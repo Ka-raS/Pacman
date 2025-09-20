@@ -1,4 +1,4 @@
-package pacman;
+package com.karas.pacman;
 
 public class Main {
     public static void main(String[] args) {

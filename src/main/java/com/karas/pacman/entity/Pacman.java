@@ -2,8 +2,8 @@ package com.karas.pacman.entity;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import com.karas.common.Vector2;
 import com.karas.pacman.Configs;
+import com.karas.pacman.common.Vector2;
 import com.karas.pacman.graphics.SpriteSheet;
 
 public class Pacman extends Entity {

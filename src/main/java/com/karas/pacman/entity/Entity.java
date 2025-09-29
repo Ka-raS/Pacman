@@ -3,9 +3,9 @@ package com.karas.pacman.entity;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
-import com.karas.common.Directions;
-import com.karas.common.Vector2;
 import com.karas.pacman.Configs;
+import com.karas.pacman.common.Directions;
+import com.karas.pacman.common.Vector2;
 
 public abstract class Entity {
 

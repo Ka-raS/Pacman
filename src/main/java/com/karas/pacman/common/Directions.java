@@ -1,4 +1,4 @@
-package com.karas.common;
+package com.karas.pacman.common;
 
 public class Directions {
     public static final int RIGHT = 0;

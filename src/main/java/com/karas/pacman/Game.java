@@ -10,7 +10,7 @@ import java.awt.event.KeyListener;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import com.karas.common.Directions;
+import com.karas.pacman.common.Directions;
 import com.karas.pacman.entity.Pacman;
 
 public class Game extends JPanel implements Runnable, KeyListener {

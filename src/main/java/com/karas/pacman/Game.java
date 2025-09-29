@@ -10,98 +10,111 @@ import java.awt.event.KeyListener;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import com.karas.common.Directions;
 import com.karas.pacman.entity.Pacman;
-import com.karas.pacman.entity.Entity.Direction;
 
-public class Game extends JPanel implements KeyListener {
+public class Game extends JPanel implements Runnable, KeyListener {
 
     public Game() {
-        m_running = false;
-        m_frame = new JFrame();
-        m_pacman = new Pacman();
+        _running = false;
+        _frame = new JFrame();
+        _pacman = new Pacman();
 
-        m_frame.setTitle(Configs.TITLE);
-        m_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        m_frame.setResizable(false);
+        _frame.setTitle(Configs.TITLE);
+        _frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        _frame.setResizable(false);
         
         setBackground(Color.BLACK);
         setDoubleBuffered(true);
         setPreferredSize(new Dimension(1000, 1000));
         
-        m_frame.add(this);
-        m_frame.addKeyListener(this);
-        m_frame.pack();
+        _frame.add(this);
+        _frame.addKeyListener(this);
+        _frame.pack();
     }
 
-    public void run() {
-        m_running = true;
-        m_frame.setVisible(true);
-        m_frame.requestFocus();
+    public synchronized void start() {
+        if (_running)
+            return;
+        _running = true;
+        _thread = new Thread(this);
 
+        _thread.start();
+        _frame.setVisible(true);
+        _frame.requestFocus();
+    }
+
+    @Override
+    public void run() {
         int frames = 0;
         int updates = 0;
-        float deltaTime = 0.0f;
+        long timer = 0;
         long lastTime = System.nanoTime();
-        long lastLogTime = System.currentTimeMillis();
+        long lastLogTime = System.nanoTime();
+        final long UPDATE_INTERVAL = (long)(1e9 / Configs.UPS_TARGET);
 
-        while (m_running) {
+        while (_running) {
             long currentTime = System.nanoTime();
-            deltaTime += (currentTime - lastTime) / (1e9f / Configs.UPS_TARGET);
+            timer += currentTime - lastTime;
             lastTime = currentTime;
-            if (deltaTime >= 1.0f) {
-                update();
+
+            while (timer >= UPDATE_INTERVAL) {
+                updateGame();
+                timer -= UPDATE_INTERVAL;
                 ++updates;
-                --deltaTime;
             }
 
             repaint();
             ++frames;
-            if (System.currentTimeMillis() - lastLogTime >= 1000) {
-                System.out.printf("\r%d UPS, %d FPS", updates, frames);
-                frames = updates = 0;
-                lastLogTime += 1000;
+
+            if (currentTime - lastLogTime >= (long)1e9) {
+                _frame.setTitle(Configs.TITLE + ": " + updates + " UPS, " + frames + " FPS");
+                lastLogTime = currentTime;
+                updates = frames = 0;
             }
+
+            Thread.yield();
         }
     }
 
-    private void update() {
-        m_pacman.update();
+    private void updateGame() {
+        _pacman.update();
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2D = (Graphics2D)g;
-        m_pacman.render(g2D, this);
+        _pacman.repaint(g2D);
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        Direction direction = null;
+        int direction = -1;
 
         switch (e.getKeyCode()) {
             case KeyEvent.VK_UP:
             case KeyEvent.VK_W:
-                direction = Direction.UP;
+                direction = Directions.UP;
                 break;
             case KeyEvent.VK_RIGHT:
             case KeyEvent.VK_D:
-                direction = Direction.RIGHT;
+                direction = Directions.RIGHT;
                 break;
             case KeyEvent.VK_DOWN:
             case KeyEvent.VK_S:
-                direction = Direction.DOWN;
+                direction = Directions.DOWN;
                 break;
             case KeyEvent.VK_LEFT:
             case KeyEvent.VK_A:
-                direction = Direction.LEFT;
+                direction = Directions.LEFT;
                 break;
             default:
                 break;
         }
 
-        if (direction != null) {
-            m_pacman.setNextDirection(direction);
+        if (direction != -1) {
+            _pacman.setNextDirection(direction);
         }
     }
 
@@ -111,7 +124,8 @@ public class Game extends JPanel implements KeyListener {
     @Override
     public void keyTyped(KeyEvent e) {}
 
-    private JFrame m_frame;
-    private boolean m_running;
-    private Pacman m_pacman;
+    private boolean _running;
+    private JFrame _frame;
+    private Thread _thread;
+    private Pacman _pacman;
 }

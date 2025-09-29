@@ -1,11 +1,13 @@
-package com.karas.graphics;
+package com.karas.pacman.graphics;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
+import javax.imageio.ImageIO;
+
 import com.karas.pacman.Configs;
 
-public final class SpriteSheet {
+public class SpriteSheet {
 
     public static BufferedImage[] getPacman() {
         return getSprites(0, 0, 8);
@@ -35,24 +37,22 @@ public final class SpriteSheet {
     private static BufferedImage[] getSprites(int row, int col, int count) {
         BufferedImage[] sprites = new BufferedImage[count];
         for (int i = 0; i < count; ++i)
-            sprites[i] = m_spriteSheet.getSubimage(
+            sprites[i] = SPRITE_SHEET.getSubimage(
                 (col + i) * Configs.SPRITE_SIZE_PX, row * Configs.SPRITE_SIZE_PX, Configs.SPRITE_SIZE_PX, Configs.SPRITE_SIZE_PX
             );
         return sprites;
     }
 
-    private SpriteSheet() {};
-
-    private static final BufferedImage m_spriteSheet;
+    private static final BufferedImage SPRITE_SHEET;
 
     static {
         BufferedImage result = null;
         try {
-            result = javax.imageio.ImageIO.read(SpriteSheet.class.getResourceAsStream("/spritesheet.png"));
+            result = ImageIO.read(SpriteSheet.class.getResourceAsStream("/spritesheet.png"));
         } catch (IOException e) {
             System.err.println("Load spritesheet failed: " + e.getMessage());
             System.exit(1);
         }
-        m_spriteSheet = result;
+        SPRITE_SHEET = result;
     }
 }

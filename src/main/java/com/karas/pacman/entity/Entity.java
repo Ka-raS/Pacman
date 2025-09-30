@@ -14,7 +14,7 @@ public abstract class Entity {
         _speed = speed;
         _direction = _nextDirection = direction;
         _sprites = sprites;
-        _spritePos = Directions.SPRITES[_direction];
+        _spritePos = Directions.getSpritePos(direction);
         _spriteCounter = 0;
     }
 
@@ -43,11 +43,11 @@ public abstract class Entity {
 
         ++_spriteCounter;
         if (directionChanged || _spriteCounter >= Configs.SPRITE_INTERVAL) {
-            _spritePos = Directions.SPRITES[_direction] + (_spritePos + 1) % 2;
+            _spritePos = Directions.getSpritePos(_direction) + (_spritePos + 1) % 2;
             _spriteCounter = 0;
         }
 
-        _position = _position.add(Directions.VECTORS[_direction].mul(_speed));
+        _position = _position.add(Directions.getVector2(_direction).mul(_speed));
     }
 
     // TODO

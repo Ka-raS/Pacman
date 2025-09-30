@@ -1,13 +1,15 @@
 package com.karas.pacman.graphics;
 
+import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
+import java.net.URL;
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 import com.karas.pacman.Configs;
 
-public class SpriteSheet {
+public class ImageLoader {
 
     public static BufferedImage[] getPacman() {
         return getSprites(0, 0, 8);
@@ -33,6 +35,13 @@ public class SpriteSheet {
         return getSprites(5, 0, 8);
     }
 
+    public static Image getWindowIcon() {
+        return WINDOW_ICON;
+    }
+
+    public static BufferedImage getMap() {
+        return GAME_MAP;
+    }
 
     private static BufferedImage[] getSprites(int row, int col, int count) {
         BufferedImage[] sprites = new BufferedImage[count];
@@ -43,16 +52,21 @@ public class SpriteSheet {
         return sprites;
     }
 
-    private static final BufferedImage SPRITE_SHEET;
-
-    static {
+    private static BufferedImage loadImage(URL path, boolean exitFail) {
         BufferedImage result = null;
         try {
-            result = ImageIO.read(SpriteSheet.class.getResourceAsStream("/spritesheet.png"));
-        } catch (IOException e) {
-            System.err.println("Load spritesheet failed: " + e.getMessage());
-            System.exit(1);
+            result = ImageIO.read(path);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Load image failed: " + e.getMessage());
+            if (exitFail)
+                System.exit(1);
         }
-        SPRITE_SHEET = result;
+        return result;
     }
+
+    private static final Image WINDOW_ICON = new ImageIcon(Configs.WINDOW_ICON_PATH).getImage();
+    private static final BufferedImage GAME_MAP = loadImage(Configs.MAP_PATH, true);
+    private static final BufferedImage SPRITE_SHEET = loadImage(Configs.SPRITE_SHEET_PATH, true);
+
 }

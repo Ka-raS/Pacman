@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 
 import com.karas.pacman.common.Directions;
 import com.karas.pacman.entity.Pacman;
+import com.karas.pacman.graphics.ImageLoader;
 
 public class Game extends JPanel implements Runnable, KeyListener {
 
@@ -23,10 +24,11 @@ public class Game extends JPanel implements Runnable, KeyListener {
         _frame.setTitle(Configs.TITLE);
         _frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         _frame.setResizable(false);
+        _frame.setIconImage(ImageLoader.getWindowIcon());
         
-        setBackground(Color.BLACK);
-        setDoubleBuffered(true);
-        setPreferredSize(new Dimension(1000, 1000));
+        super.setBackground(Color.BLACK);
+        super.setDoubleBuffered(true);
+        super.setPreferredSize(new Dimension(1000, 1000));
         
         _frame.add(this);
         _frame.addKeyListener(this);
@@ -64,7 +66,7 @@ public class Game extends JPanel implements Runnable, KeyListener {
                 ++updates;
             }
 
-            repaint();
+            super.repaint();
             ++frames;
 
             if (currentTime - lastLogTime >= (long)1e9) {

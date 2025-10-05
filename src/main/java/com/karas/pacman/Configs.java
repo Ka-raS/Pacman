@@ -1,14 +1,16 @@
 package com.karas.pacman;
 
-import java.net.URL;
+import java.awt.Color;
+import java.io.InputStream;
 
 public class Configs {
 
     public static final String TITLE = "Pacman";
+    public static final Color BACKGROUND_COLOR = Color.BLACK;
 
-    public static final URL MAP_PATH = Configs.class.getResource("/map.png");
-    public static final URL WINDOW_ICON_PATH = Configs.class.getResource("/icon.png");
-    public static final URL SPRITE_SHEET_PATH = Configs.class.getResource("/spritesheet.png");
+    public static final InputStream MAP_PATH = Configs.class.getResourceAsStream("/map.png");
+    public static final InputStream WINDOW_ICON_PATH = Configs.class.getResourceAsStream("/icon.png");
+    public static final InputStream SPRITE_SHEET_PATH = Configs.class.getResourceAsStream("/spritesheet.png");
 
     public static final int SCALING = 4;
     public static final int UPS_TARGET = 60; // updates per second

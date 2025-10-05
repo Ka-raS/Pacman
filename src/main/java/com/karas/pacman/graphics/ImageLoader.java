@@ -2,10 +2,9 @@ package com.karas.pacman.graphics;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.net.URL;
+import java.io.InputStream;
 
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 
 import com.karas.pacman.Configs;
 
@@ -52,10 +51,10 @@ public class ImageLoader {
         return sprites;
     }
 
-    private static BufferedImage loadImage(URL path, boolean exitFail) {
+    private static BufferedImage loadImage(InputStream stream, boolean exitFail) {
         BufferedImage result = null;
         try {
-            result = ImageIO.read(path);
+            result = ImageIO.read(stream);
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("Load image failed: " + e.getMessage());
@@ -65,7 +64,7 @@ public class ImageLoader {
         return result;
     }
 
-    private static final Image WINDOW_ICON = new ImageIcon(Configs.WINDOW_ICON_PATH).getImage();
+    private static final BufferedImage WINDOW_ICON = loadImage(Configs.WINDOW_ICON_PATH, false);
     private static final BufferedImage GAME_MAP = loadImage(Configs.MAP_PATH, true);
     private static final BufferedImage SPRITE_SHEET = loadImage(Configs.SPRITE_SHEET_PATH, true);
 

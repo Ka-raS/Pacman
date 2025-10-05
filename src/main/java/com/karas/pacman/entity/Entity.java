@@ -4,21 +4,12 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import com.karas.pacman.Configs;
-import com.karas.pacman.common.Directions;
+import com.karas.pacman.common.Direction;
 import com.karas.pacman.common.Vector2;
 
 public abstract class Entity {
 
-    public Entity(Vector2 position, int speed, int direction, BufferedImage[] sprites) {
-        _position = position;
-        _speed = speed;
-        _direction = _nextDirection = direction;
-        _sprites = sprites;
-        _spritePos = Directions.getSpritePos(direction);
-        _spriteCounter = 0;
-    }
-
-    public void setNextDirection(int d) {
+    public void setNextDirection(Direction d) {
         _nextDirection = d;
     }
 
@@ -43,11 +34,11 @@ public abstract class Entity {
 
         ++_spriteCounter;
         if (directionChanged || _spriteCounter >= Configs.SPRITE_INTERVAL) {
-            _spritePos = Directions.getSpritePos(_direction) + (_spritePos + 1) % 2;
+            _spritePos = Direction.toSpritePos(_direction) + (_spritePos + 1) % 2;
             _spriteCounter = 0;
         }
 
-        _position = _position.add(Directions.getVector2(_direction).mul(_speed));
+        _position = _position.add(Direction.toVector2(_direction).mul(_speed));
     }
 
     // TODO
@@ -55,12 +46,12 @@ public abstract class Entity {
         return true;
     }
 
-    private int _speed;
-    private int _direction;
-    private int _nextDirection;
-    private Vector2 _position;
-    private int _spritePos;
-    private int _spriteCounter;
-    private BufferedImage[] _sprites;
+    protected int _speed;
+    protected Direction _direction;
+    protected Direction _nextDirection;
+    protected Vector2 _position;
+    protected int _spritePos;
+    protected int _spriteCounter;
+    protected BufferedImage[] _sprites;
 
 }

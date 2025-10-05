@@ -1,6 +1,5 @@
 package com.karas.pacman;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -10,32 +9,34 @@ import java.awt.event.KeyListener;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import com.karas.pacman.common.Directions;
-import com.karas.pacman.entity.Pacman;
 import com.karas.pacman.graphics.ImageLoader;
+import com.karas.pacman.state.Playing;
+import com.karas.pacman.state.State;
 
 public class Game extends JPanel implements Runnable, KeyListener {
 
     public Game() {
         _running = false;
-        _frame = new JFrame();
-        _pacman = new Pacman();
+        _state = new Playing();
+        _frame = new JFrame(Configs.TITLE);
 
-        _frame.setTitle(Configs.TITLE);
         _frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        _frame.setResizable(false);
         _frame.setIconImage(ImageLoader.getWindowIcon());
+        _frame.setResizable(false);
         
-        super.setBackground(Color.BLACK);
-        super.setDoubleBuffered(true);
-        super.setPreferredSize(new Dimension(1000, 1000));
+        setBackground(Configs.BACKGROUND_COLOR);
+        setDoubleBuffered(true);
+        setPreferredSize(new Dimension(1000, 1000));
         
         _frame.add(this);
         _frame.addKeyListener(this);
         _frame.pack();
     }
 
-    public synchronized void start() {
+    /**
+     * Starts the game thread by calling {@code run()}
+     */
+    public synchronized void enter() {
         if (_running)
             return;
         _running = true;
@@ -46,13 +47,27 @@ public class Game extends JPanel implements Runnable, KeyListener {
         _frame.requestFocus();
     }
 
+    public synchronized void exit() {
+        if (!_running)
+            return;
+        _running = false;
+        try {
+            _thread.join();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Do not call this directly.
+     * Call {@code enter()} instead.
+     */
     @Override
     public void run() {
-        int frames = 0;
-        int updates = 0;
-        long timer = 0;
+        long timer = 0L;
         long lastTime = System.nanoTime();
-        long lastLogTime = System.nanoTime();
+        long lastLogTime = lastTime;
+        int frames = 0, updates = 0;
         final long UPDATE_INTERVAL = (long)(1e9 / Configs.UPS_TARGET);
 
         while (_running) {
@@ -61,12 +76,24 @@ public class Game extends JPanel implements Runnable, KeyListener {
             lastTime = currentTime;
 
             while (timer >= UPDATE_INTERVAL) {
-                updateGame();
                 timer -= UPDATE_INTERVAL;
                 ++updates;
+
+                State nextState = _state.update();
+                if (nextState == null) {
+                    _state.exit();
+                    exit();
+                    break;
+                } else if (nextState != _state) {
+                    _state.exit();
+                    _state = nextState;
+                    _state.enter();
+                }
             }
 
-            super.repaint();
+            if (!_running)
+                break;
+            repaint(); // calls paintComponent()
             ++frames;
 
             if (currentTime - lastLogTime >= (long)1e9) {
@@ -79,55 +106,34 @@ public class Game extends JPanel implements Runnable, KeyListener {
         }
     }
 
-    private void updateGame() {
-        _pacman.update();
-    }
-
     @Override
-    public void paintComponent(Graphics g) {
+    protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2D = (Graphics2D)g;
-        _pacman.repaint(g2D);
+        _state.repaint(g2D);
+        g2D.dispose();
     }
+
+    // KeyListener methods gets called by _frame
 
     @Override
     public void keyPressed(KeyEvent e) {
-        int direction = -1;
-
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_UP:
-            case KeyEvent.VK_W:
-                direction = Directions.UP;
-                break;
-            case KeyEvent.VK_RIGHT:
-            case KeyEvent.VK_D:
-                direction = Directions.RIGHT;
-                break;
-            case KeyEvent.VK_DOWN:
-            case KeyEvent.VK_S:
-                direction = Directions.DOWN;
-                break;
-            case KeyEvent.VK_LEFT:
-            case KeyEvent.VK_A:
-                direction = Directions.LEFT;
-                break;
-            default:
-                break;
-        }
-
-        if (direction != -1) {
-            _pacman.setNextDirection(direction);
-        }
+        _state.input(e);
     }
 
     @Override
-    public void keyReleased(KeyEvent e) {}
+    public void keyReleased(KeyEvent e) {
+        _state.input(e);
+    }
 
     @Override
-    public void keyTyped(KeyEvent e) {}
+    public void keyTyped(KeyEvent e) {
+        _state.input(e);
+    }
 
     private boolean _running;
+    private State _state;
     private JFrame _frame;
     private Thread _thread;
-    private Pacman _pacman;
+    
 }

@@ -10,8 +10,8 @@ A Pacman game.
 ## How To Run
 
 ```bash
-git clone https://github.com/yourusername/pacman.git
+git clone https://github.com/Ka-raS/Pacman.git
 cd pacman
 mvn package
-./target/pacman-0.0.1-SNAPSHOT.jar
+java -jar target/pacman-0.0.1-SNAPSHOT.jar
 ```

@@ -3,7 +3,7 @@ package com.karas.pacman.entity;
 import com.karas.pacman.Configs;
 import com.karas.pacman.common.Direction;
 import com.karas.pacman.common.Vector2;
-import com.karas.pacman.graphics.ImageLoader;
+import com.karas.pacman.resources.ImageLoader;
 
 public class Pacman extends Entity {
 

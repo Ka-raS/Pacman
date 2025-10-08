@@ -1,6 +1,5 @@
 package com.karas.pacman;
 
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
@@ -9,7 +8,7 @@ import java.awt.event.KeyListener;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import com.karas.pacman.graphics.ImageLoader;
+import com.karas.pacman.resources.ImageLoader;
 import com.karas.pacman.state.Playing;
 import com.karas.pacman.state.State;
 
@@ -26,7 +25,7 @@ public class Game extends JPanel implements Runnable, KeyListener {
         
         setBackground(Configs.BACKGROUND_COLOR);
         setDoubleBuffered(true);
-        setPreferredSize(new Dimension(1000, 1000));
+        setPreferredSize(Configs.WINDOW_SIZE);
         
         _frame.add(this);
         _frame.addKeyListener(this);

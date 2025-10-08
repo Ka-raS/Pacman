@@ -7,11 +7,11 @@ public class Vector2 {
         _y = y;
     }
 
-    public int getX() {
+    public int x() {
         return _x;
     }
 
-    public int getY() {
+    public int y() {
         return _y;
     }
 

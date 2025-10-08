@@ -14,14 +14,14 @@ public abstract class Entity {
     }
 
     public boolean isCollide(Entity other) {
-        final float BOUND = Configs.SPRITE_SIZE * 0.9f;
-        Vector2 v = _position.sub(other._position);
-        return Math.abs(v.getX()) < BOUND && Math.abs(v.getY()) < BOUND;
+        final float BOUND = Configs.SPRITE_SIZE_UI * 0.9f;
+        Vector2 delta = _position.sub(other._position);
+        return Math.abs(delta.x()) < BOUND && Math.abs(delta.y()) < BOUND;
     }
     
     public void repaint(Graphics2D g) {
         g.drawImage(
-            _sprites[_spritePos], _position.getX(), _position.getY(), Configs.SPRITE_SIZE, Configs.SPRITE_SIZE, null
+            _sprites[_spritePos], _position.x(), _position.y(), Configs.SPRITE_SIZE_UI, Configs.SPRITE_SIZE_UI, null
         );
     }
 
@@ -45,7 +45,7 @@ public abstract class Entity {
     private boolean isValidNextDirection() {
         return true;
     }
-
+    
     protected int _speed;
     protected Direction _direction;
     protected Direction _nextDirection;

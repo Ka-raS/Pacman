@@ -5,15 +5,19 @@ import java.awt.event.KeyEvent;
 
 import com.karas.pacman.common.Direction;
 import com.karas.pacman.entity.Pacman;
+import com.karas.pacman.map.Map;
 
 public class Playing implements State {
 
     public Playing() {
+        _map = new Map();
         _pacman = new Pacman();
+        enter();
     }
 
     @Override
     public void enter() {
+        _nextState = null;
     }
 
     @Override
@@ -22,12 +26,16 @@ public class Playing implements State {
 
     @Override
     public State update() {
+        if (_nextState != null)
+            return _nextState;
+
         _pacman.update();
         return this;
     }
 
     @Override
     public void repaint(Graphics2D g) {
+        _map.repaint(g);
         _pacman.repaint(g);
     }
 
@@ -43,27 +51,36 @@ public class Playing implements State {
             case KeyEvent.VK_W:
                 d = Direction.UP;
                 break;
+
             case KeyEvent.VK_RIGHT:
             case KeyEvent.VK_D:
                 d = Direction.RIGHT;
                 break;
+
             case KeyEvent.VK_DOWN:
             case KeyEvent.VK_S:
                 d = Direction.DOWN;
                 break;
+
             case KeyEvent.VK_LEFT:
             case KeyEvent.VK_A:
                 d = Direction.LEFT;
                 break;
+
+            case KeyEvent.VK_ESCAPE:
+                _nextState = new Paused(this);
+                break;
+
             default:
                 break;
         }
 
-        if (d != null) {
+        if (d != null)
             _pacman.setNextDirection(d);
-        }
     }
 
-    Pacman _pacman;
+    private State _nextState;
+    private Map _map;
+    private Pacman _pacman;
 
 }

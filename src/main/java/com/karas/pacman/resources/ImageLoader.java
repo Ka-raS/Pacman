@@ -1,4 +1,4 @@
-package com.karas.pacman.graphics;
+package com.karas.pacman.resources;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;

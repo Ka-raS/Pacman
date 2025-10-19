@@ -9,7 +9,7 @@ public interface State {
 
     public void exit();
 
-    public State update();
+    public State update(double deltaTime);
 
     public void repaint(Graphics2D g);
 

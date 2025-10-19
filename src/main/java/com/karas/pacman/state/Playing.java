@@ -12,7 +12,6 @@ public class Playing implements State {
     public Playing() {
         _map = new Map();
         _pacman = new Pacman();
-        enter();
     }
 
     @Override
@@ -25,11 +24,10 @@ public class Playing implements State {
     }
 
     @Override
-    public State update() {
+    public State update(double deltaTime) {
         if (_nextState != null)
             return _nextState;
-
-        _pacman.update();
+        _pacman.update(deltaTime, _map);
         return this;
     }
 

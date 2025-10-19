@@ -2,7 +2,6 @@ package com.karas.pacman.resources;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
@@ -43,18 +42,17 @@ public class ImageLoader {
     }
 
     private static BufferedImage[] getSprites(int row, int col, int count) {
+        final int CELL = Configs.PX.SPRITE_SIZE;
         BufferedImage[] sprites = new BufferedImage[count];
         for (int i = 0; i < count; ++i)
-            sprites[i] = SPRITE_SHEET.getSubimage(
-                (col + i) * Configs.SPRITE_SIZE_PX, row * Configs.SPRITE_SIZE_PX, Configs.SPRITE_SIZE_PX, Configs.SPRITE_SIZE_PX
-            );
+            sprites[i] = SPRITE_SHEET.getSubimage((col + i) * CELL, row * CELL, CELL, CELL);
         return sprites;
     }
 
-    private static BufferedImage loadImage(InputStream stream, boolean exitFail) {
+    private static BufferedImage loadImage(String path, boolean exitFail) {
         BufferedImage result = null;
         try {
-            result = ImageIO.read(stream);
+            result = ImageIO.read(ImageLoader.class.getResourceAsStream(path));
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("Load image failed: " + e.getMessage());

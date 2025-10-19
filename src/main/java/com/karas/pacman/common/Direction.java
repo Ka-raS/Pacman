@@ -6,7 +6,7 @@ public enum Direction {
 
     RIGHT(0), LEFT(1), UP(2), DOWN(3);
 
-    public static Direction getRandom() {
+    public static Direction random() {
         Direction[] v = values();
         return v[ThreadLocalRandom.current().nextInt(v.length)];
     }

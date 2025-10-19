@@ -22,31 +22,28 @@ public class Game extends JPanel implements Runnable, KeyListener {
         _frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         _frame.setIconImage(ImageLoader.getWindowIcon());
         _frame.setResizable(false);
-        
+
         setBackground(Configs.BACKGROUND_COLOR);
         setDoubleBuffered(true);
         setPreferredSize(Configs.WINDOW_SIZE);
-        
+
         _frame.add(this);
         _frame.addKeyListener(this);
         _frame.pack();
     }
 
-    /**
-     * Starts the game thread by calling {@code run()}
-     */
     public synchronized void enter() {
         if (_running)
             return;
         _running = true;
         _thread = new Thread(this);
 
-        _thread.start();
         _frame.setVisible(true);
         _frame.requestFocus();
+        _thread.start(); // calls run()
     }
 
-    public synchronized void exit() {
+    private synchronized void exit() {
         if (!_running)
             return;
         _running = false;
@@ -57,82 +54,77 @@ public class Game extends JPanel implements Runnable, KeyListener {
         }
     }
 
-    /**
-     * Do not call this directly.
-     * Call {@code enter()} instead.
-     */
+    /** {@code Runnable} method. Do not call. */
     @Override
     public void run() {
-        long timer = 0L;
+        int frames = 0;
+        double logTimer = 0.0;
         long lastTime = System.nanoTime();
-        long lastLogTime = lastTime;
-        int frames = 0, updates = 0;
-        final long UPDATE_INTERVAL = (long)(1e9 / Configs.UPS_TARGET);
 
         while (_running) {
             long currentTime = System.nanoTime();
-            timer += currentTime - lastTime;
+            double deltaTime = (currentTime - lastTime) / 1e9;
+            if (deltaTime < 0.0)
+                continue;
             lastTime = currentTime;
 
-            while (timer >= UPDATE_INTERVAL) {
-                timer -= UPDATE_INTERVAL;
-                ++updates;
-
-                State nextState = _state.update();
-                if (nextState == null) {
-                    _state.exit();
-                    exit();
-                    break;
-                } else if (nextState != _state) {
-                    _state.exit();
-                    _state = nextState;
-                    _state.enter();
-                }
-            }
-
+            updateGame(deltaTime);
             if (!_running)
                 break;
             repaint(); // calls paintComponent()
             ++frames;
 
-            if (currentTime - lastLogTime >= (long)1e9) {
-                _frame.setTitle(Configs.TITLE + ": " + updates + " UPS, " + frames + " FPS");
-                lastLogTime = currentTime;
-                updates = frames = 0;
+            logTimer += deltaTime;
+            if (logTimer >= 1.0) {
+                System.out.printf("\rFPS: %d", frames);
+                logTimer = frames = 0;
             }
+        }
+        exit();
+    }
 
-            Thread.yield();
+    private void updateGame(double deltaTime) {
+        State nextState = _state.update(deltaTime);
+        if (nextState == null) {
+            _state.exit();
+            _running = false;
+        } else if (nextState != _state) {
+            _state.exit();
+            _state = nextState;
+            _state.enter();
         }
     }
 
+    /** {@code JPanel} method. Do not call. */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2D = (Graphics2D)g;
+        Graphics2D g2D = (Graphics2D) g;
         _state.repaint(g2D);
         g2D.dispose();
     }
 
-    // KeyListener methods gets called by _frame
-
+    /** {@code KeyListener} method. Do not call. */
     @Override
     public void keyPressed(KeyEvent e) {
         _state.input(e);
     }
 
+    /** {@code KeyListener} method. Do not call. */
     @Override
     public void keyReleased(KeyEvent e) {
         _state.input(e);
     }
-
+    
+    /** {@code KeyListener} method. Do not call. */
     @Override
     public void keyTyped(KeyEvent e) {
         _state.input(e);
     }
-
+    
     private boolean _running;
     private State _state;
     private JFrame _frame;
     private Thread _thread;
-    
+
 }

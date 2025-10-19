@@ -19,10 +19,9 @@ public class Paused implements State {
     }
 
     @Override
-    public State update() {
+    public State update(double deltaTime) {
         if (_nextState != null)
             return _nextState;
-
         return this;
     }
 

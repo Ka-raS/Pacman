@@ -9,6 +9,14 @@ import com.karas.pacman.Configs;
 
 public class ImageLoader {
 
+    public static Image getWindowIcon() {
+        return WINDOW_ICON;
+    }
+
+    public static BufferedImage getMap() {
+        return GAME_MAP;
+    }
+
     public static BufferedImage[] getPacman() {
         return getSprites(0, 0, 8);
     }
@@ -31,14 +39,6 @@ public class ImageLoader {
 
     public static BufferedImage[] getClyde() {
         return getSprites(5, 0, 8);
-    }
-
-    public static Image getWindowIcon() {
-        return WINDOW_ICON;
-    }
-
-    public static BufferedImage getMap() {
-        return GAME_MAP;
     }
 
     private static BufferedImage[] getSprites(int row, int col, int count) {

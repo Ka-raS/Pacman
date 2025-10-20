@@ -26,13 +26,16 @@ public class Configs {
         public static final int TILE_SIZE = 8;
         public static final int SPRITE_SIZE = 16;
         public static final Vector2 MAP_SIZE = MAP_GRID.mul(TILE_SIZE);
-
+        public static final int DOT_SIZE = 2;
+        public static final int POWERUP_SIZE = 6;
     }
 
     public class UI {
         public static final int TILE_SIZE = PX.TILE_SIZE * SCALING;
         public static final int SPRITE_SIZE = PX.SPRITE_SIZE * SCALING;
         public static final Vector2 MAP_SIZE = PX.MAP_SIZE.mul(SCALING);
+        public static final int DOT_SIZE = PX.DOT_SIZE * SCALING;
+        public static final int POWERUP_SIZE = PX.POWERUP_SIZE * SCALING;
     }
 
     public static final Dimension WINDOW_SIZE = new Dimension(UI.MAP_SIZE.ix(), UI.MAP_SIZE.iy()); // TODO: temporary

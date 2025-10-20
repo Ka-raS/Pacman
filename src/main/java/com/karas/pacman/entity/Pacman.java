@@ -7,7 +7,6 @@ import com.karas.pacman.Configs;
 import com.karas.pacman.common.Direction;
 import com.karas.pacman.common.Vector2;
 import com.karas.pacman.map.Map;
-import com.karas.pacman.map.Tile;
 import com.karas.pacman.resources.ImageLoader;
 
 public class Pacman extends Entity {
@@ -23,18 +22,26 @@ public class Pacman extends Entity {
         // _deathSprites = SpriteSheet.getPacmanDeath();
     }
 
+    public void setNextDirection(Direction d) {
+        _nextDirection = d;
+    }
+
+    public Vector2 getPosition() {
+        return _position;
+    }
+
     public void update(double deltaTime, Map map) {
-        boolean directionChanged = false;
-        if (_direction != _nextDirection && Map.isCenteredInTile(_position)) {
+        boolean changeDirection = _direction != _nextDirection && !map.willHitWall(_position, _nextDirection) && Map.isCenteredInTile(_position);
+        if (changeDirection)
             _direction = _nextDirection;
-            directionChanged = true;
+
+        if (!map.willHitWall(_position, _direction)) {
+            Vector2 delta = Direction.toVector2(_direction).mul(deltaTime * _speed);
+            _position = _position.add(delta);
         }
 
-        if (!willHitWall(map))
-            _position = _position.add(Direction.toVector2(_direction).mul(deltaTime * _speed));
-
         _spriteTimer += deltaTime;
-        if (directionChanged || _spriteTimer > Configs.SPRITE_INTERVAL) {
+        if (changeDirection || _spriteTimer > Configs.SPRITE_INTERVAL) {
             _spritePos = Direction.toSpritePos(_direction) + (_spritePos + 1) % 2;
             _spriteTimer = 0;
         }
@@ -43,18 +50,6 @@ public class Pacman extends Entity {
     public void repaint(Graphics2D g) {
         Vector2 p = _position.mul(Configs.SCALING);
         g.drawImage(_sprites[_spritePos], p.ix(), p.iy(), Configs.UI.SPRITE_SIZE, Configs.UI.SPRITE_SIZE, null);
-    }
-
-    public void setNextDirection(Direction d) {
-        _nextDirection = d;
-    }
-
-    private boolean willHitWall(Map map) {
-        Vector2 delta = Direction.toVector2(_direction).mul(Configs.PX.TILE_SIZE / 2);
-        Vector2 testPos = _position.add(delta);
-        if (_direction == Direction.LEFT || _direction == Direction.UP)
-            testPos = testPos.sub(1); // TODO: ??????????
-        return map.getTile(testPos) == Tile.WALL;
     }
 
     // public boolean isCollide(Entity other) {

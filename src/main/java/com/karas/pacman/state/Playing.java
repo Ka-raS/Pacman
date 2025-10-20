@@ -28,6 +28,15 @@ public class Playing implements State {
         if (_nextState != null)
             return _nextState;
         _pacman.update(deltaTime, _map);
+
+        _map.tryEatDotAt(_pacman.getPosition());
+        if (_map.tryEatPowerupAt(_pacman.getPosition()))
+            System.out.println("Powerup eaten!");
+        
+        if (_map.getDotCounts() == 0) {
+            System.out.println("Game won!");
+            return null;
+        }
         return this;
     }
 

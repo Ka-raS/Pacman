@@ -23,6 +23,14 @@ public class Vector2 {
         return (int) _y;
     }
 
+    public Vector2 ceil() {
+        return new Vector2(Math.ceil(_x), Math.ceil(_y));
+    }
+
+    public Vector2 floor() {
+        return new Vector2(Math.floor(_x), Math.floor(_y));
+    }
+
     public Vector2 add(Vector2 other) {
         return new Vector2(_x + other._x, _y + other._y);
     }

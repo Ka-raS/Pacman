@@ -7,7 +7,7 @@ public class Paused implements State {
     
     public Paused(State lastState) {
         _lastState = lastState;
-        _nextState = null;
+        _nextState = this;
     }
 
     @Override
@@ -20,9 +20,7 @@ public class Paused implements State {
 
     @Override
     public State update(double deltaTime) {
-        if (_nextState != null)
-            return _nextState;
-        return this;
+        return _nextState;
     }
 
     @Override
@@ -46,6 +44,6 @@ public class Paused implements State {
     }
     
     private State _lastState;
-    private State _nextState;
+    private volatile State _nextState;
 
 }

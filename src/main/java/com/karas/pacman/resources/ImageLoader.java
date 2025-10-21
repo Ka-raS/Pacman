@@ -2,10 +2,12 @@ package com.karas.pacman.resources;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
 import com.karas.pacman.Configs;
+import com.karas.pacman.common.ExceptionHandler;
 
 public class ImageLoader {
 
@@ -49,15 +51,15 @@ public class ImageLoader {
         return sprites;
     }
 
-    private static BufferedImage loadImage(String path, boolean exitFail) {
+    private static BufferedImage loadImage(String path, boolean isCritical) {
         BufferedImage result = null;
         try {
             result = ImageIO.read(ImageLoader.class.getResourceAsStream(path));
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("Load image failed: " + e.getMessage());
-            if (exitFail)
-                System.exit(1);
+        } catch (IOException e) {
+            if (isCritical)
+                ExceptionHandler.handleCritical(e, path + " Load Failed");
+            else
+                ExceptionHandler.handleGeneric(e, path + " Load Failed");
         }
         return result;
     }

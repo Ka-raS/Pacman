@@ -4,19 +4,23 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 
 import com.karas.pacman.common.Direction;
+import com.karas.pacman.entity.GhostGang;
 import com.karas.pacman.entity.Pacman;
 import com.karas.pacman.map.Map;
+import com.karas.pacman.map.Tile;
 
 public class Playing implements State {
 
     public Playing() {
         _map = new Map();
         _pacman = new Pacman();
+        _ghostGang = new GhostGang();
     }
 
     @Override
     public void enter() {
-        _nextState = null;
+        _nextState = this;
+        _idleTimer = 1.0;
     }
 
     @Override
@@ -25,14 +29,24 @@ public class Playing implements State {
 
     @Override
     public State update(double deltaTime) {
-        if (_nextState != null)
+        if (_nextState != this)
             return _nextState;
-        _pacman.update(deltaTime, _map);
-
-        _map.tryEatDotAt(_pacman.getPosition());
-        if (_map.tryEatPowerupAt(_pacman.getPosition()))
-            System.out.println("Powerup eaten!");
         
+        boolean isIdling = _idleTimer > 0.0;
+        if (isIdling)
+            _idleTimer -= deltaTime;
+        _pacman.update(deltaTime, _map, isIdling);
+        _ghostGang.update(deltaTime, _map, isIdling);
+        
+        if (_ghostGang.caughtPacman(_pacman)) {
+            System.out.println("Game lost!");
+            return null;
+        }
+
+        Tile eaten = _map.tryEatAt(_pacman.getPosition());
+        if (eaten == Tile.POWERUP)
+            System.out.println("Powerup eaten!");
+
         if (_map.getDotCounts() == 0) {
             System.out.println("Game won!");
             return null;
@@ -44,6 +58,7 @@ public class Playing implements State {
     public void repaint(Graphics2D g) {
         _map.repaint(g);
         _pacman.repaint(g);
+        _ghostGang.repaint(g);
     }
 
     @Override
@@ -86,8 +101,10 @@ public class Playing implements State {
             _pacman.setNextDirection(d);
     }
 
-    private State _nextState;
     private Map _map;
     private Pacman _pacman;
+    private GhostGang _ghostGang;
+    private double _idleTimer;
+    private volatile State _nextState;
 
 }

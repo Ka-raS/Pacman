@@ -41,34 +41,22 @@ public class Map {
         return _dotCounts;
     }
 
-    public void tryEatDotAt(Vector2 p) {
-        if (!isCenteredInTile(p))
-            return;
-        p = toGridVector2(p);
-        if (_tiles[p.iy()][p.ix()] == Tile.DOT) {
-            _tiles[p.iy()][p.ix()] = Tile.NONE;
-            --_dotCounts;
-        }
-    }
+    public Tile tryEatAt(Vector2 pacmanPos) {
+        if (!isCenteredInTile(pacmanPos))
+            return Tile.NONE;
+        Vector2 p = toGridVector2(pacmanPos);
+        Tile tile = _tiles[p.iy()][p.ix()];
+        switch (tile) {
+            case DOT:
+                --_dotCounts;
+            case POWERUP:
+                _tiles[p.iy()][p.ix()] = Tile.NONE;
+                break;
 
-    public boolean tryEatPowerupAt(Vector2 p) {
-        if (!isCenteredInTile(p))
-            return false;
-        p = toGridVector2(p);
-        if (_tiles[p.iy()][p.ix()] == Tile.POWERUP) {
-            _tiles[p.iy()][p.ix()] = Tile.NONE;
-            return true;
+            default:
+                break;
         }
-        return false;
-    }
-    
-    public boolean willHitWall(Vector2 p, Direction d) {
-        Vector2 halfTile = Direction.toVector2(d).mul(Configs.PX.TILE_SIZE / 2);
-        p = p.add(halfTile);
-        if (d == Direction.LEFT || d == Direction.UP)
-            p = p.floor(); // TODO: why???
-        p = toGridVector2(p);
-        return _tiles[p.iy()][p.ix()] == Tile.WALL;
+        return tile;
     }
 
     public void repaint(Graphics2D g) {
@@ -82,6 +70,15 @@ public class Map {
                     paintPowerup(g, toPixelVector2(new Vector2(x, y)));
             }
         }
+    }
+
+    public boolean willHitWall(Vector2 p, Direction d) {
+        Vector2 halfTile = Direction.toVector2(d).mul(Configs.PX.TILE_SIZE / 2);
+        p = p.add(halfTile);
+        if (d == Direction.LEFT || d == Direction.UP)
+            p = p.floor(); // TODO: why???
+        p = toGridVector2(p);
+        return _tiles[p.iy()][p.ix()] == Tile.WALL;
     }
 
     private void paintDot(Graphics2D g, Vector2 p) {

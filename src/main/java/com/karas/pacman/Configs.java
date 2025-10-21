@@ -7,35 +7,50 @@ import com.karas.pacman.common.Vector2;
 
 public class Configs {
 
-    public static final String TITLE = "Pacman";
-    public static final int SCALING = 3;
+    public static final int UPS_TARGET = 60;                                   // 60 <= UPS_TARGET <= 2e7
+    public static final int FPS_TARGET = 60;
+    public static final double SCALING = 6.0;
+    public static final boolean DEBUG = true;
     public static final Color BACKGROUND_COLOR = Color.BLACK;
 
-    public static final String MAP_PATH = "/images/map.png";
-    public static final String MAPTILE_PATH = "/maptile.txt";
-    public static final String WINDOW_ICON_PATH = "/images/icon.png";
+    public static final String TITLE             = "Pacman";
+    public static final String MAP_PATH          = "/images/map.png";
+    public static final String MAPTILE_PATH      = "/maptile.txt";
+    public static final String WINDOW_ICON_PATH  = "/images/icon.png";
     public static final String SPRITE_SHEET_PATH = "/images/spritesheet.png";
 
-    public static final Vector2 MAP_GRID = new Vector2(28, 31);
-    public static final Vector2 PACMAN_POS_GRID = new Vector2(13.5, 23);
+    public static final double SPRITE_INTERVAL = 0.133;                         // seconds per sprite change
 
-    public static final double SPRITE_INTERVAL = 0.133; // seconds per sprite change
-    public static final int PACMAN_SPEED_PX = 54; // pixels per second
+    public class GRID {
+        public static final Vector2 MAP_SIZE   = new Vector2(28,   31);
+        public static final Vector2 PACMAN_POS = new Vector2(13.5, 23);
+        public static final Vector2 BLINKY_POS = new Vector2(13.5, 11);
+        public static final Vector2 PINKY_POS  = new Vector2(12,   14);
+        public static final Vector2 INKY_POS   = new Vector2(15,   14);
+        public static final Vector2 CLYDE_POS  = new Vector2(13.5, 17);
+    }
 
     public class PX {
-        public static final int TILE_SIZE = 8;
-        public static final int SPRITE_SIZE = 16;
-        public static final Vector2 MAP_SIZE = MAP_GRID.mul(TILE_SIZE);
-        public static final int DOT_SIZE = 2;
+        public static final int DOT_SIZE     = 2;
+        public static final int TILE_SIZE    = 8;
+        public static final int SPRITE_SIZE  = 16;
         public static final int POWERUP_SIZE = 6;
+        public static final Vector2 MAP_SIZE = GRID.MAP_SIZE.mul(TILE_SIZE);
+        
+        // per second
+        public static final int PACMAN_SPEED = 54; 
+        public static final int BLINKY_SPEED = 54;
+        public static final int PINKY_SPEED  = 50;
+        public static final int INKY_SPEED   = 50;
+        public static final int CLYDE_SPEED  = 46;
     }
 
     public class UI {
-        public static final int TILE_SIZE = PX.TILE_SIZE * SCALING;
-        public static final int SPRITE_SIZE = PX.SPRITE_SIZE * SCALING;
+        public static final int DOT_SIZE     = (int) (PX.DOT_SIZE * SCALING);
+        public static final int TILE_SIZE    = (int) (PX.TILE_SIZE * SCALING);
+        public static final int SPRITE_SIZE  = (int) (PX.SPRITE_SIZE * SCALING);
+        public static final int POWERUP_SIZE = (int) (PX.POWERUP_SIZE * SCALING);
         public static final Vector2 MAP_SIZE = PX.MAP_SIZE.mul(SCALING);
-        public static final int DOT_SIZE = PX.DOT_SIZE * SCALING;
-        public static final int POWERUP_SIZE = PX.POWERUP_SIZE * SCALING;
     }
 
     public static final Dimension WINDOW_SIZE = new Dimension(UI.MAP_SIZE.ix(), UI.MAP_SIZE.iy()); // TODO: temporary

@@ -9,20 +9,20 @@ import java.awt.event.KeyListener;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import com.karas.pacman.common.ExceptionHandler;
-import com.karas.pacman.resources.ImageLoader;
-import com.karas.pacman.state.Playing;
-import com.karas.pacman.state.State;
+import com.karas.pacman.commons.ExceptionHandler;
+import com.karas.pacman.resources.ResourcesLoader;
+import com.karas.pacman.screens.Playing;
+import com.karas.pacman.screens.Screen;
 
 public class Game extends JPanel implements Runnable, KeyListener {
 
     public Game() {
         _running = false;
-        _state = new Playing();
+        _screen = new Playing();
         _frame = new JFrame(Configs.TITLE);
 
         _frame.setResizable(false);
-        _frame.setIconImage(ImageLoader.getWindowIcon());
+        _frame.setIconImage(ResourcesLoader.loadImage(Configs.WINDOW_ICON_PATH, false));
         _frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setBackground(Configs.BACKGROUND_COLOR);
@@ -42,18 +42,18 @@ public class Game extends JPanel implements Runnable, KeyListener {
         _thread = new Thread(this, "Game Thread");
         _updateTimer = _repaintTimer = _logTimer = _updateCount = _frameCount = 0;
 
-        _state.enter();
+        _screen.enter();
         _frame.setVisible(true);
         _frame.requestFocus();
-        _thread.start(); // calls run()
+        _thread.start(); // Game Thread calls run()
     }
 
     public synchronized void exit() {
         if (!_running)
             return;
         System.out.println("Exiting game...");
-        _running = false;
         _frame.dispose();
+        _running = false;
 
         if (Thread.currentThread() != _thread) {
             try {
@@ -64,7 +64,7 @@ public class Game extends JPanel implements Runnable, KeyListener {
         }
     }
 
-    /** {@code Runnable} method. Start the game with {@code enter()} instead. */
+    /** {@code Runnable} method. Enter Game with {@code enter()} instead. */
     @Override
     public void run() {
         long lastTime = System.nanoTime();
@@ -84,6 +84,37 @@ public class Game extends JPanel implements Runnable, KeyListener {
         }
     }
 
+    /** {@code KeyListener} method. Gets called by EDT. */
+    @Override
+    public void keyPressed(KeyEvent e) {
+        _screen.input(e);
+    }
+
+    /** {@code KeyListener} method. Gets called by EDT. */
+    @Override
+    public void keyReleased(KeyEvent e) {
+        _screen.input(e);
+    }
+
+    /** {@code KeyListener} method. Gets called by EDT. */
+    @Override
+    public void keyTyped(KeyEvent e) {
+        _screen.input(e);
+    }
+
+
+    /** {@code JPanel} method. Gets called by EDT. */
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2D = (Graphics2D) g;
+        _screen.repaint(g2D);
+        ++_frameCount;
+        g2D.dispose();
+        Toolkit.getDefaultToolkit().sync();
+    }
+
+
     private void updateGame(double deltaTime) {
         deltaTime = Math.min(deltaTime, 0.25); // lag spike
         _updateTimer += deltaTime;
@@ -93,23 +124,21 @@ public class Game extends JPanel implements Runnable, KeyListener {
             ++_updateCount;
             _updateTimer -= STEP;
 
-            State nextState = _state.update(STEP);
-            if (nextState == null) {
-                _state.exit();
+            Screen nextScreen = _screen.update(STEP);
+            if (nextScreen == null)
                 exit();
-
-            } else if (nextState != _state) {
-                _state.exit();
-                _state = nextState;
-                _state.enter();
+            else if (nextScreen != _screen) {
+                _screen = nextScreen;
+                _screen.enter();
             }
         }
     }
 
     private void repaintGame(double deltaTime) {
         _repaintTimer += deltaTime;
-        if (_repaintTimer >= 1.0 / Configs.FPS_TARGET) {
-            repaint(); // calls paintComponent()
+        final double INTERVAL = 1.0 / Configs.FPS_TARGET;
+        if (_repaintTimer >= INTERVAL) {
+            repaint(); // EDT calls paintComponent()
             _repaintTimer = 0.0;
         }
     }
@@ -122,44 +151,13 @@ public class Game extends JPanel implements Runnable, KeyListener {
         }
     }
 
-    /** {@code JPanel} method. Gets called by {@code repaint()} only. */
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        Graphics2D g2D = (Graphics2D) g;
-        _state.repaint(g2D);
-        ++_frameCount;
-        g2D.dispose();
-        Toolkit.getDefaultToolkit().sync();
-    }
-
-    /** {@code KeyListener} method. Do not call. */
-    @Override
-    public void keyPressed(KeyEvent e) {
-        _state.input(e);
-    }
-
-    /** {@code KeyListener} method. Do not call. */
-    @Override
-    public void keyReleased(KeyEvent e) {
-        _state.input(e);
-    }
-
-    /** {@code KeyListener} method. Do not call. */
-    @Override
-    public void keyTyped(KeyEvent e) {
-        _state.input(e);
-    }
-
     private boolean _running;
     private JFrame _frame;
     private Thread _thread;
-    private volatile State _state;
+    private volatile Screen _screen;
 
-    private double _updateTimer;
-    private double _repaintTimer;
-    private double _logTimer;
     private int _updateCount;
+    private double _updateTimer, _repaintTimer, _logTimer;
     private volatile int _frameCount;
 
 }

@@ -1,0 +1,106 @@
+Game:
+    Menu (default):
+        điều kiện:  chỉ enter từ Paused, GameOver
+        update:     hiện màn hình chính
+        exit:       enter Playing nếu người chơi chọn "Chơi"
+
+    Playing:
+        điều kiện:  chỉ enter từ Menu
+        update:     hiện màn hình khi chơi Game
+        exit:       enter Paused nếu người chơi pause
+                    enter GameOver khi kết lúc lần chơi
+
+    Paused:
+        điều kiện:  chỉ enter từ Playing
+        update:     hiện màn hình dừng game
+        exit:       enter Playing nếu người chơi tiếp tục
+                    enter Menu nếu người chơi thoát
+
+    GameOver:
+        điều kiện:  chỉ enter từ Playing
+        update:     hiện màn hình kết thúc game
+        exit: enter Menu nếu người chơi tiếp tục
+
+Pacman:
+    IDLE: 
+        điều kiện:  chỉ enter từ IDLE, (HUNTER|PREY)
+        update:     cập nhật sprites
+        exit:       enter trạng thái Playing yêu cầu
+
+    (HUNTER|PREY) (default):
+        điều kiện:  chỉ enter từ IDLE, (HUNTER|PREY)
+        enter:      cập nhật sprites theo direction
+        update:     di chuyển theo ý người chơi. cập nhật sprites
+        exit:       enter trạng thái Playing yêu cầu
+
+    DEAD:
+        điều kiện:  chỉ enter từ (HUNTER|PREY)
+        enter:      đổi sprites sang DEAD_PACMAN
+        update:     cập nhật sprites
+
+Ghost:
+    IDLE:
+        điều kiện:  enter được từ cả 4 trạng thái
+        enter:      lưu lại trạng thái trước khi IDLE
+        update:     cập nhật sprites
+        exit:       enter trạng thái trước khi IDLE (rồi enter trạng thái Playing yêu cầu)
+
+    HUNTER (default):
+        điều kiện:  enter từ cả 4 trạng thái
+        enter:      đổi sprites sang BLINKY hoặc PINKY... tùy lớp kế thừa        
+        update:     di chuyển đến Pacman. cập nhật sprites
+        exit:       enter IDLE, PREY nếu Playing yêu cầu
+
+    PREY:           (nếu có timer thì tự xử lý POWERUP expiring, exit->HUNTER)
+        điều kiện:  chỉ enter từ IDLE, HUNTER, PREY
+        enter:      đổi sprites sang PREY_GHOST
+        update:     tìm đường và di chuyển ra xa Pacman. cập nhật sprites
+        exit:       enter IDLE, PREY, HUNTER nếu Playing yêu cầu
+                    enter DEAD nếu chạm Pacman
+
+    DEAD:
+        điều kiện:  enter từ cả 4 trạng thái
+        enter:      đổi sprites sang DEAD_GHOST, tìm toàn bộ đường đi về nhà
+        update:     di chuyển về nhà, cập nhật sprites
+        exit:       enter HUNTER nếu Ghost về nhà
+                    enter IDLE, DEAD nếu Playing yêu cầu
+
+Playing:
+    IDLE (default):
+        điều kiện:  chỉ enter từ IDLE, NORMAL, POWERUP
+        enter:      đặt thời gian đếm ngược 
+                    lưu lại trạng thái trước khi IDLE
+                    thử chuyển Pacman và Ghost sang IDLE
+        exit:       enter IDLE nếu người chơi Pause
+                    enter trạng thái trước đó nếu hết thời gian đếm ngược
+    
+    NORMAL:
+        điều kiện:  chỉ enter từ IDLE, POWERUP
+        enter:      thử chuyển Pacman sang PREY, Ghost sang HUNTER
+        exit:       enter IDLE nếu người chơi Pause
+                    enter POWERUP nếu Pacman ăn Powerup
+                    enter LOST nếu có Ghost ăn Pacman
+                    enter WON nếu Pacman ăn hết DOT
+
+    POWERUP:
+        điều kiện:  chỉ enter từ IDLE, NORMAL, POWERUP
+        enter:      đặt thời gian đếm ngược
+                    thử chuyển Pacman sang HUNTER, Ghost sang PREY
+        exit:       enter IDLE nếu người chơi Pause
+                    enter NORMAL nếu hết thời gian đếm ngược
+                    enter POWERUP nếu Pacman ăn Powerup
+                    enter LOST nếu có Ghost ăn Pacman
+                    enter WON nếu Pacman ăn hết DOT
+    
+    LOST:
+        điều kiện:  chỉ enter từ NORMAL, POWERUP
+        enter:      đặt thời gian đếm ngược
+                    thử chuyển Pacman sang DEAD, Ghost sang IDLE
+        exit:       hiện màn hình GameOver nếu hết thời gian đếm ngược
+    
+    WON:
+        điều kiện:  chỉ enter từ NORMAL, POWERUP
+        enter:      đặt thời gian đếm ngược
+                    thử chuyển Pacman sang IDLE, Ghost sang IDLE
+        exit:       hiện màn hình GameOver nếu hết thời gian đếm ngược
+

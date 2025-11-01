@@ -8,30 +8,32 @@ import java.util.Queue;
 import com.karas.pacman.Configs;
 import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Vector2;
+import com.karas.pacman.maps.ImmutableMap;
 import com.karas.pacman.maps.Map;
 import com.karas.pacman.resources.SpriteSheet;
 import com.karas.pacman.resources.Sprites;
 
-public abstract class Ghost {
+public abstract class Ghost implements Entity {
 
     public boolean hasCaughtPacman() {
         return _hasCaughtPacman;
     }
 
     public void handlePowerupExpiring() {
-        if (_state == State.PREY)
+        if (_state == Entity.State.PREY)
             _sprites.setFrameCount(4);
     }
 
-    public void enterState(State nextState) {
-        if ((_state == State.PREY && nextState == State.DEAD) ||
-            (_state == State.DEAD && nextState == State.HUNTER))
+    public void enterState(Entity.State nextState) {
+        if ((_state == Entity.State.PREY && nextState == Entity.State.DEAD) ||
+            (_state == Entity.State.DEAD && nextState == Entity.State.HUNTER))
             return;
-        if (_state == State.IDLE && nextState != State.IDLE)
+        if (_state == Entity.State.IDLE && nextState != Entity.State.IDLE)
             nextState = _preIdleState;
         enterStateInternal(nextState);
     }
 
+    @Override
     public void update(double deltaTime) {
         // TODO: in construction
 
@@ -50,7 +52,7 @@ public abstract class Ghost {
                 
             case PREY:
                 if (collidesWithPacman())
-                    enterStateInternal(State.DEAD);
+                    enterStateInternal(Entity.State.DEAD);
                 break;
 
             case DEAD:
@@ -60,13 +62,14 @@ public abstract class Ghost {
         _sprites.update(deltaTime);
     }
 
+    @Override
     public void repaint(Graphics2D g) {
         Vector2 p = _position.mul(Configs.SCALING);
         g.drawImage(_sprites.getFrame(), p.ix(), p.iy(), Configs.UI.SPRITE_SIZE, Configs.UI.SPRITE_SIZE, null);
     }
 
   
-    protected Ghost(Vector2 position, Direction direction, double speed, SpriteSheet spriteName, Pacman pacmanRef, Map mapRef) {
+    protected Ghost(Vector2 position, Direction direction, double speed, SpriteSheet spriteName, Pacman pacmanRef, ImmutableMap mapRef) {
         _position = position;
         _direction = direction;
         _speed = speed;
@@ -78,7 +81,7 @@ public abstract class Ghost {
         _hunterSprites = new Sprites(spriteName, 0, 2);
         _preySprites = new Sprites(SpriteSheet.PREY_GHOST, 0, 4);
         _deadSprites = new Sprites(SpriteSheet.DEAD_GHOST, 0, 1);
-        enterState(State.HUNTER);
+        enterState(Entity.State.HUNTER);
     }
 
     protected abstract Collection<Direction> findPathToPacman(Vector2 pacmanPos);
@@ -86,7 +89,7 @@ public abstract class Ghost {
     protected abstract Collection<Direction> findPathToRunaway(Vector2 pacmanPos);
 
 
-    private void enterStateInternal(State nextState) {
+    private void enterStateInternal(Entity.State nextState) {
         switch (nextState) {
             case IDLE:
                 _preIdleState = _state;
@@ -98,14 +101,14 @@ public abstract class Ghost {
                 break;
 
             case PREY:
-                if (_state == State.DEAD)
+                if (_state == Entity.State.DEAD)
                     return;
                 _sprites = _preySprites;
                 _sprites.setFrameCount(2);
                 break;
 
             case DEAD:
-                if (_state == State.PREY)
+                if (_state == Entity.State.PREY)
                     System.out.println(getClass().getSimpleName() + " eaten!");
                 _sprites = _deadSprites;
                 _sprites.setOffset(_direction.ordinal());
@@ -128,13 +131,13 @@ public abstract class Ghost {
     
 
     private final Pacman _pacmanRef;
-    private final Map _mapRef;
+    private final ImmutableMap _mapRef;
     private final Sprites _hunterSprites, _preySprites, _deadSprites;
 
     private Vector2 _position;
     private Direction _direction;
     private double _speed;
-    private State _state, _preIdleState;
+    private Entity.State _state, _preIdleState;
     private Queue<Direction> _nextDirections;
     private Sprites _sprites;
     private boolean _hasCaughtPacman;

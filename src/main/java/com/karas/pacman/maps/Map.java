@@ -10,7 +10,7 @@ import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.resources.ResourcesLoader;
 
-public class Map {
+public class Map implements ImmutableMap {
 
     public static Vector2 toGridVector2(Vector2 position) {
         return position.div(Configs.PX.TILE_SIZE).ceil();
@@ -40,10 +40,12 @@ public class Map {
         System.out.println("Map initialized with " + _dotCounts + " dots.");
     }
 
+    @Override
     public int getDotCounts() {
         return _dotCounts;
     }
 
+    @Override
     public boolean validDirection(Vector2 position, Direction nextDirection) {
         boolean[] centered = isXYCenteredInTile(position);
         boolean isXCentered = centered[0];

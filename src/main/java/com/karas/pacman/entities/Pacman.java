@@ -5,19 +5,20 @@ import java.awt.Graphics2D;
 import com.karas.pacman.Configs;
 import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Vector2;
+import com.karas.pacman.maps.ImmutableMap;
 import com.karas.pacman.maps.Map;
 import com.karas.pacman.resources.SpriteSheet;
 import com.karas.pacman.resources.Sprites;
 
-public class Pacman {
+public class Pacman implements Entity {
 
-    public Pacman(Map mapRef) {
+    public Pacman(ImmutableMap mapRef) {
         _position = Map.toPixelVector2(Configs.Grid.PACMAN_POS);
         _direction = _nextDirection = Direction.RIGHT;
         _speed = Configs.PX.PACMAN_SPEED;        
         _sprites = new Sprites(SpriteSheet.PACMAN, 0, 2);
         _mapRef = mapRef;
-        enterState(State.PREY);
+        enterState(Entity.State.PREY);
         
     }
 
@@ -29,6 +30,7 @@ public class Pacman {
         _nextDirection = d;
     }
 
+    @Override
     public void enterState(State nextState) {
         if (_state == State.DEAD)
             return;
@@ -42,7 +44,7 @@ public class Pacman {
                 break;
 
             case DEAD:
-                if (_state == State.IDLE)
+                if (_state == Entity.State.IDLE)
                     return;
                 _sprites = new Sprites(SpriteSheet.DEAD_PACMAN, 0, 8);
                 break;
@@ -50,6 +52,7 @@ public class Pacman {
         _state = nextState;
     }
 
+    @Override
     public void update(double deltaTime) {
         switch (_state) {
             case PREY, HUNTER:
@@ -72,6 +75,7 @@ public class Pacman {
         }
     }
 
+    @Override
     public void repaint(Graphics2D g) {
         Vector2 p = _position.mul(Configs.SCALING);
         g.drawImage(_sprites.getFrame(), p.ix(), p.iy(), Configs.UI.SPRITE_SIZE, Configs.UI.SPRITE_SIZE, null);
@@ -83,6 +87,6 @@ public class Pacman {
     private double _speed;
     private State _state;
     private Sprites _sprites;
-    private final Map _mapRef;
+    private final ImmutableMap _mapRef;
 
 }

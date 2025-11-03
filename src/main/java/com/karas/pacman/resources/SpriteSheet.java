@@ -12,16 +12,24 @@ public enum SpriteSheet {
     INKY(  4, 0, 8), SCORES(     7, 0, 4),
     CLYDE( 5, 0, 8);
 
-    public BufferedImage[] getSprites() {
-        final int SIZE = Configs.PX.SPRITE_SIZE;
-        BufferedImage[] sprites = new BufferedImage[_len];
-        for (int i = 0; i < _len; ++i)
-            sprites[i] = SPRITE_SHEET.getSubimage((_col + i) * SIZE, _row * SIZE, SIZE, SIZE);
-        return sprites;
+    BufferedImage[] getSprites() {
+        return SPRITE_MAP[this.ordinal()];
     }
 
+    
+    private static final BufferedImage[][] SPRITE_MAP;
 
-    private static final BufferedImage SPRITE_SHEET = ResourcesLoader.loadImage(Configs.SPRITE_SHEET_PATH, true);
+    static {
+        final int SIZE = Configs.PX.SPRITE_SIZE;
+        BufferedImage SpriteSheetImage = ResourcesLoader.loadImage(Configs.SPRITE_SHEET_PATH, true);
+        SPRITE_MAP = new BufferedImage[values().length][];
+
+        for (SpriteSheet sheet : values()) {
+            SPRITE_MAP[sheet.ordinal()] = new BufferedImage[sheet._len];
+            for (int i = 0; i < sheet._len; ++i)
+                SPRITE_MAP[sheet.ordinal()][i] = SpriteSheetImage.getSubimage((sheet._col + i) * SIZE, sheet._row * SIZE, SIZE, SIZE);
+        }
+    }
 
     private SpriteSheet(int row, int col, int len) {
         _row = row; _col = col; _len = len;

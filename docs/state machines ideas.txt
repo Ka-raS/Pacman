@@ -22,57 +22,45 @@ Game:
         exit: enter Menu nếu người chơi tiếp tục
 
 Pacman:
-    IDLE: 
-        điều kiện:  chỉ enter từ IDLE, (HUNTER|PREY)
-        update:     cập nhật sprites
-        exit:       enter trạng thái Playing yêu cầu
-
-    (HUNTER|PREY) (default):
-        điều kiện:  chỉ enter từ IDLE, (HUNTER|PREY)
+    (HUNTER|PREY)   (default):
+        điều kiện:  enter từ (HUNTER|PREY) (external)
         enter:      cập nhật sprites theo direction
         update:     di chuyển theo ý người chơi. cập nhật sprites
-        exit:       enter trạng thái Playing yêu cầu
+        exit:       enter DEAD nếu Playing yêu cầu
 
     DEAD:
-        điều kiện:  chỉ enter từ (HUNTER|PREY)
+        điều kiện:  enter từ (HUNTER|PREY) (external)
         enter:      đổi sprites sang DEAD_PACMAN
         update:     cập nhật sprites
 
 Ghost:
-    IDLE:
-        điều kiện:  enter được từ cả 4 trạng thái
-        enter:      lưu lại trạng thái trước khi IDLE
-        update:     cập nhật sprites
-        exit:       enter trạng thái trước khi IDLE (rồi enter trạng thái Playing yêu cầu)
-
     HUNTER (default):
-        điều kiện:  enter từ cả 4 trạng thái
+        điều kiện:  chỉ enter từ DEAD (internal), từ PREY (external)
         enter:      đổi sprites sang BLINKY hoặc PINKY... tùy lớp kế thừa        
-        update:     di chuyển đến Pacman. cập nhật sprites
-        exit:       enter IDLE, PREY nếu Playing yêu cầu
+        update:     di chuyển đến Pacman. cập nhật sprites, kiểm tra va đập Pacman
+        exit:       enter PREY nếu Playing yêu cầu
 
-    PREY:           (nếu có timer thì tự xử lý POWERUP expiring, exit->HUNTER)
-        điều kiện:  chỉ enter từ IDLE, HUNTER, PREY
-        enter:      đổi sprites sang PREY_GHOST
+    PREY:
+        điều kiện:  chỉ enter từ HUNTER, PREY (external)
+        enter:      đổi sprites sang PREY_GHOST, đặt thời gian đếm ngược
         update:     tìm đường và di chuyển ra xa Pacman. cập nhật sprites
-        exit:       enter IDLE, PREY, HUNTER nếu Playing yêu cầu
-                    enter DEAD nếu chạm Pacman
+        exit:       enter HUNTER, PREY nếu nếu Playing yêu cầu
+                    enter DEAD nếu va chạm Pacman
 
     DEAD:
-        điều kiện:  enter từ cả 4 trạng thái
+        điều kiện:  chỉ enter từ PREY (internal)
         enter:      đổi sprites sang DEAD_GHOST, tìm toàn bộ đường đi về nhà
         update:     di chuyển về nhà, cập nhật sprites
         exit:       enter HUNTER nếu Ghost về nhà
-                    enter IDLE, DEAD nếu Playing yêu cầu
 
 Playing:
     IDLE (default):
-        điều kiện:  chỉ enter từ IDLE, NORMAL, POWERUP
-        enter:      đặt thời gian đếm ngược 
+        điều kiện:  khi người chơi tiếp tục chơi sau khi Pause Game
+        enter:      đặt thời gian đếm ngược
                     lưu lại trạng thái trước khi IDLE
-                    thử chuyển Pacman và Ghost sang IDLE
-        exit:       enter IDLE nếu người chơi Pause
-                    enter trạng thái trước đó nếu hết thời gian đếm ngược
+                    gọi Entity::toggleIdle() cho Pacman và Ghost
+        exit:       enter IDLE nếu người chơi Pause tiếp
+                    gọi Entity::toggleIdle() và enter trạng thái trước đó nếu hết thời gian đếm ngược
     
     NORMAL:
         điều kiện:  chỉ enter từ IDLE, POWERUP
@@ -93,13 +81,13 @@ Playing:
                     enter WON nếu Pacman ăn hết DOT
     
     LOST:
-        điều kiện:  chỉ enter từ NORMAL, POWERUP
+        điều kiện:  chỉ enter từ IDLE, NORMAL, POWERUP
         enter:      đặt thời gian đếm ngược
                     thử chuyển Pacman sang DEAD, Ghost sang IDLE
         exit:       hiện màn hình GameOver nếu hết thời gian đếm ngược
     
     WON:
-        điều kiện:  chỉ enter từ NORMAL, POWERUP
+        điều kiện:  chỉ enter từ IDLE, NORMAL, POWERUP
         enter:      đặt thời gian đếm ngược
                     thử chuyển Pacman sang IDLE, Ghost sang IDLE
         exit:       hiện màn hình GameOver nếu hết thời gian đếm ngược

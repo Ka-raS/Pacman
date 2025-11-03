@@ -6,10 +6,10 @@ import java.util.List;
 
 import com.karas.pacman.Configs;
 import com.karas.pacman.commons.Direction;
-import com.karas.pacman.entities.Ghost;
 import com.karas.pacman.entities.Entity;
-import com.karas.pacman.entities.Pacman;
 import com.karas.pacman.entities.ghosts.Blinky;
+import com.karas.pacman.entities.ghosts.Ghost;
+import com.karas.pacman.entities.pacman.Pacman;
 import com.karas.pacman.maps.Map;
 import com.karas.pacman.maps.Tile;
 
@@ -19,8 +19,7 @@ public class Playing implements Screen {
         _map = new Map();
         _pacman = new Pacman(_map);
         _ghosts = List.of(new Blinky(_pacman, _map));
-        _state = State.IDLE;
-        _preIdleState = State.NORMAL;
+        _state = _preIdleState = State.NORMAL;
     }
 
     @Override
@@ -57,7 +56,7 @@ public class Playing implements Screen {
             case KeyEvent.VK_LEFT,  KeyEvent.VK_A -> d = Direction.LEFT;
 
             case KeyEvent.VK_ESCAPE -> {
-                if (_state != State.LOST && _state != State.WON)
+                if (_nextScreen == this)
                     _nextScreen = new Paused(this);
             }
         }
@@ -76,8 +75,8 @@ public class Playing implements Screen {
                 _stateTimer = Configs.IDLE_DURATION;
                 if (_state != State.IDLE)
                     _preIdleState = _state;
-                _pacman.enterState(Pacman.State.IDLE);
-                _ghosts.forEach(ghost -> ghost.enterState(Entity.State.IDLE));
+                _pacman.toggleIdle();
+                _ghosts.forEach(Ghost::toggleIdle);
                 break;
 
             case NORMAL:
@@ -88,6 +87,7 @@ public class Playing implements Screen {
             case POWERUP:
                 System.out.println("Powerup eaten!");
                 _stateTimer = Configs.POWERUP_DURATION;
+                _isGhostsFlashing = false;
                 _pacman.enterState(Pacman.State.HUNTER);
                 _ghosts.forEach(ghost -> ghost.enterState(Entity.State.PREY));
                 break;
@@ -96,14 +96,14 @@ public class Playing implements Screen {
                 System.out.println("Game lost!");
                 _stateTimer = Configs.ENDGAME_DURATION;
                 _pacman.enterState(Pacman.State.DEAD);
-                _ghosts.forEach(ghost -> ghost.enterState(Entity.State.IDLE));
+                _ghosts.forEach(Ghost::toggleIdle);
                 break;
 
             case WON:
                 System.out.println("Game won!");
                 _stateTimer = Configs.ENDGAME_DURATION;
-                _pacman.enterState(Pacman.State.IDLE);
-                _ghosts.forEach(ghost -> ghost.enterState(Entity.State.IDLE));
+                _pacman.toggleIdle();;
+                _ghosts.forEach(Ghost::toggleIdle);
                 break;
         }
         _state = nextState;
@@ -115,23 +115,28 @@ public class Playing implements Screen {
 
             switch (_state) {
             case IDLE:
-                if (_stateTimer <= 0.0)
+                if (_stateTimer < 0.0) {
+                    _pacman.toggleIdle();
+                    _ghosts.forEach(Ghost::toggleIdle);
                     enterState(_preIdleState);
+                }
                 break;
 
             case POWERUP:
-                if (_stateTimer <= 0.0)
+                if (_stateTimer < 0.0)
                     enterState(State.NORMAL);
-                else if (_stateTimer < Configs.GHOST_FLASH_TIME)    // TODO: not the best tbh
-                    _ghosts.forEach(Ghost::handlePowerupExpiring);
+                else if (!_isGhostsFlashing && _stateTimer < Configs.GHOST_FLASH_TIME) {
+                    _isGhostsFlashing = true;
+                    _ghosts.forEach(Ghost::enableFlashing);
+                }
 
             case NORMAL:
                 if (_ghosts.stream().anyMatch(Ghost::hasCaughtPacman))
                     enterState(State.LOST);
-                else if (_map.getDotCounts() == 0)
-                    enterState(State.WON);
                 else if (_map.tryEatAt(_pacman.getPosition()) == Tile.POWERUP)
                     enterState(State.POWERUP);
+                else if (_map.getDotCounts() == 0)
+                    enterState(State.WON);
                 break;
 
             case LOST, WON:
@@ -144,9 +149,9 @@ public class Playing implements Screen {
     private Map _map;
     private Pacman _pacman;
     private List<Ghost> _ghosts;
-    private volatile State _state;
-    private State _preIdleState;
+    private State _state, _preIdleState;
     private double _stateTimer;
+    private boolean _isGhostsFlashing;
     private volatile Screen _nextScreen;
 
 }

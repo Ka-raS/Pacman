@@ -9,7 +9,7 @@ public class Configs {
 
     public static final int UPS_TARGET = 60;    // 60 <= UPS_TARGET <= 2e7
     public static final int FPS_TARGET = 60;
-    public static final double SCALING = 6.0;
+    public static final double SCALING = 6.0;   // CHANGE THIS
     public static final boolean DEBUG  = true;
     public static final Color BACKGROUND_COLOR = Color.BLACK;
 
@@ -29,10 +29,10 @@ public class Configs {
 
         public static final Vector2 MAP_SIZE   = new Vector2(28,   31);
         public static final Vector2 PACMAN_POS = new Vector2(13.5, 23);
-        public static final Vector2 BLINKY_POS = new Vector2(13.5, 11);
+        public static final Vector2 BLINKY_POS = new Vector2(15, 11);
         public static final Vector2 PINKY_POS  = new Vector2(12,   14);
         public static final Vector2 INKY_POS   = new Vector2(15,   14);
-        public static final Vector2 CLYDE_POS  = new Vector2(13.5, 17);
+        public static final Vector2 CLYDE_POS  = new Vector2(12, 11);
 
 
         private Grid() {}
@@ -73,5 +73,8 @@ public class Configs {
     }
 
     public static final Dimension WINDOW_SIZE = new Dimension(UI.MAP_SIZE.ix(), UI.MAP_SIZE.iy()); // TODO: temporary
+
+
+    private Configs() {}
 
 }

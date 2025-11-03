@@ -32,12 +32,12 @@ public class Map implements ImmutableMap {
             Configs.Grid.MAP_SIZE.iy(),
             Configs.Grid.MAP_SIZE.ix()
         );
+
         _dotCounts = 0;
         for (Tile[] row : _tiles)
             for (Tile tile : row)
                 if (tile == Tile.DOT)
                     ++_dotCounts;
-        System.out.println("Map initialized with " + _dotCounts + " dots.");
     }
 
     @Override
@@ -58,6 +58,18 @@ public class Map implements ImmutableMap {
         return nextDirection.isVertical() ? isXCentered : isYCentered;
     }
 
+    @Override
+    public boolean validGridDirection(Vector2 gridPos, Direction nextDirection) {
+        Vector2 p = gridPos.add(nextDirection.toVector2());
+        return _tiles[p.iy()][p.ix()] != Tile.WALL;
+    }
+
+    @Override
+    public Vector2 nearestMovableGridPos(Vector2 position) {
+        return Map.toGridVector2(position); // TODO
+    }
+    
+    
     /** @return Tile value eaten at {@code position} */
     public Tile tryEatAt(Vector2 position) {
         if (isCenteredInTile(position))

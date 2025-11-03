@@ -1,8 +1,7 @@
-package com.karas.pacman.entities.pacman;
+package com.karas.pacman.entities;
 
 import com.karas.pacman.Configs;
 import com.karas.pacman.commons.Direction;
-import com.karas.pacman.entities.Entity;
 import com.karas.pacman.maps.ImmutableMap;
 import com.karas.pacman.maps.Map;
 import com.karas.pacman.resources.SpriteSheet;

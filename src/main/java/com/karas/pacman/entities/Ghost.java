@@ -1,4 +1,4 @@
-package com.karas.pacman.entities.ghosts;
+package com.karas.pacman.entities;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
@@ -6,8 +6,6 @@ import java.util.Queue;
 
 import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Vector2;
-import com.karas.pacman.entities.Entity;
-import com.karas.pacman.entities.ImmutableEntity;
 import com.karas.pacman.maps.ImmutableMap;
 import com.karas.pacman.maps.Map;
 import com.karas.pacman.resources.SpriteSheet;

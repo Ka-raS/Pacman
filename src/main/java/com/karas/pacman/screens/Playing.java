@@ -7,9 +7,9 @@ import java.util.List;
 import com.karas.pacman.Configs;
 import com.karas.pacman.commons.Direction;
 import com.karas.pacman.entities.Entity;
+import com.karas.pacman.entities.Ghost;
+import com.karas.pacman.entities.Pacman;
 import com.karas.pacman.entities.ghosts.Blinky;
-import com.karas.pacman.entities.ghosts.Ghost;
-import com.karas.pacman.entities.pacman.Pacman;
 import com.karas.pacman.maps.Map;
 import com.karas.pacman.maps.Tile;
 

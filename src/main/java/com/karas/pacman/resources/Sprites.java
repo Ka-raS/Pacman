@@ -17,16 +17,14 @@ public class Sprites {
         return _images[_index + _offset];
     }
 
-    public boolean isLastFrame() {
-        return _index == _frameCount - 1;
-    }
-
     public void setOffset(int offset) {
-        _offset = offset;
+        if (0 <= offset && offset <= _images.length - _frameCount)
+            _offset = offset;
     }
 
     public void setFrameCount(int frameCount) {
-        _frameCount = frameCount;
+        if (0 < frameCount && frameCount <= _images.length)
+            _frameCount = frameCount;
     }
 
     public void update(double deltaTime) {

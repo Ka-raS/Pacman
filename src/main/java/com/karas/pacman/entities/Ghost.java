@@ -67,11 +67,15 @@ public abstract class Ghost extends Entity {
     
     protected abstract SpriteSheet getSpriteName();
 
-    protected abstract Collection<Direction> findPathToPacman(Vector2 begin, Vector2 target);
+    protected abstract Collection<Direction> findPathToPacman(Vector2 currPos, Vector2 pacmanPos, ImmutableMap map);
     
-    protected abstract Collection<Direction> findPathToRunaway(Vector2 begin, Vector2 target);
+    protected abstract Collection<Direction> findPathToRunaway(Vector2 currPos, Vector2 pacmanPos, ImmutableMap map);
 
-    protected abstract Collection<Direction> findPathToHome(Vector2 begin, Vector2 target);
+    protected abstract Collection<Direction> findPathToHome(Vector2 currPos, Vector2 homePos, ImmutableMap map);
+
+    protected ImmutableEntity getPacman() {
+        return _Pacman;
+    }
 
 
     private void enterStateInternal(Entity.State nextState) {
@@ -91,6 +95,8 @@ public abstract class Ghost extends Entity {
                 setSprites(new Sprites(SpriteSheet.DEAD_GHOST, getDirection().ordinal(), 1));
                 break;
         }
+        _prevGridPos = null;
+        _nextDirections.clear();
         setState(nextState);
     }
 
@@ -107,7 +113,7 @@ public abstract class Ghost extends Entity {
 
         _prevGridPos = currGridPos;
         if (_nextDirections.isEmpty())
-            _nextDirections.addAll(findPathToPacman(currGridPos, _Pacman.getNearestMovableGridPos()));
+            _nextDirections.addAll(findPathToPacman(currGridPos, _Pacman.getNearestMovableGridPos(), getMap()));
         
         setDirection(_nextDirections.poll());
         setSpritesOffset(getDirection().ordinal() * 2);
@@ -130,7 +136,7 @@ public abstract class Ghost extends Entity {
         
         _prevGridPos = currGridPos;
         if (_nextDirections.isEmpty())
-            _nextDirections.addAll(findPathToRunaway(currGridPos, _Pacman.getNearestMovableGridPos()));
+            _nextDirections.addAll(findPathToRunaway(currGridPos, _Pacman.getNearestMovableGridPos(), getMap()));
         setDirection(_nextDirections.poll());
         return RETURN;
     }
@@ -151,13 +157,15 @@ public abstract class Ghost extends Entity {
         
         _prevGridPos = currGridPos;
         if (_nextDirections.isEmpty())
-            _nextDirections.addAll(findPathToHome(currGridPos, _Pacman.getNearestMovableGridPos()));
+            _nextDirections.addAll(findPathToHome(currGridPos, getHomeGridPos(), getMap()));
+
         setDirection(_nextDirections.poll());
         setSpritesOffset(getDirection().ordinal());
         return RETURN;
     }
 
     private final ImmutableEntity _Pacman;
+    
     private Vector2 _prevGridPos;
     private Queue<Direction> _nextDirections;
     private boolean _caughtPacman;

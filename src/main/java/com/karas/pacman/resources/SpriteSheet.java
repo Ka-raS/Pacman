@@ -12,6 +12,7 @@ public enum SpriteSheet {
     INKY(  4, 0, 8), SCORES(     7, 0, 4),
     CLYDE( 5, 0, 8);
 
+    
     BufferedImage[] getSprites() {
         return SPRITE_MAP[this.ordinal()];
     }

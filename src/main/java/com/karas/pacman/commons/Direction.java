@@ -6,13 +6,6 @@ public enum Direction {
 
     UP, RIGHT, DOWN, LEFT;
 
-    public static final Vector2[] VECTORS = {
-        new Vector2( 0.0, -1.0), 
-        new Vector2( 1.0,  0.0),
-        new Vector2( 0.0,  1.0), 
-        new Vector2(-1.0,  0.0)
-    };
-
     public static Direction random() {
         Direction[] v = values();
         int pos = ThreadLocalRandom.current().nextInt(v.length);
@@ -26,5 +19,13 @@ public enum Direction {
     public boolean isVertical() {
         return this == UP || this == DOWN;
     }
+
+
+    private static final Vector2[] VECTORS = {
+        new Vector2( 0.0, -1.0), 
+        new Vector2( 1.0,  0.0),
+        new Vector2( 0.0,  1.0), 
+        new Vector2(-1.0,  0.0)
+    };
 
 }

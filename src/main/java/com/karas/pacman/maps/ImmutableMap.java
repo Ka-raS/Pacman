@@ -7,9 +7,9 @@ public interface ImmutableMap {
     
     int getDotCounts();
 
-    boolean validDirection(Vector2 position, Direction nextDirection);
+    boolean isMovable(Vector2 position);
 
-    boolean validGridDirection(Vector2 gridPos, Direction nextDirection);
+    boolean validDirection(Vector2 position, Direction nextDirection);
 
     Vector2 nearestMovableGridPos(Vector2 position);
 

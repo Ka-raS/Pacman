@@ -25,13 +25,18 @@ public abstract class Entity implements ImmutableEntity {
     }
 
     @Override
+    public Direction getDirection() {
+        return _direction;
+    }
+
+    @Override
     public Vector2 getNearestMovableGridPos() {
         return _Map.nearestMovableGridPos(_position);
     }
 
     @Override
     public boolean collidesWith(ImmutableEntity other) {
-        final double BOUND = Configs.PX.SPRITE_SIZE * 0.8;
+        final double BOUND = Configs.PX.SPRITE_SIZE * 0.65;
         Vector2 delta = _position.sub(other.getPosition()).abs();
         return delta.x() < BOUND && delta.y() < BOUND;
     }
@@ -55,22 +60,18 @@ public abstract class Entity implements ImmutableEntity {
         _Map = map;
     }
 
-    protected boolean isIdle() {
-        return _isIdle;
+    protected ImmutableMap getMap() {
+        return _Map;
     }
 
-    protected Direction getDirection() {
-        return _direction;
+    protected boolean isIdle() {
+        return _isIdle;
     }
 
     protected void setDirection(Direction d) {
         if (_direction != d && _Map.validDirection(_position, d))
             _direction = d;
     }
-
-    // protected boolean validNextDirection(Direction d) {
-    //     return _Map.validDirection(_position, d);
-    // }
 
     protected boolean isCenteredInTile() {
         return Map.isCenteredInTile(_position);
@@ -112,7 +113,6 @@ public abstract class Entity implements ImmutableEntity {
     }
 
     private final ImmutableMap _Map;
-
     private double _speed;
     private Vector2 _position;
     private Direction _direction;

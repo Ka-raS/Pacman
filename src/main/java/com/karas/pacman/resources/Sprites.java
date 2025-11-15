@@ -8,9 +8,10 @@ public class Sprites {
     
     public Sprites(SpriteSheet name, int offset, int frameCount) {
         _timer = _index = 0;
-        _offset = offset;
         _images = name.getSprites();
-        _frameCount = frameCount;
+        _frameCount = 1;
+        setOffset(offset);
+        setFrameCount(frameCount);
     }
 
     public BufferedImage getFrame() {

@@ -19,7 +19,6 @@ public class Pacman extends Entity {
         );
         _nextDirection = Direction.RIGHT;
         enterState(Entity.State.PREY);
-        
     }
 
     public void setNextDirection(Direction d) {
@@ -41,7 +40,7 @@ public class Pacman extends Entity {
 
     @Override
     public void update(double deltaTime) {
-        if (!isIdle()) {
+        if (!isIdle() && getState() != Entity.State.DEAD) {
             setDirection(_nextDirection);
             setSpritesOffset(getDirection().ordinal() * 2);
             move(deltaTime);

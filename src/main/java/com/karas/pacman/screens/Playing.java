@@ -10,6 +10,9 @@ import com.karas.pacman.entities.Entity;
 import com.karas.pacman.entities.Ghost;
 import com.karas.pacman.entities.Pacman;
 import com.karas.pacman.entities.ghosts.Blinky;
+// import com.karas.pacman.entities.ghosts.Clyde;
+import com.karas.pacman.entities.ghosts.Inky;
+// import com.karas.pacman.entities.ghosts.Pinky;
 import com.karas.pacman.maps.Map;
 import com.karas.pacman.maps.Tile;
 
@@ -18,8 +21,12 @@ public class Playing implements Screen {
     public Playing() {
         _map = new Map();
         _pacman = new Pacman(_map);
-        _ghosts = List.of(new Blinky(_pacman, _map));
         _state = _preIdleState = State.NORMAL;
+
+        Ghost blinky = new Blinky(_pacman, _map);
+        Ghost inky = new Inky(_pacman, blinky, _map);
+        // _ghosts = List.of(blinky, inky);
+        _ghosts = List.of(blinky);
     }
 
     @Override

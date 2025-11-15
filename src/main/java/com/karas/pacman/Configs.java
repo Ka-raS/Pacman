@@ -23,7 +23,7 @@ public class Configs {
     public static final double IDLE_DURATION    = 1.0;
     public static final double POWERUP_DURATION = 8.0;
     public static final double GHOST_FLASH_TIME = 2.0;      // when powerup is expiring
-    public static final double ENDGAME_DURATION = 2.0;
+    public static final double ENDGAME_DURATION = 4.0;
 
     public static final class Grid {
 

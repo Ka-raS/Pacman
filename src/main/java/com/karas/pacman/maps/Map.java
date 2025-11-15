@@ -34,15 +34,23 @@ public class Map implements ImmutableMap {
         );
 
         _dotCounts = 0;
-        for (Tile[] row : _tiles)
-            for (Tile tile : row)
-                if (tile == Tile.DOT)
+        for (int y = 0; y < _tiles.length; ++y)
+            for (int x = 0; x < _tiles[y].length; ++x)
+                if (_tiles[y][x] == Tile.DOT)
                     ++_dotCounts;
     }
 
     @Override
     public int getDotCounts() {
         return _dotCounts;
+    }
+
+    @Override
+    public boolean isMovable(Vector2 gridPos) {
+        int x = gridPos.ix(), y = gridPos.iy();
+        return 0 <= y && y < _tiles.length
+            && 0 <= x && x < _tiles[y].length
+            && _tiles[y][x] != Tile.WALL;
     }
 
     @Override
@@ -53,20 +61,32 @@ public class Map implements ImmutableMap {
         
         if (isXCentered && isYCentered) {
             Vector2 p = toGridVector2(position).add(nextDirection.toVector2());
-            return _tiles[p.iy()][p.ix()] != Tile.WALL;
+            return isMovable(p);
         }
         return nextDirection.isVertical() ? isXCentered : isYCentered;
     }
 
     @Override
-    public boolean validGridDirection(Vector2 gridPos, Direction nextDirection) {
-        Vector2 p = gridPos.add(nextDirection.toVector2());
-        return _tiles[p.iy()][p.ix()] != Tile.WALL;
-    }
-
-    @Override
     public Vector2 nearestMovableGridPos(Vector2 position) {
-        return Map.toGridVector2(position); // TODO
+        Vector2 gridPos = position.div(Configs.PX.TILE_SIZE);
+        Vector2 ceilGP = gridPos.ceil();
+        Vector2 floorGP = gridPos.floor();
+        int[] xs = { floorGP.ix(), ceilGP.ix() };
+        int[] ys = { floorGP.iy(), ceilGP.iy() };
+
+        Vector2 result = null;
+        double minDist = Double.MAX_VALUE;
+        for (int y : ys)
+            for (int x : xs)
+                if (_tiles[y][x] != Tile.WALL) {
+                    Vector2 gp = new Vector2(x, y);
+                    double dist = position.toDistance(toPixelVector2(gp));
+                    if (minDist > dist) {
+                        minDist = dist;
+                        result = gp;
+                    }
+                }
+        return result;
     }
     
     

@@ -1,10 +1,6 @@
 package com.karas.pacman.entities.ghosts;
 
-import java.util.ArrayDeque;
-import java.util.Collection;
-
 import com.karas.pacman.Configs;
-import com.karas.pacman.commons.Algorithm;
 import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.entities.Ghost;
@@ -26,34 +22,8 @@ public class Blinky extends Ghost {
     }
 
     @Override
-    protected Vector2 getHomeGridPos() {
-        return Configs.Grid.BLINKY_POS;
-    }
-
-    @Override
-    protected SpriteSheet getSpriteName() {
-        return SpriteSheet.BLINKY;
-    }
-
-    @Override
-    protected Collection<Direction> findPathToPacman(Vector2 currPos, Vector2 pacmanPos, ImmutableMap map) {
-        ArrayDeque<Direction> path = new ArrayDeque<>(5);
-        for (Direction dir : Algorithm.bfsShortestPath(currPos, pacmanPos, map)) {
-            if (path.size() == 5)
-                break;
-            path.add(dir);
-        }
-        return path;
-    }
-
-    @Override
-    protected Collection<Direction> findPathToRunaway(Vector2 currPos, Vector2 pacmanPos, ImmutableMap map) {
-        return Algorithm.bfsFurthestPath(currPos, pacmanPos, map, 5);
-    }
-
-    @Override
-    protected Collection<Direction> findPathToHome(Vector2 currPos, Vector2 homePos, ImmutableMap map) {
-        return Algorithm.bfsShortestPath(currPos, homePos, map);
+    protected Vector2 findHunterTarget(ImmutableEntity pacman) {
+        return pacman.getGridPos();
     }
     
 }

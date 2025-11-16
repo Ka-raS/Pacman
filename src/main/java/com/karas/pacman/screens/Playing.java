@@ -10,9 +10,9 @@ import com.karas.pacman.entities.Entity;
 import com.karas.pacman.entities.Ghost;
 import com.karas.pacman.entities.Pacman;
 import com.karas.pacman.entities.ghosts.Blinky;
-// import com.karas.pacman.entities.ghosts.Clyde;
+import com.karas.pacman.entities.ghosts.Clyde;
 import com.karas.pacman.entities.ghosts.Inky;
-// import com.karas.pacman.entities.ghosts.Pinky;
+import com.karas.pacman.entities.ghosts.Pinky;
 import com.karas.pacman.maps.Map;
 import com.karas.pacman.maps.Tile;
 
@@ -24,9 +24,10 @@ public class Playing implements Screen {
         _state = _preIdleState = State.NORMAL;
 
         Ghost blinky = new Blinky(_pacman, _map);
-        Ghost inky = new Inky(_pacman, blinky, _map);
-        // _ghosts = List.of(blinky, inky);
-        _ghosts = List.of(blinky);
+        Ghost pinky  = new Pinky (_pacman, _map);
+        Ghost inky   = new Inky(_pacman, blinky, _map);
+        Ghost clyde  = new Clyde (_pacman, _map);
+        _ghosts = List.of(blinky, pinky, inky, clyde);
     }
 
     @Override
@@ -120,7 +121,7 @@ public class Playing implements Screen {
         if (_stateTimer > 0.0)
             _stateTimer -= deltaTime;
 
-            switch (_state) {
+        switch (_state) {
             case IDLE:
                 if (_stateTimer < 0.0) {
                     _pacman.toggleIdle();
@@ -132,7 +133,7 @@ public class Playing implements Screen {
             case POWERUP:
                 if (_stateTimer < 0.0)
                     enterState(State.NORMAL);
-                else if (!_isGhostsFlashing && _stateTimer < Configs.GHOST_FLASH_TIME) {
+                else if (!_isGhostsFlashing && _stateTimer < Configs.GHOST_FLASH_DURATION) {
                     _isGhostsFlashing = true;
                     _ghosts.forEach(Ghost::enableFlashing);
                 }

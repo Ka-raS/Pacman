@@ -1,8 +1,6 @@
 package com.karas.pacman.entities;
 
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.Queue;
+import java.util.EnumSet;
 
 import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Vector2;
@@ -50,39 +48,30 @@ public abstract class Ghost extends Entity {
     }
   
 
-    protected Ghost(Vector2 gridPos, Direction direction, double speed, SpriteSheet spriteName, ImmutableEntity pacman, ImmutableMap map) {
+    protected Ghost(Vector2 homeGridPos, Direction direction, double speed, SpriteSheet spriteName, ImmutableEntity pacman, ImmutableMap map) {
         super(
-            Map.toPixelVector2(gridPos),
+            Map.toPixelVector2(homeGridPos),
             direction,
             speed,
             null, // set in enterStateInternal()
             map
         );
-        _nextDirections = new ArrayDeque<>(32);
+        _HomeGridPos = homeGridPos;
+        _SpriteName = spriteName;
         _Pacman = pacman;
+        _prevGridPos = null;
+        _caughtPacman = false;
         enterStateInternal(Entity.State.HUNTER);
     }
 
-    protected abstract Vector2 getHomeGridPos();
-    
-    protected abstract SpriteSheet getSpriteName();
-
-    protected abstract Collection<Direction> findPathToPacman(Vector2 currPos, Vector2 pacmanPos, ImmutableMap map);
-    
-    protected abstract Collection<Direction> findPathToRunaway(Vector2 currPos, Vector2 pacmanPos, ImmutableMap map);
-
-    protected abstract Collection<Direction> findPathToHome(Vector2 currPos, Vector2 homePos, ImmutableMap map);
-
-    protected ImmutableEntity getPacman() {
-        return _Pacman;
-    }
+    protected abstract Vector2 findHunterTarget(ImmutableEntity pacman);
 
 
     private void enterStateInternal(Entity.State nextState) {
         switch (nextState) {
             case HUNTER:
                 _caughtPacman = false;
-                setSprites(new Sprites(getSpriteName(), getDirection().ordinal() * 2, 2));
+                setSprites(new Sprites(_SpriteName, getDirection().ordinal() * 2, 2));
                 break;
 
             case PREY:
@@ -95,27 +84,27 @@ public abstract class Ghost extends Entity {
                 setSprites(new Sprites(SpriteSheet.DEAD_GHOST, getDirection().ordinal(), 1));
                 break;
         }
-        _prevGridPos = null;
-        _nextDirections.clear();
         setState(nextState);
     }
 
     private boolean updateHunter() {
+        final boolean RETURN = false;
         _caughtPacman |= collidesWith(_Pacman);
         
-        final boolean RETURN = false;
         if (!isCenteredInTile())
             return RETURN;
 
         Vector2 currGridPos = getGridPos();
         if (currGridPos.equals(_prevGridPos))
             return RETURN;
-
         _prevGridPos = currGridPos;
-        if (_nextDirections.isEmpty())
-            _nextDirections.addAll(findPathToPacman(currGridPos, _Pacman.getNearestMovableGridPos(), getMap()));
-        
-        setDirection(_nextDirections.poll());
+
+        EnumSet<Direction> validDirections = getValidDirections();
+        if (!validDirections.isEmpty()) {
+            Vector2 target = findHunterTarget(_Pacman);
+            Direction nextDir = currGridPos.closestTo(target, validDirections);
+            setDirection(nextDir);
+        }
         setSpritesOffset(getDirection().ordinal() * 2);
         return RETURN;
     }
@@ -125,19 +114,21 @@ public abstract class Ghost extends Entity {
             enterStateInternal(Entity.State.DEAD);
             return true;
         }
-
         final boolean RETURN = false;
+
         if (!isCenteredInTile())
             return RETURN;
 
         Vector2 currGridPos = getGridPos();
         if (currGridPos.equals(_prevGridPos))
             return RETURN;
-        
         _prevGridPos = currGridPos;
-        if (_nextDirections.isEmpty())
-            _nextDirections.addAll(findPathToRunaway(currGridPos, _Pacman.getNearestMovableGridPos(), getMap()));
-        setDirection(_nextDirections.poll());
+        
+        EnumSet<Direction> validDirections = getValidDirections();
+        if (!validDirections.isEmpty()) {
+            Direction nextDir = currGridPos.furthestFrom(_Pacman.getGridPos(), validDirections);
+            setDirection(nextDir);
+        }
         return RETURN;
     }
 
@@ -146,28 +137,41 @@ public abstract class Ghost extends Entity {
             return false;
 
         Vector2 currGridPos = getGridPos();
-        if (currGridPos.equals(getHomeGridPos())) {
+        if (currGridPos.equals(_HomeGridPos)) {
             enterStateInternal(Entity.State.HUNTER);
             return true;
         }
-
         final boolean RETURN = false;
+
         if (currGridPos.equals(_prevGridPos))
             return RETURN;
-        
         _prevGridPos = currGridPos;
-        if (_nextDirections.isEmpty())
-            _nextDirections.addAll(findPathToHome(currGridPos, getHomeGridPos(), getMap()));
-
-        setDirection(_nextDirections.poll());
+        
+        EnumSet<Direction> validDirections = getValidDirections();
+        if (!validDirections.isEmpty()) {
+            Direction nextDir = currGridPos.closestTo(_HomeGridPos, validDirections);
+            setDirection(nextDir);
+        }
         setSpritesOffset(getDirection().ordinal());
         return RETURN;
     }
 
+    private EnumSet<Direction> getValidDirections() {
+        EnumSet<Direction> result = EnumSet.noneOf(Direction.class);
+        for (Direction d : Direction.values())
+            if (validDirection(d))
+                result.add(d);
+
+        if (result.size() > 1)
+            result.remove(getDirection().opposite());
+        return result;
+    }
+
+    private final Vector2 _HomeGridPos;
+    private final SpriteSheet _SpriteName;
     private final ImmutableEntity _Pacman;
     
     private Vector2 _prevGridPos;
-    private Queue<Direction> _nextDirections;
     private boolean _caughtPacman;
 
 }

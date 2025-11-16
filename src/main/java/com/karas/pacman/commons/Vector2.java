@@ -18,20 +18,36 @@ public record Vector2(double x, double y) {
     public Vector2 add(Vector2 other) { return new Vector2(x + other.x, y + other.y); }
     public Vector2 sub(Vector2 other) { return new Vector2(x - other.x, y - other.y); }
 
-    public double toDistance(Vector2 other) {   // Manhattan
+    public double distance(Vector2 other) {   // Manhattan
         return Math.abs(x - other.x) + Math.abs(y - other.y);
     }
     
-    public Direction toDirection(Vector2 target) {
-        return target.sub(this).toDirection();
+    public Direction furthestFrom(Vector2 other, Iterable<Direction> directions) {
+        Direction result = null;
+        double maxDistance = -1.0;
+        for (Direction dir : directions) {
+            Vector2 next = this.add(dir.toVector2());
+            double distance = other.distance(next);
+            if (maxDistance < distance) {
+                maxDistance = distance;
+                result = dir;
+            }
+        }
+        return result;
     }
 
-    public Direction toDirection() {
-        Vector2 normalized = new Vector2(Double.compare(x, 0), Double.compare(y, 0));   // nasty
-        for (Direction dir : Direction.values())
-            if (dir.toVector2().equals(normalized))
-                return dir;
-        return null;
+    public Direction closestTo(Vector2 other, Iterable<Direction> directions) {
+        Direction result = null;
+        double minDistance = Double.MAX_VALUE;
+        for (Direction dir : directions) {
+            Vector2 next = this.add(dir.toVector2());
+            double distance = other.distance(next);
+            if (minDistance > distance) {
+                minDistance = distance;
+                result = dir;
+            }
+        }
+        return result;
     }
 
 }

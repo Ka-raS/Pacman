@@ -7,8 +7,8 @@ import com.karas.pacman.commons.Vector2;
 
 public class Configs {
 
-    public static final int UPS_TARGET = 60;    // 60 <= UPS_TARGET <= 2e7
-    public static final int FPS_TARGET = 60;
+    public static final int UPS_TARGET = 144;
+    public static final int FPS_TARGET = Integer.MAX_VALUE;
     public static final double SCALING = 6.0;   // CHANGE THIS
     public static final boolean DEBUG  = true;
     public static final Color BACKGROUND_COLOR = Color.BLACK;
@@ -19,20 +19,32 @@ public class Configs {
     public static final String WINDOW_ICON_PATH  = "/images/icon.png";
     public static final String SPRITE_SHEET_PATH = "/images/spritesheet.png";
 
-    public static final double SPRITE_INTERVAL  = 0.133;     // seconds per sprite change
-    public static final double IDLE_DURATION    = 1.0;
-    public static final double POWERUP_DURATION = 8.0;
-    public static final double GHOST_FLASH_TIME = 2.0;      // when powerup is expiring
-    public static final double ENDGAME_DURATION = 4.0;
+    public static final double SPRITE_INTERVAL        = 0.133;  // seconds per sprite change
+    public static final double IDLE_DURATION          = 1.0;
+    public static final double POWERUP_DURATION       = 8.0;
+    public static final double GHOST_FLASH_DURATION   = POWERUP_DURATION - 6.0; // when powerup is expiring
+    public static final double ENDGAME_DURATION       = 4.0;
+
+    // TODO
+    public static final double GHOST_SCATTER_DURATION = 7.0; 
+    public static final double GHOST_SCATTER_INTERVAL = 20.0 + GHOST_SCATTER_DURATION;
 
     public static final class Grid {
 
         public static final Vector2 MAP_SIZE   = new Vector2(28,   31);
         public static final Vector2 PACMAN_POS = new Vector2(13.5, 23);
-        public static final Vector2 BLINKY_POS = new Vector2(15, 11);
+        public static final Vector2 BLINKY_POS = new Vector2(15,   11);
         public static final Vector2 PINKY_POS  = new Vector2(12,   14);
         public static final Vector2 INKY_POS   = new Vector2(15,   14);
-        public static final Vector2 CLYDE_POS  = new Vector2(12, 11);
+        public static final Vector2 CLYDE_POS  = new Vector2(12,   11);
+
+        // TODO
+        public static final Vector2 BLINKY_SCATTER_POS = new Vector2(MAP_SIZE.ix() - 1, 0);
+        public static final Vector2 PINKY_SCATTER_POS  = new Vector2(0, 0);
+        public static final Vector2 INKY_SCATTER_POS   = new Vector2(MAP_SIZE.ix() - 1, MAP_SIZE.iy() - 1);
+        public static final Vector2 CLYDE_SCATTER_POS  = new Vector2(0, MAP_SIZE.iy() - 1);
+
+        public static final int CLYDE_TARGET_DISTANCE = 8;
 
 
         private Grid() {}

@@ -11,6 +11,6 @@ public interface ImmutableMap {
 
     boolean validDirection(Vector2 position, Direction nextDirection);
 
-    Vector2 nearestMovableGridPos(Vector2 position);
+    Vector2 getPortalExit(Vector2 position);
 
 }

@@ -9,7 +9,7 @@ public interface ImmutableEntity {
 
     Direction getDirection();
 
-    Vector2 getNearestMovableGridPos();
+    Vector2 getGridPos();
 
     boolean collidesWith(ImmutableEntity other);
 

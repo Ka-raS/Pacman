@@ -20,6 +20,10 @@ public enum Direction {
         return this == UP || this == DOWN;
     }
 
+    public Direction opposite() {
+        return values()[(ordinal() + 2) % 4];   // trippy
+    }
+
 
     private static final Vector2[] VECTORS = {
         new Vector2( 0.0, -1.0), 

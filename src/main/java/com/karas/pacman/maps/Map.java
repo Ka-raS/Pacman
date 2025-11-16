@@ -46,11 +46,22 @@ public class Map implements ImmutableMap {
     }
 
     @Override
+    public Vector2 getPortalExit(Vector2 position) {
+        if (!isCenteredInTile(position))
+            return null;
+
+        Vector2 p = toGridVector2(position);
+        if (_tiles[p.iy()][p.ix()] != Tile.PORTAL)
+            return null;
+        
+        p = p.sub(new Vector2(Configs.Grid.MAP_SIZE.ix() - 1, 0)).abs();
+        return toPixelVector2(p);
+    }
+
+    @Override
     public boolean isMovable(Vector2 gridPos) {
-        int x = gridPos.ix(), y = gridPos.iy();
-        return 0 <= y && y < _tiles.length
-            && 0 <= x && x < _tiles[y].length
-            && _tiles[y][x] != Tile.WALL;
+        Vector2 p = gridPos;
+        return boundCheck(gridPos) && _tiles[p.iy()][p.ix()] != Tile.WALL;
     }
 
     @Override
@@ -66,36 +77,14 @@ public class Map implements ImmutableMap {
         return nextDirection.isVertical() ? isXCentered : isYCentered;
     }
 
-    @Override
-    public Vector2 nearestMovableGridPos(Vector2 position) {
-        Vector2 gridPos = position.div(Configs.PX.TILE_SIZE);
-        Vector2 ceilGP = gridPos.ceil();
-        Vector2 floorGP = gridPos.floor();
-        int[] xs = { floorGP.ix(), ceilGP.ix() };
-        int[] ys = { floorGP.iy(), ceilGP.iy() };
-
-        Vector2 result = null;
-        double minDist = Double.MAX_VALUE;
-        for (int y : ys)
-            for (int x : xs)
-                if (_tiles[y][x] != Tile.WALL) {
-                    Vector2 gp = new Vector2(x, y);
-                    double dist = position.toDistance(toPixelVector2(gp));
-                    if (minDist > dist) {
-                        minDist = dist;
-                        result = gp;
-                    }
-                }
-        return result;
-    }
-    
-    
     /** @return Tile value eaten at {@code position} */
     public Tile tryEatAt(Vector2 position) {
         if (isCenteredInTile(position))
             return Tile.NONE;
-
         Vector2 p = toGridVector2(position);
+        if (!boundCheck(p))
+            return Tile.NONE;
+
         Tile tile = _tiles[p.iy()][p.ix()];
         switch (tile) {
             case DOT:
@@ -125,7 +114,7 @@ public class Map implements ImmutableMap {
     /** @return { isXCentered, isYCentered } */
     private static boolean[] isXYCenteredInTile(Vector2 position) {
         final int HALF_TILE = Configs.PX.TILE_SIZE / 2;
-        Vector2 p = position.mod(Configs.PX.TILE_SIZE).sub(HALF_TILE);
+        Vector2 p = position.mod(Configs.PX.TILE_SIZE).abs().sub(HALF_TILE);
         return new boolean[] { p.ix() == 0, p.iy() == 0 };
     }
 
@@ -137,6 +126,11 @@ public class Map implements ImmutableMap {
         g2.fillOval(0, 0, size, size);
         g2.dispose();
         return image;
+    }
+
+    private boolean boundCheck(Vector2 gridPos) {
+        int x = gridPos.ix(), y = gridPos.iy();
+        return 0 <= y && y < _tiles.length && 0 <= x && x < _tiles[y].length;
     }
 
     private static final BufferedImage DOT_IMAGE = createOval(Configs.UI.DOT_SIZE);

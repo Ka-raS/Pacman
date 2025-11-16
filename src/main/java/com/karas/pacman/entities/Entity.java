@@ -30,8 +30,8 @@ public abstract class Entity implements ImmutableEntity {
     }
 
     @Override
-    public Vector2 getNearestMovableGridPos() {
-        return _Map.nearestMovableGridPos(_position);
+    public Vector2 getGridPos() {
+        return Map.toGridVector2(_position);
     }
 
     @Override
@@ -60,30 +60,39 @@ public abstract class Entity implements ImmutableEntity {
         _Map = map;
     }
 
-    protected ImmutableMap getMap() {
-        return _Map;
-    }
-
     protected boolean isIdle() {
         return _isIdle;
-    }
-
-    protected void setDirection(Direction d) {
-        if (_direction != d && _Map.validDirection(_position, d))
-            _direction = d;
     }
 
     protected boolean isCenteredInTile() {
         return Map.isCenteredInTile(_position);
     }
 
-    protected Vector2 getGridPos() {
-        return Map.toGridVector2(_position);
+    protected Entity.State getState() {
+        return _state;
+    }
+
+    protected boolean validDirection(Direction d) {
+        return _Map.validDirection(_position, d);
+    }
+
+    protected void setDirection(Direction d) {
+        if (_direction != d && validDirection(d))
+            _direction = d;
     }
 
     protected void move(double deltaTime) {
-        if (_Map.validDirection(_position, _direction))
-            _position = _position.add(_direction.toVector2().mul(deltaTime * _speed));
+        if (!validDirection(_direction))
+            return;
+        _position = _position.add(_direction.toVector2().mul(deltaTime * _speed));
+        
+        // Vector2 portalGridPos = _Map.getPortalExit(_position);
+        // if (portalGridPos != null && !_hasJustExitedPortal) {
+        //     _position = Map.toPixelVector2(portalGridPos);
+        //     _hasJustExitedPortal = true;
+        // } else if (portalGridPos == null) {
+        //     _hasJustExitedPortal = false;
+        // }
     }
 
     protected void setSprites(Sprites sprites) {
@@ -101,10 +110,6 @@ public abstract class Entity implements ImmutableEntity {
 
     protected void updateSprites(double deltaTime) {
         _sprites.update(deltaTime);
-    }
-
-    protected Entity.State getState() {
-        return _state;
     }
 
     protected void setState(Entity.State state) {

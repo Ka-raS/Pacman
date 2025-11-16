@@ -7,7 +7,7 @@ public interface ImmutableMap {
     
     int getDotCounts();
 
-    boolean checkBound(Vector2 gridPos);
+    boolean checkWall(Vector2 gridPos);
 
     boolean validDirection(Vector2 position, Direction nextDirection);
 

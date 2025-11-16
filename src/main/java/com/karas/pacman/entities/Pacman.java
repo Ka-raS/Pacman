@@ -24,7 +24,8 @@ public class Pacman extends Entity {
     }
 
     public void setNextDirection(Direction d) {
-        _nextDirection = d;
+        if (_nextDirection != null)
+            _nextDirection = d;
     }
 
     @Override
@@ -32,9 +33,7 @@ public class Pacman extends Entity {
         if (getState() == Entity.State.DEAD)
             return;
 
-        if (nextState != Entity.State.DEAD)
-            setSpritesOffset(getDirection().ordinal() * 2);
-        else
+        if (nextState == Entity.State.DEAD)
             setSprites(new Sprites(SpriteSheet.DEAD_PACMAN, 0, 8));
 
         setState(nextState);
@@ -44,8 +43,8 @@ public class Pacman extends Entity {
     public void update(double deltaTime) {
         if (!isIdle() && getState() != Entity.State.DEAD) {
             setDirection(_nextDirection);
-            setSpritesOffset(getDirection().ordinal() * 2);
             move(deltaTime);
+            setSpritesOffset(getDirection().ordinal() * 2);
         }
         updateSprites(deltaTime);
     }
@@ -58,7 +57,7 @@ public class Pacman extends Entity {
             _tunnelCooldown -= deltaTime;
             return;
         }
-        Vector2 tunnel = getExitTunnel();
+        Vector2 tunnel = getTunnelExit();
         if (tunnel != null) {
             setPosition(tunnel);
             _tunnelCooldown = Configs.TUNNEL_COOLDOWN;

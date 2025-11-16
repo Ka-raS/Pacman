@@ -57,9 +57,9 @@ public class Map implements ImmutableMap {
     }
 
     @Override
-    public boolean checkBound(Vector2 gridPos) {
+    public boolean checkWall(Vector2 gridPos) {
         int x = gridPos.ix(), y = gridPos.iy();
-        return 0 <= y && y < _tiles.length && 0 <= x && x < _tiles[y].length;
+        return checkBound(gridPos) && _tiles[y][x] != Tile.WALL;
     }
 
     @Override
@@ -70,7 +70,7 @@ public class Map implements ImmutableMap {
         
         if (isXCentered && isYCentered) {
             Vector2 p = toGridVector2(position).add(nextDirection.toVector2());
-            return checkBound(p) && _tiles[p.iy()][p.ix()] != Tile.WALL;
+            return checkWall(p);
         }
         return nextDirection.isVertical() ? isXCentered : isYCentered;
     }
@@ -102,6 +102,7 @@ public class Map implements ImmutableMap {
             for (int x = 0; x < _tiles[y].length; ++x)
                 if (_tiles[y][x] == Tile.DOT || _tiles[y][x] == Tile.POWERUP) {
                     BufferedImage image = _tiles[y][x] == Tile.DOT ? DOT_IMAGE : POWERUP_IMAGE;
+                    
                     int offset = (Configs.UI.TILE_SIZE - image.getWidth() / 2);
                     Vector2 p = toPixelVector2(new Vector2(x, y)).mul(Configs.SCALING).add(offset);
                     g.drawImage(image, p.ix(), p.iy(), null);
@@ -114,6 +115,12 @@ public class Map implements ImmutableMap {
         final int HALF_TILE = Configs.PX.TILE_SIZE / 2;
         Vector2 p = position.mod(Configs.PX.TILE_SIZE).abs().sub(HALF_TILE);
         return new boolean[] { p.ix() == 0, p.iy() == 0 };
+    }
+
+    private static boolean checkBound(Vector2 gridPos) {
+        int x = gridPos.ix(), y = gridPos.iy();
+        return 0 <= y && y < Configs.Grid.MAP_SIZE.iy()
+            && 0 <= x && x < Configs.Grid.MAP_SIZE.ix();
     }
 
     private static BufferedImage createOval(int size) {

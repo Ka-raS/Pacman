@@ -68,8 +68,7 @@ public class Playing implements Screen {
                     _nextScreen = new Paused(this);
             }
         }
-        if (d != null)
-            _pacman.setNextDirection(d);
+        _pacman.setNextDirection(d);
     }
 
     

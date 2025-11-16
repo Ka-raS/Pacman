@@ -29,26 +29,16 @@ public abstract class Ghost extends Entity {
 
     @Override
     public void update(double deltaTime) {
-        if (isIdle()) {
-            updateSprites(deltaTime);
-            return;
+        if (!isIdle()) {
+            updateDirection();
+            move(deltaTime);
+            handleCollision();
         }
-
-        // update direction and stuffs
-        boolean earlyReturn = switch (getState()) {
-            case HUNTER -> updateHunter();
-            case PREY   -> updatePrey();
-            case DEAD   -> updateDead();
-        };
-        if (earlyReturn)
-            return;
-
-        move(deltaTime);
         updateSprites(deltaTime);
     }
   
 
-    protected Ghost(Vector2 homeGridPos, Direction direction, double speed, SpriteSheet spriteName, ImmutableEntity pacman, ImmutableMap map) {
+    protected Ghost(Vector2 homeGridPos, Direction direction, double speed, SpriteSheet baseSprite, ImmutableEntity pacman, ImmutableMap map) {
         super(
             Map.toPixelVector2(homeGridPos),
             direction,
@@ -57,7 +47,7 @@ public abstract class Ghost extends Entity {
             map
         );
         _HomeGridPos = homeGridPos;
-        _SpriteName = spriteName;
+        _BaseSprite = baseSprite;
         _Pacman = pacman;
         _prevGridPos = null;
         _caughtPacman = false;
@@ -71,7 +61,7 @@ public abstract class Ghost extends Entity {
         switch (nextState) {
             case HUNTER:
                 _caughtPacman = false;
-                setSprites(new Sprites(_SpriteName, getDirection().ordinal() * 2, 2));
+                setSprites(new Sprites(_BaseSprite, getDirection().ordinal() * 2, 2));
                 break;
 
             case PREY:
@@ -87,73 +77,52 @@ public abstract class Ghost extends Entity {
         setState(nextState);
     }
 
-    private boolean updateHunter() {
-        final boolean RETURN = false;
-        _caughtPacman |= collidesWith(_Pacman);
-        
-        if (!isCenteredInTile())
-            return RETURN;
-
+    private void updateDirection() {
         Vector2 currGridPos = getGridPos();
-        if (currGridPos.equals(_prevGridPos))
-            return RETURN;
+        if (!isCenteredInTile() || currGridPos.equals(_prevGridPos))
+            return;
         _prevGridPos = currGridPos;
 
         EnumSet<Direction> validDirections = getValidDirections();
-        if (!validDirections.isEmpty()) {
-            Vector2 target = findHunterTarget(_Pacman);
-            Direction nextDir = currGridPos.closestTo(target, validDirections);
-            setDirection(nextDir);
+        if (validDirections.isEmpty())
+            return;
+
+        Direction nextDir = getDirection();
+        switch (getState()) {
+            case HUNTER: 
+                nextDir = currGridPos.closestTo(findHunterTarget(_Pacman), validDirections);
+                setSpritesOffset(getDirection().ordinal() * 2);
+                break;
+
+            case PREY:
+                nextDir = currGridPos.furthestFrom(_Pacman.getGridPos(), validDirections);
+                break;
+                
+            case DEAD:
+                nextDir = currGridPos.closestTo(_HomeGridPos, validDirections);
+                setSpritesOffset(getDirection().ordinal());
+                break;
         }
-        setSpritesOffset(getDirection().ordinal() * 2);
-        return RETURN;
+        setDirection(nextDir);
     }
 
-    private boolean updatePrey() {
-        if (collidesWith(_Pacman)) {
-            enterStateInternal(Entity.State.DEAD);
-            return true;
-        }
-        final boolean RETURN = false;
-
-        if (!isCenteredInTile())
-            return RETURN;
-
+    private void handleCollision() {
         Vector2 currGridPos = getGridPos();
-        if (currGridPos.equals(_prevGridPos))
-            return RETURN;
-        _prevGridPos = currGridPos;
+        switch (getState()) {
+            case HUNTER:
+                _caughtPacman |= collidesWith(_Pacman);       
+                break;
         
-        EnumSet<Direction> validDirections = getValidDirections();
-        if (!validDirections.isEmpty()) {
-            Direction nextDir = currGridPos.furthestFrom(_Pacman.getGridPos(), validDirections);
-            setDirection(nextDir);
-        }
-        return RETURN;
-    }
+            case PREY:
+                if (collidesWith(_Pacman))
+                    enterStateInternal(Entity.State.DEAD);
+                break;
 
-    private boolean updateDead() {
-        if (!isCenteredInTile())
-            return false;
-
-        Vector2 currGridPos = getGridPos();
-        if (currGridPos.equals(_HomeGridPos)) {
-            enterStateInternal(Entity.State.HUNTER);
-            return true;
+            case DEAD:
+                if (currGridPos.equals(_HomeGridPos))
+                    enterStateInternal(Entity.State.HUNTER);
+                break;
         }
-        final boolean RETURN = false;
-
-        if (currGridPos.equals(_prevGridPos))
-            return RETURN;
-        _prevGridPos = currGridPos;
-        
-        EnumSet<Direction> validDirections = getValidDirections();
-        if (!validDirections.isEmpty()) {
-            Direction nextDir = currGridPos.closestTo(_HomeGridPos, validDirections);
-            setDirection(nextDir);
-        }
-        setSpritesOffset(getDirection().ordinal());
-        return RETURN;
     }
 
     private EnumSet<Direction> getValidDirections() {
@@ -168,7 +137,7 @@ public abstract class Ghost extends Entity {
     }
 
     private final Vector2 _HomeGridPos;
-    private final SpriteSheet _SpriteName;
+    private final SpriteSheet _BaseSprite;
     private final ImmutableEntity _Pacman;
     
     private Vector2 _prevGridPos;

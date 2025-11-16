@@ -72,7 +72,7 @@ public abstract class Entity implements ImmutableEntity {
         return _Map.validDirection(_position, d);
     }
 
-    protected Vector2 getExitTunnel() {
+    protected Vector2 getTunnelExit() {
         return _Map.getTunnelExit(_position);
     }
 
@@ -86,19 +86,18 @@ public abstract class Entity implements ImmutableEntity {
     }
 
     protected void setDirection(Direction d) {
-        if (_direction != d && validDirection(d))
+        if (d != null && _direction != d && validDirection(d))
             _direction = d;
     }
 
     protected void setPosition(Vector2 p) {
-        if (_Map.checkBound(Map.toGridVector2(p)))
+        if (_Map.checkWall(Map.toGridVector2(p)))
             _position = p;
     }
 
     protected void move(double deltaTime) {
-        if (!validDirection(_direction))
-            return;
-        _position = _position.add(_direction.toVector2().mul(deltaTime * _speed));
+        if (validDirection(_direction))
+            _position = _position.add(_direction.toVector2().mul(deltaTime * _speed));
     }
 
     protected void setSprites(Sprites sprites) {

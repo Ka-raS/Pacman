@@ -18,8 +18,14 @@ public record Vector2(double x, double y) {
     public Vector2 add(Vector2 other) { return new Vector2(x + other.x, y + other.y); }
     public Vector2 sub(Vector2 other) { return new Vector2(x - other.x, y - other.y); }
 
-    public double distance(Vector2 other) {   // Manhattan
-        return Math.abs(x - other.x) + Math.abs(y - other.y);
+    // public double distance(Vector2 other) {   // Manhattan
+    //     return Math.abs(x - other.x) + Math.abs(y - other.y);
+    // }
+    
+    public double distance(Vector2 other) {   // Euclidean
+        double dx = x - other.x;
+        double dy = y - other.y;
+        return Math.sqrt(dx * dx + dy * dy);
     }
     
     public Direction furthestFrom(Vector2 other, Iterable<Direction> directions) {

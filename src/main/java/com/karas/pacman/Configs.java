@@ -7,8 +7,8 @@ import com.karas.pacman.commons.Vector2;
 
 public class Configs {
 
-    public static final int UPS_TARGET = 60;    // 60 <= UPS_TARGET <= 2e7
-    public static final int FPS_TARGET = 60;
+    public static final int UPS_TARGET = 144;
+    public static final int FPS_TARGET = Integer.MAX_VALUE;
     public static final double SCALING = 3.0;   // CHANGE THIS
     public static final boolean DEBUG  = true;
     public static final Color BACKGROUND_COLOR = Color.BLACK;

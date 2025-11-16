@@ -7,10 +7,10 @@ public interface ImmutableMap {
     
     int getDotCounts();
 
-    boolean isMovable(Vector2 position);
+    boolean checkBound(Vector2 gridPos);
 
     boolean validDirection(Vector2 position, Direction nextDirection);
 
-    Vector2 getPortalExit(Vector2 position);
+    Vector2 getTunnelExit(Vector2 position);
 
 }

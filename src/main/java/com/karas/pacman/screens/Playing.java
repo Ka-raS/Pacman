@@ -80,7 +80,7 @@ public class Playing implements Screen {
     private void enterState(State nextState) {
         switch (nextState) {
             case IDLE:
-                _stateTimer = Configs.IDLE_DURATION;
+                _stateCooldown = Configs.IDLE_DURATION;
                 if (_state != State.IDLE)
                     _preIdleState = _state;
                 _pacman.toggleIdle();
@@ -94,7 +94,7 @@ public class Playing implements Screen {
 
             case POWERUP:
                 System.out.println("Powerup eaten!");
-                _stateTimer = Configs.POWERUP_DURATION;
+                _stateCooldown = Configs.POWERUP_DURATION;
                 _isGhostsFlashing = false;
                 _pacman.enterState(Pacman.State.HUNTER);
                 _ghosts.forEach(ghost -> ghost.enterState(Entity.State.PREY));
@@ -102,14 +102,14 @@ public class Playing implements Screen {
 
             case LOST:
                 System.out.println("Game lost!");
-                _stateTimer = Configs.ENDGAME_DURATION;
+                _stateCooldown = Configs.ENDGAME_DURATION;
                 _pacman.enterState(Pacman.State.DEAD);
                 _ghosts.forEach(Ghost::toggleIdle);
                 break;
 
             case WON:
                 System.out.println("Game won!");
-                _stateTimer = Configs.ENDGAME_DURATION;
+                _stateCooldown = Configs.ENDGAME_DURATION;
                 _pacman.toggleIdle();;
                 _ghosts.forEach(Ghost::toggleIdle);
                 break;
@@ -118,12 +118,12 @@ public class Playing implements Screen {
     }
 
     private void updateState(double deltaTime) {
-        if (_stateTimer > 0.0)
-            _stateTimer -= deltaTime;
+        if (_stateCooldown > 0.0)
+            _stateCooldown -= deltaTime;
 
         switch (_state) {
             case IDLE:
-                if (_stateTimer < 0.0) {
+                if (_stateCooldown < 0.0) {
                     _pacman.toggleIdle();
                     _ghosts.forEach(Ghost::toggleIdle);
                     enterState(_preIdleState);
@@ -131,9 +131,9 @@ public class Playing implements Screen {
                 break;
 
             case POWERUP:
-                if (_stateTimer < 0.0)
+                if (_stateCooldown < 0.0)
                     enterState(State.NORMAL);
-                else if (!_isGhostsFlashing && _stateTimer < Configs.GHOST_FLASH_DURATION) {
+                else if (!_isGhostsFlashing && _stateCooldown < Configs.GHOST_FLASH_DURATION) {
                     _isGhostsFlashing = true;
                     _ghosts.forEach(Ghost::enableFlashing);
                 }
@@ -148,7 +148,7 @@ public class Playing implements Screen {
                 break;
 
             case LOST, WON:
-                if (_stateTimer < 0.0)
+                if (_stateCooldown < 0.0)
                     _nextScreen = null; // TODO: _nextScreen = new GameOver();
                 break;
         }
@@ -158,7 +158,7 @@ public class Playing implements Screen {
     private Pacman _pacman;
     private List<Ghost> _ghosts;
     private State _state, _preIdleState;
-    private double _stateTimer;
+    private double _stateCooldown;
     private boolean _isGhostsFlashing;
     private volatile Screen _nextScreen;
 

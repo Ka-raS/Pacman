@@ -68,12 +68,21 @@ public abstract class Entity implements ImmutableEntity {
         return Map.isCenteredInTile(_position);
     }
 
+    protected boolean validDirection(Direction d) {
+        return _Map.validDirection(_position, d);
+    }
+
+    protected Vector2 getExitTunnel() {
+        return _Map.getTunnelExit(_position);
+    }
+
     protected Entity.State getState() {
         return _state;
     }
 
-    protected boolean validDirection(Direction d) {
-        return _Map.validDirection(_position, d);
+    protected void setState(Entity.State state) {
+        if (state != null)
+            _state = state;
     }
 
     protected void setDirection(Direction d) {
@@ -81,18 +90,15 @@ public abstract class Entity implements ImmutableEntity {
             _direction = d;
     }
 
+    protected void setPosition(Vector2 p) {
+        if (_Map.checkBound(Map.toGridVector2(p)))
+            _position = p;
+    }
+
     protected void move(double deltaTime) {
         if (!validDirection(_direction))
             return;
         _position = _position.add(_direction.toVector2().mul(deltaTime * _speed));
-        
-        // Vector2 portalGridPos = _Map.getPortalExit(_position);
-        // if (portalGridPos != null && !_hasJustExitedPortal) {
-        //     _position = Map.toPixelVector2(portalGridPos);
-        //     _hasJustExitedPortal = true;
-        // } else if (portalGridPos == null) {
-        //     _hasJustExitedPortal = false;
-        // }
     }
 
     protected void setSprites(Sprites sprites) {
@@ -112,10 +118,6 @@ public abstract class Entity implements ImmutableEntity {
         _sprites.update(deltaTime);
     }
 
-    protected void setState(Entity.State state) {
-        if (state != null)
-            _state = state;
-    }
 
     private final ImmutableMap _Map;
     private double _speed;

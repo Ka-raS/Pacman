@@ -19,11 +19,12 @@ public class Configs {
     public static final String WINDOW_ICON_PATH  = "/images/icon.png";
     public static final String SPRITE_SHEET_PATH = "/images/spritesheet.png";
 
-    public static final double SPRITE_INTERVAL        = 0.133;  // seconds per sprite change
-    public static final double IDLE_DURATION          = 1.0;
-    public static final double POWERUP_DURATION       = 8.0;
-    public static final double GHOST_FLASH_DURATION   = POWERUP_DURATION - 6.0; // when powerup is expiring
-    public static final double ENDGAME_DURATION       = 4.0;
+    public static final double SPRITE_INTERVAL      = 0.133;  // seconds per sprite change
+    public static final double TUNNEL_COOLDOWN      = 1.0;
+    public static final double IDLE_DURATION        = 1.0;
+    public static final double POWERUP_DURATION     = 8.0;
+    public static final double GHOST_FLASH_DURATION = POWERUP_DURATION - 6.0; // when powerup is expiring
+    public static final double ENDGAME_DURATION     = 4.0;
 
     // TODO
     public static final double GHOST_SCATTER_DURATION = 7.0; 

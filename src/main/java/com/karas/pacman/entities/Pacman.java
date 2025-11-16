@@ -2,6 +2,7 @@ package com.karas.pacman.entities;
 
 import com.karas.pacman.Configs;
 import com.karas.pacman.commons.Direction;
+import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.maps.ImmutableMap;
 import com.karas.pacman.maps.Map;
 import com.karas.pacman.resources.SpriteSheet;
@@ -17,6 +18,7 @@ public class Pacman extends Entity {
             new Sprites(SpriteSheet.PACMAN, 0, 2),    
             map
         );
+        _tunnelCooldown = 0.0;
         _nextDirection = Direction.RIGHT;
         enterState(Entity.State.PREY);
     }
@@ -49,6 +51,21 @@ public class Pacman extends Entity {
     }
 
 
+    @Override
+    protected void move(double deltaTime) {
+        super.move(deltaTime);
+        if (_tunnelCooldown > 0.0) {
+            _tunnelCooldown -= deltaTime;
+            return;
+        }
+        Vector2 tunnel = getExitTunnel();
+        if (tunnel != null) {
+            setPosition(tunnel);
+            _tunnelCooldown = Configs.TUNNEL_COOLDOWN;
+        }
+    }
+
+    private double _tunnelCooldown;
     private volatile Direction _nextDirection;
 
 }

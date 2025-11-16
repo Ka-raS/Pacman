@@ -46,22 +46,20 @@ public class Map implements ImmutableMap {
     }
 
     @Override
-    public Vector2 getPortalExit(Vector2 position) {
+    public Vector2 getTunnelExit(Vector2 position) {
         if (!isCenteredInTile(position))
             return null;
-
         Vector2 p = toGridVector2(position);
-        if (_tiles[p.iy()][p.ix()] != Tile.PORTAL)
-            return null;
-        
+        if (_tiles[p.iy()][p.ix()] != Tile.TUNNEL)
+            return null;        
         p = p.sub(new Vector2(Configs.Grid.MAP_SIZE.ix() - 1, 0)).abs();
-        return toPixelVector2(p);
+        return Map.toPixelVector2(p);
     }
 
     @Override
-    public boolean isMovable(Vector2 gridPos) {
-        Vector2 p = gridPos;
-        return boundCheck(gridPos) && _tiles[p.iy()][p.ix()] != Tile.WALL;
+    public boolean checkBound(Vector2 gridPos) {
+        int x = gridPos.ix(), y = gridPos.iy();
+        return 0 <= y && y < _tiles.length && 0 <= x && x < _tiles[y].length;
     }
 
     @Override
@@ -72,7 +70,7 @@ public class Map implements ImmutableMap {
         
         if (isXCentered && isYCentered) {
             Vector2 p = toGridVector2(position).add(nextDirection.toVector2());
-            return isMovable(p);
+            return checkBound(p) && _tiles[p.iy()][p.ix()] != Tile.WALL;
         }
         return nextDirection.isVertical() ? isXCentered : isYCentered;
     }
@@ -82,7 +80,7 @@ public class Map implements ImmutableMap {
         if (isCenteredInTile(position))
             return Tile.NONE;
         Vector2 p = toGridVector2(position);
-        if (!boundCheck(p))
+        if (!checkBound(p))
             return Tile.NONE;
 
         Tile tile = _tiles[p.iy()][p.ix()];
@@ -126,11 +124,6 @@ public class Map implements ImmutableMap {
         g2.fillOval(0, 0, size, size);
         g2.dispose();
         return image;
-    }
-
-    private boolean boundCheck(Vector2 gridPos) {
-        int x = gridPos.ix(), y = gridPos.iy();
-        return 0 <= y && y < _tiles.length && 0 <= x && x < _tiles[y].length;
     }
 
     private static final BufferedImage DOT_IMAGE = createOval(Configs.UI.DOT_SIZE);

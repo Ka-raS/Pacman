@@ -30,8 +30,16 @@ public class ResourcesManager {
         initSoundMap();
         initImageMap();
         initSpriteMap();
-        _tilemap = loadTilemap(Resource.TILEMAP, Configs.Grid.MAP_SIZE);
-        _font = loadFont(Resource.FONT, Configs.UI.FONT_SIZE_BASE);
+        initTilemap();
+        initFont();
+
+
+        try {
+            _font = loadFont(Resource.FONT.getPath(), Configs.UI.FONT_SIZE_BASE);
+        } catch (RuntimeException e) {
+            handleException(e, Resource.FONT.isCritical());
+            _font = new Font("Arial", Font.PLAIN, (int) Configs.UI.FONT_SIZE_BASE);
+        }
     }
 
     public Sound getSound(Resource sound) {
@@ -68,116 +76,95 @@ public class ResourcesManager {
     }
 
 
-    private static Sound loadSound(Resource sound) {
-        Exception exception;
-
+    private static Sound loadSound(String path) throws RuntimeException {
         try (
-            InputStream is = ResourcesManager.class.getResourceAsStream(sound.getPath());
+            InputStream is = ResourcesManager.class.getResourceAsStream(path);
             AudioInputStream ais = is == null ? null : AudioSystem.getAudioInputStream(is)
         ) {
             if (is == null)
-                throw new FileNotFoundException("Sound Not Found: " + sound.getPath());
+                throw new FileNotFoundException();
             
             Clip clip = AudioSystem.getClip();
             clip.open(ais);
             return new Sound(clip);
 
         } catch (FileNotFoundException e) {
-            exception = e;
+            throw new RuntimeException("Sound Not Found: " + path, e);
         } catch (IOException e) {
-            exception = new RuntimeException("Failed Reading Sound: " + sound.getPath(), e);
-            exception.setStackTrace(e.getStackTrace());
+            throw new RuntimeException("Failed Reading Sound: " + path, e);
         } catch (UnsupportedAudioFileException e) {
-            exception = new RuntimeException("Unsupported Audio File: " + sound.getPath(), e);
-            exception.setStackTrace(e.getStackTrace());
+            throw new RuntimeException("Unsupported Audio File: " + path, e);
         } catch (LineUnavailableException e) {
-            exception = new RuntimeException("Audio Line Unavailable: " + sound.getPath(), e);
-            exception.setStackTrace(e.getStackTrace());
+            throw new RuntimeException("Audio Line Unavailable: " + path, e);
         }
-
-        handleException(exception, sound.isCritical());
-        return Sound.getDummy();
     }
 
-    private static BufferedImage loadImage(Resource image) {
-        Exception exception;
-
-        try (InputStream is = ResourcesManager.class.getResourceAsStream(image.getPath())) {
+    private static BufferedImage loadImage(String path) throws RuntimeException {
+        try (InputStream is = ResourcesManager.class.getResourceAsStream(path)) {
             if (is == null)
-                throw new FileNotFoundException("Image Not Found: " + image.getPath());
+                throw new FileNotFoundException();
             
             BufferedImage bufferedImg = ImageIO.read(is);
             if (bufferedImg == null)
-                throw new RuntimeException("Failed Reading Image: " + image.getPath());
+                throw new NullPointerException();
             return bufferedImg;
 
-        } catch (FileNotFoundException | RuntimeException e) {
-            exception = e;
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("Image Not Found: " + path, e);
+        } catch (NullPointerException e) {
+            throw new RuntimeException("Invalid Image Format: " + path, e);
         } catch (IOException e) {
-            exception = new RuntimeException("Failed Reading Image: " + image.getPath(), e);
-            exception.setStackTrace(e.getStackTrace());
+            throw new RuntimeException("Failed Reading Image: " + path, e);
         }
-
-        handleException(exception, image.isCritical());
-        return null;
     }
 
-    private static Tile[][] loadTilemap(Resource tilemap, Vector2 size) {
-        Exception exception;
-
+    private static Tile[][] loadTilemap(String path, Vector2 size) throws RuntimeException {
         try (
-            InputStream is = ResourcesManager.class.getResourceAsStream(tilemap.getPath());
+            InputStream is = ResourcesManager.class.getResourceAsStream(path);
             BufferedReader reader = is == null ? null : new BufferedReader(new InputStreamReader(is))
         ) {
             if (is == null)
-                throw new FileNotFoundException("Tilemap Not Found: " + tilemap.getPath());
+                throw new FileNotFoundException();
 
             Tile[][] tiles = new Tile[size.iy()][size.ix()];
 
             for (int y = 0; y < size.iy(); ++y) {
                 String line = reader.readLine();
                 if (line == null || line.length() != tiles[0].length)
-                    throw new RuntimeException("Tilemap Data Corrupted: " + tilemap.getPath());
-
+                    throw new IllegalArgumentException("Tilemap Data Corrupted At Line " + (y+1));
+                    
                 for (int x = 0; x < size.ix(); ++x) {
                     tiles[y][x] = Tile.fromChar(line.charAt(x));
                     if (tiles[y][x] == null)
-                        throw new RuntimeException("Tilemap Data Corrupted: " + tilemap.getPath());
+                        throw new IllegalArgumentException(
+                            String.format("Tilemap Data Corrupted At Line %d Column %d", y+1, x+1)
+                        );
                 }
             }
             return tiles;
 
-        } catch (FileNotFoundException | RuntimeException e) {
-            exception = e;
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("Tilemap Not Found: " + path, e);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException(e.getMessage() + ": " + path, e);
         } catch (IOException e) {
-            exception = new RuntimeException("Failed Reading Tilemap: " + tilemap.getPath(), e);
-            exception.setStackTrace(e.getStackTrace());
+            throw new RuntimeException("Failed Reading Tilemap: " + path, e);
         }
-
-        handleException(exception, tilemap.isCritical());
-        return null;
     }
 
-    private static Font loadFont(Resource font, float size) {
-        Exception exception;
-
-        try (InputStream is = ResourcesManager.class.getResourceAsStream(font.getPath())) {
+    private static Font loadFont(String path, float size) throws RuntimeException {
+        try (InputStream is = ResourcesManager.class.getResourceAsStream(path)) {
             if (is == null)
-                throw new FileNotFoundException("Font Not Found: " + font.getPath());
+                throw new FileNotFoundException();
             return Font.createFont(Font.TRUETYPE_FONT, is).deriveFont((float) size);
 
         } catch (FileNotFoundException e) {
-            exception = e;
+            throw new RuntimeException("Font Not Found: " + path, e);
         } catch (IOException e) {
-            exception = new RuntimeException("Failed Reading Font: " + font.getPath(), e);
-            exception.setStackTrace(e.getStackTrace());
+            throw new RuntimeException("Failed Reading Font: " + path, e);
         } catch (FontFormatException e) {
-            exception = new RuntimeException("Invalid Font Format: " + font.getPath(), e);
-            exception.setStackTrace(e.getStackTrace());
+            throw new RuntimeException("Invalid Font Format: " + path, e);
         }
-
-        handleException(exception, font.isCritical());
-        return new Font("Arial", Font.PLAIN, (int) size);
     }
 
     private static void handleException(Exception e, boolean isCritical) {
@@ -202,28 +189,66 @@ public class ResourcesManager {
             Resource.GAME_START_SOUND, Resource.GAME_NORMAL_SOUND, Resource.GAME_POWERUP_SOUND
         };
         _soundMap = new HashMap<>(sounds.length);
-        for (Resource sound : sounds)
-            _soundMap.put(sound, loadSound(sound));
+
+        for (Resource sound : sounds) {
+            try {
+                _soundMap.put(sound, loadSound(sound.getPath()));
+            } catch (RuntimeException e) {
+                handleException(e, sound.isCritical());
+                _soundMap.put(sound, Sound.getDummy());
+            }
+        }
     }
 
     private void initImageMap() {
         Resource[] images = { Resource.WINDOW_ICON, Resource.TITLE_IMAGE, Resource.MAP_IMAGE, Resource.SPRITE_SHEET };
         _imageMap = new HashMap<>(images.length);
-        for (Resource image : images)
-            _imageMap.put(image, loadImage(image));
+
+        for (Resource image : images) {
+            try {
+                _imageMap.put(image, loadImage(image.getPath()));
+            } catch (RuntimeException e) {
+                handleException(e, image.isCritical());
+                _imageMap.put(image, null);
+            }
+        }
     }
 
     private void initSpriteMap() {
-        _spriteMap = new HashMap<>(SpriteSheet.values().length);
         BufferedImage sheetImage = _imageMap.get(Resource.SPRITE_SHEET);
-        final int SIZE = Configs.PX.SPRITE_SIZE;
+        _spriteMap = new HashMap<>(SpriteSheet.values().length);
+        
+        if (sheetImage == null) {
+            _LOGGER.warning("Sprite sheet not initialized.");
+            for (SpriteSheet sheet : SpriteSheet.values())
+                _spriteMap.put(sheet, null);
+            return;
+        }
 
+        final int SIZE = Configs.PX.SPRITE_SIZE;
         for (SpriteSheet sheet : SpriteSheet.values()) {
             BufferedImage[] sprite = new BufferedImage[sheet.getLen()];
             for (int i = 0; i < sheet.getLen(); ++i)
                 sprite[i] = sheetImage.getSubimage((sheet.getCol() + i) * SIZE, sheet.getRow() * SIZE, SIZE, SIZE);
             _spriteMap.put(sheet, sprite);
         }
+    }
+
+    private void initTilemap() {
+        final Vector2 SIZE = Configs.Grid.MAP_SIZE;
+        try {
+            _tilemap = loadTilemap(Resource.TILEMAP.getPath(), SIZE);
+        } catch (RuntimeException e) {
+            handleException(e, Resource.TILEMAP.isCritical());
+            _tilemap = new Tile[SIZE.iy()][SIZE.ix()];
+            for (Tile[] row : _tilemap)
+                for (int i = 0; i < SIZE.ix(); ++i)
+                    row[i] = Tile.NONE;
+        }
+    }
+
+    private void initFont() {
+
     }
 
     private static final Logger _LOGGER = Logger.getLogger(ResourcesManager.class.getName());

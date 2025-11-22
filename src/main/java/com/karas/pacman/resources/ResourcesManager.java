@@ -32,14 +32,6 @@ public class ResourcesManager {
         initSpriteMap();
         initTilemap();
         initFont();
-
-
-        try {
-            _font = loadFont(Resource.FONT.getPath(), Configs.UI.FONT_SIZE_BASE);
-        } catch (RuntimeException e) {
-            handleException(e, Resource.FONT.isCritical());
-            _font = new Font("Arial", Font.PLAIN, (int) Configs.UI.FONT_SIZE_BASE);
-        }
     }
 
     public Sound getSound(Resource sound) {
@@ -248,7 +240,12 @@ public class ResourcesManager {
     }
 
     private void initFont() {
-
+        try {
+            _font = loadFont(Resource.FONT.getPath(), Configs.UI.FONT_SIZE_BASE);
+        } catch (RuntimeException e) {
+            handleException(e, Resource.FONT.isCritical());
+            _font = new Font("Arial", Font.PLAIN, (int) Configs.UI.FONT_SIZE_BASE);
+        }
     }
 
     private static final Logger _LOGGER = Logger.getLogger(ResourcesManager.class.getName());

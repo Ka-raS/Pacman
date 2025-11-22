@@ -28,6 +28,8 @@ public record Vector2(double x, double y) {
         return Math.sqrt(dx * dx + dy * dy);
     }
     
+    // Not the best placement bth, maybe DirectionUtils.java?
+
     public Direction furthestFrom(Vector2 other, Iterable<Direction> directions) {
         Direction result = null;
         double maxDistance = -1.0;

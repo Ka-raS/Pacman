@@ -5,10 +5,12 @@ import java.awt.event.KeyEvent;
 
 public interface Screen {
     
-    void enter();
+    void enter(Class<? extends Screen> fromScreen);
 
-    /** @return the next Screen, can be itself */
-    Screen update(double deltaTime);
+    void exit(Class<? extends Screen> toScreen);
+
+    /** @return next screen.class to switch, current screen.class to remain, or null to exit */
+    Class<? extends Screen> update(double deltaTime);
 
     void repaint(Graphics2D g);
 

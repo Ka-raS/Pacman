@@ -13,7 +13,7 @@ public enum Direction {
     }
 
     public Vector2 toVector2() { 
-        return VECTORS[ordinal()]; 
+        return _VECTORS[ordinal()]; 
     }
 
     public boolean isVertical() {
@@ -25,7 +25,7 @@ public enum Direction {
     }
 
 
-    private static final Vector2[] VECTORS = {
+    private static final Vector2[] _VECTORS = {
         new Vector2( 0.0, -1.0), 
         new Vector2( 1.0,  0.0),
         new Vector2( 0.0,  1.0), 

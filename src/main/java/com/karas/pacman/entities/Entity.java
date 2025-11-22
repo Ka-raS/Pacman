@@ -7,7 +7,7 @@ import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.maps.ImmutableMap;
 import com.karas.pacman.maps.Map;
-import com.karas.pacman.resources.Sprites;
+import com.karas.pacman.resources.Sprite;
 
 public abstract class Entity implements ImmutableEntity {
     
@@ -19,10 +19,12 @@ public abstract class Entity implements ImmutableEntity {
 
     public abstract void update(double deltaTime);
 
+    public abstract void reset();
+
     @Override
     public Vector2 getPosition() {
         return _position;
-    }
+    } 
 
     @Override
     public Direction getDirection() {
@@ -36,40 +38,39 @@ public abstract class Entity implements ImmutableEntity {
 
     @Override
     public boolean collidesWith(ImmutableEntity other) {
-        final double BOUND = Configs.PX.SPRITE_SIZE * 0.65;
-        Vector2 delta = _position.sub(other.getPosition()).abs();
-        return delta.x() < BOUND && delta.y() < BOUND;
+        double delta = _position.distance(other.getPosition());
+        return delta < Configs.PX.SPRITE_SIZE * 0.7;
     }
 
-    public void toggleIdle() {
-        _isIdle = !_isIdle;
+    public void setIdle(boolean isIdle) {
+        _isIdling = isIdle;
     }
 
     public void repaint(Graphics2D g) {
         Vector2 p = _position.mul(Configs.SCALING);
-        g.drawImage(_sprites.getFrame(), p.ix(), p.iy(), Configs.UI.SPRITE_SIZE, Configs.UI.SPRITE_SIZE, null);
+        g.drawImage(_sprite.getFrame(), p.ix(), p.iy(), Configs.UI.SPRITE_SIZE, Configs.UI.SPRITE_SIZE, null);
     }
 
 
-    protected Entity(Vector2 position, Direction direction, double speed, Sprites sprites, ImmutableMap map) {
+    protected Entity(Vector2 position, Direction direction, double speed, Sprite sprite, ImmutableMap map) {
         _position = position;
         _direction = direction;
         _speed = speed;
-        _sprites = sprites;
-        _isIdle = false;
+        _sprite = sprite;
+        _isIdling = true;
         _Map = map;
     }
 
     protected boolean isIdle() {
-        return _isIdle;
+        return _isIdling;
     }
 
     protected boolean isCenteredInTile() {
         return Map.isCenteredInTile(_position);
     }
 
-    protected boolean validDirection(Direction d) {
-        return _Map.validDirection(_position, d);
+    protected boolean isValidDirection(Direction d) {
+        return _Map.isValidDirection(_position, d);
     }
 
     protected Vector2 getTunnelExit() {
@@ -86,35 +87,27 @@ public abstract class Entity implements ImmutableEntity {
     }
 
     protected void setDirection(Direction d) {
-        if (d != null && _direction != d && validDirection(d))
+        if (d != null && _direction != d && isValidDirection(d))
             _direction = d;
     }
 
     protected void setPosition(Vector2 p) {
-        if (_Map.checkWall(Map.toGridVector2(p)))
+        if (_Map.isNotWall(Map.toGridVector2(p)))
             _position = p;
     }
 
     protected void move(double deltaTime) {
-        if (validDirection(_direction))
+        if (isValidDirection(_direction))
             _position = _position.add(_direction.toVector2().mul(deltaTime * _speed));
     }
 
-    protected void setSprites(Sprites sprites) {
-        if (sprites != null)
-            _sprites = sprites;
+    protected Sprite getSprite() {
+        return _sprite;
     }
 
-    protected void setSpritesOffset(int offset) {
-        _sprites.setOffset(offset);
-    }
-
-    protected void setSpritesFrameCount(int count) {
-        _sprites.setFrameCount(count);
-    }
-
-    protected void updateSprites(double deltaTime) {
-        _sprites.update(deltaTime);
+    protected void setSprite(Sprite sprite) {
+        if (sprite != null)
+            _sprite = sprite;
     }
 
 
@@ -123,7 +116,7 @@ public abstract class Entity implements ImmutableEntity {
     private Vector2 _position;
     private Direction _direction;
     private Entity.State _state;
-    private Sprites _sprites;
-    private boolean _isIdle;
+    private Sprite _sprite;
+    private boolean _isIdling;
 
 }

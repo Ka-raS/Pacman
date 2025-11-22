@@ -4,16 +4,20 @@ import java.awt.image.BufferedImage;
 
 import com.karas.pacman.Configs;
 
-public class Sprites {
+public class Sprite {
     
-    public Sprites(SpriteSheet name, int offset, int frameCount) {
+    public Sprite(BufferedImage[] images, int offset, int frameCount) {
         _timer = _index = 0;
-        _images = name.getSprites();
-        _frameCount = 1;
+        _images = images;
         setOffset(offset);
+        _frameCount = 1;
         setFrameCount(frameCount);
     }
 
+    public boolean isAnimationEnded() {
+        return _index == _frameCount - 1;
+    }
+    
     public BufferedImage getFrame() {
         return _images[_index + _offset];
     }
@@ -30,7 +34,7 @@ public class Sprites {
 
     public void update(double deltaTime) {
         _timer += deltaTime;
-        if (_timer > Configs.SPRITE_INTERVAL) {
+        if (_timer > Configs.Time.SPRITE_INTERVAL) {
             _timer = 0.0;
             _index = (_index + 1) % _frameCount;
         }

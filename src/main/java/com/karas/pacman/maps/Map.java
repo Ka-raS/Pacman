@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
 import com.karas.pacman.Configs;
 import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Vector2;
-import com.karas.pacman.resources.ResourcesLoader;
+import com.karas.pacman.resources.Sound;
 
 public class Map implements ImmutableMap {
 
@@ -25,24 +25,19 @@ public class Map implements ImmutableMap {
         return centered[0] && centered[1];
     }
 
-    public Map() {
-        _mapImage = ResourcesLoader.loadImage(Configs.MAP_PATH, true);
-        _tiles = ResourcesLoader.loadTilemap(
-            Configs.TILEMAP_PATH,
-            Configs.Grid.MAP_SIZE.iy(),
-            Configs.Grid.MAP_SIZE.ix()
-        );
+    public Map(BufferedImage mapImgae, Tile[][] tileMap, Sound waSound, Sound kaSound) {
+        _mapImage = mapImgae;
+        setTilemap(tileMap);
+        _WakaSounds = new Sound[] { waSound, kaSound };
+    }
 
-        _dotCounts = 0;
-        for (int y = 0; y < _tiles.length; ++y)
-            for (int x = 0; x < _tiles[y].length; ++x)
-                if (_tiles[y][x] == Tile.DOT)
-                    ++_dotCounts;
+    public void reset(Tile[][] tileMap) {
+        setTilemap(tileMap);
     }
 
     @Override
-    public int getDotCounts() {
-        return _dotCounts;
+    public int getPelletCounts() {
+        return _pelletCounts;
     }
 
     @Override
@@ -57,20 +52,20 @@ public class Map implements ImmutableMap {
     }
 
     @Override
-    public boolean checkWall(Vector2 gridPos) {
+    public boolean isNotWall(Vector2 gridPos) {
         int x = gridPos.ix(), y = gridPos.iy();
         return checkBound(gridPos) && _tiles[y][x] != Tile.WALL;
     }
 
     @Override
-    public boolean validDirection(Vector2 position, Direction nextDirection) {
+    public boolean isValidDirection(Vector2 position, Direction nextDirection) {
         boolean[] centered = isXYCenteredInTile(position);
         boolean isXCentered = centered[0];
         boolean isYCentered = centered[1];
         
         if (isXCentered && isYCentered) {
             Vector2 p = toGridVector2(position).add(nextDirection.toVector2());
-            return checkWall(p);
+            return isNotWall(p);
         }
         return nextDirection.isVertical() ? isXCentered : isYCentered;
     }
@@ -85,10 +80,14 @@ public class Map implements ImmutableMap {
 
         Tile tile = _tiles[p.iy()][p.ix()];
         switch (tile) {
-            case DOT:
-                --_dotCounts;
+            case PELLET:
+                _WakaSounds[_pelletCounts % 2].play();
+                --_pelletCounts;
+
             case POWERUP:
                 _tiles[p.iy()][p.ix()] = Tile.NONE;
+                break;
+                
             default:
                 break;
         }
@@ -100,8 +99,8 @@ public class Map implements ImmutableMap {
 
         for (int y = 0; y < _tiles.length; ++y)
             for (int x = 0; x < _tiles[y].length; ++x)
-                if (_tiles[y][x] == Tile.DOT || _tiles[y][x] == Tile.POWERUP) {
-                    BufferedImage image = _tiles[y][x] == Tile.DOT ? DOT_IMAGE : POWERUP_IMAGE;
+                if (_tiles[y][x] == Tile.PELLET || _tiles[y][x] == Tile.POWERUP) {
+                    BufferedImage image = _tiles[y][x] == Tile.PELLET ? _PELLET_IMAGE : _POWERUP_IMAGE;
                     
                     int offset = (Configs.UI.TILE_SIZE - image.getWidth() / 2);
                     Vector2 p = toPixelVector2(new Vector2(x, y)).mul(Configs.SCALING).add(offset);
@@ -112,8 +111,8 @@ public class Map implements ImmutableMap {
 
     /** @return { isXCentered, isYCentered } */
     private static boolean[] isXYCenteredInTile(Vector2 position) {
-        final int HALF_TILE = Configs.PX.TILE_SIZE / 2;
-        Vector2 p = position.mod(Configs.PX.TILE_SIZE).abs().sub(HALF_TILE);
+        Vector2 p = position.mod(Configs.PX.TILE_SIZE).abs()
+                            .sub(Configs.PX.TILE_SIZE / 2);
         return new boolean[] { p.ix() == 0, p.iy() == 0 };
     }
 
@@ -133,10 +132,20 @@ public class Map implements ImmutableMap {
         return image;
     }
 
-    private static final BufferedImage DOT_IMAGE = createOval(Configs.UI.DOT_SIZE);
-    private static final BufferedImage POWERUP_IMAGE = createOval(Configs.UI.POWERUP_SIZE);
+    private void setTilemap(Tile[][] tileMap) {
+        _tiles = tileMap;
+        _pelletCounts = 0;
+        for (int y = 0; y < _tiles.length; ++y)
+            for (int x = 0; x < _tiles[y].length; ++x)
+                if (_tiles[y][x] == Tile.PELLET)
+                    ++_pelletCounts;
+    }
 
-    private int _dotCounts;
+    private static final BufferedImage _PELLET_IMAGE = createOval(Configs.UI.PELLET_SIZE);
+    private static final BufferedImage _POWERUP_IMAGE = createOval(Configs.UI.POWERUP_SIZE);
+    
+    private final Sound[] _WakaSounds;
+    private int _pelletCounts;
     private Tile[][] _tiles;
     private BufferedImage _mapImage;
 

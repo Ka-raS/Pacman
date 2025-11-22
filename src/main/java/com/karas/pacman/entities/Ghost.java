@@ -1,13 +1,15 @@
 package com.karas.pacman.entities;
 
+import java.awt.image.BufferedImage;
 import java.util.EnumSet;
+import java.util.logging.Logger;
 
 import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.maps.ImmutableMap;
 import com.karas.pacman.maps.Map;
-import com.karas.pacman.resources.SpriteSheet;
-import com.karas.pacman.resources.Sprites;
+import com.karas.pacman.resources.Sound;
+import com.karas.pacman.resources.Sprite;
 
 public abstract class Ghost extends Entity {
 
@@ -17,7 +19,7 @@ public abstract class Ghost extends Entity {
 
     public void enableFlashing() {
         if (getState() == Entity.State.PREY)
-            setSpritesFrameCount(4);
+            getSprite().setFrameCount(4);
     }
 
     @Override
@@ -34,23 +36,37 @@ public abstract class Ghost extends Entity {
             move(deltaTime);
             handleCollision();
         }
-        updateSprites(deltaTime);
+        getSprite().update(deltaTime);
     }
   
+    @Override
+    public void reset() {
+        setPosition(Map.toPixelVector2(_HomeGridPos));
+        setDirection(_HomeDirection);
+        enterStateInternal(Entity.State.HUNTER);
+    }
 
-    protected Ghost(Vector2 homeGridPos, Direction direction, double speed, SpriteSheet baseSprite, ImmutableEntity pacman, ImmutableMap map) {
+    
+    protected Ghost(Vector2 gridPos, Direction direction, double speed, 
+                    BufferedImage[] baseSprite, BufferedImage[] preySprite, BufferedImage[] deathSprite, Sound deathSound,
+                    ImmutableEntity pacman, ImmutableMap map) {
         super(
-            Map.toPixelVector2(homeGridPos),
-            direction,
-            speed,
-            null, // set in enterStateInternal()
+            Map.toPixelVector2(gridPos),
+            direction, speed,
+            new Sprite(baseSprite, direction.ordinal() * 2, 2),
             map
         );
-        _HomeGridPos = homeGridPos;
-        _BaseSprite = baseSprite;
-        _Pacman = pacman;
         _prevGridPos = null;
         _caughtPacman = false;
+
+        _HomeGridPos = gridPos;
+        _HomeDirection = direction;
+        _BaseSprite = getSprite();
+        _PreySprite = new Sprite(preySprite, 0, 2);
+        _DeathSprite = new Sprite(deathSprite, direction.ordinal(), 1);
+        _DeathSound = deathSound;
+        _Pacman = pacman;
+
         enterStateInternal(Entity.State.HUNTER);
     }
 
@@ -61,17 +77,21 @@ public abstract class Ghost extends Entity {
         switch (nextState) {
             case HUNTER:
                 _caughtPacman = false;
-                setSprites(new Sprites(_BaseSprite, getDirection().ordinal() * 2, 2));
+                _BaseSprite.setOffset(getDirection().ordinal() * 2);
+                setSprite(_BaseSprite);
                 break;
 
             case PREY:
-                setSprites(new Sprites(SpriteSheet.PREY_GHOST, 0, 2));
+                _PreySprite.setFrameCount(2);
+                setSprite(_PreySprite);
                 break;
 
             case DEAD:
                 if (getState() == Entity.State.PREY)
-                    System.out.println(getClass().getSimpleName() + " eaten!");
-                setSprites(new Sprites(SpriteSheet.DEAD_GHOST, getDirection().ordinal(), 1));
+                    _LOGGER.info(getClass().getSimpleName() + " eaten!");
+                _DeathSprite.setOffset(getDirection().ordinal());
+                setSprite(_DeathSprite);
+                _DeathSound.play();
                 break;
         }
         setState(nextState);
@@ -91,7 +111,7 @@ public abstract class Ghost extends Entity {
         switch (getState()) {
             case HUNTER: 
                 nextDir = currGridPos.closestTo(findHunterTarget(_Pacman), validDirections);
-                setSpritesOffset(getDirection().ordinal() * 2);
+                getSprite().setOffset(nextDir.ordinal() * 2);
                 break;
 
             case PREY:
@@ -100,7 +120,7 @@ public abstract class Ghost extends Entity {
                 
             case DEAD:
                 nextDir = currGridPos.closestTo(_HomeGridPos, validDirections);
-                setSpritesOffset(getDirection().ordinal());
+                getSprite().setOffset(nextDir.ordinal());
                 break;
         }
         setDirection(nextDir);
@@ -128,7 +148,7 @@ public abstract class Ghost extends Entity {
     private EnumSet<Direction> getValidDirections() {
         EnumSet<Direction> result = EnumSet.noneOf(Direction.class);
         for (Direction d : Direction.values())
-            if (validDirection(d))
+            if (isValidDirection(d))
                 result.add(d);
 
         if (result.size() > 1)
@@ -136,10 +156,13 @@ public abstract class Ghost extends Entity {
         return result;
     }
 
+    private static final Logger _LOGGER = Logger.getLogger(Ghost.class.getName());
+
     private final Vector2 _HomeGridPos;
-    private final SpriteSheet _BaseSprite;
+    private final Direction _HomeDirection;
+    private final Sprite _BaseSprite, _PreySprite, _DeathSprite;
+    private final Sound _DeathSound;
     private final ImmutableEntity _Pacman;
-    
     private Vector2 _prevGridPos;
     private boolean _caughtPacman;
 

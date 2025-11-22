@@ -11,6 +11,6 @@ public interface ImmutableMap {
 
     boolean isValidDirection(Vector2 position, Direction nextDirection);
 
-    Vector2 getTunnelExit(Vector2 position);
+    Vector2 tryTunneling(Vector2 position, Direction direction);
 
 }

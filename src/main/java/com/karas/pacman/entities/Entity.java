@@ -52,7 +52,7 @@ public abstract class Entity implements ImmutableEntity {
     }
 
 
-    protected Entity(Vector2 position, Direction direction, double speed, Sprite sprite, ImmutableMap map) {
+    protected Entity(Vector2 position, Direction direction, int speed, Sprite sprite, ImmutableMap map) {
         _position = position;
         _direction = direction;
         _speed = speed;
@@ -73,10 +73,6 @@ public abstract class Entity implements ImmutableEntity {
         return _Map.isValidDirection(_position, d);
     }
 
-    protected Vector2 getTunnelExit() {
-        return _Map.getTunnelExit(_position);
-    }
-
     protected Entity.State getState() {
         return _state;
     }
@@ -87,7 +83,7 @@ public abstract class Entity implements ImmutableEntity {
     }
 
     protected void setDirection(Direction d) {
-        if (d != null && _direction != d && isValidDirection(d))
+        if (_direction != d && isValidDirection(d))
             _direction = d;
     }
 
@@ -99,6 +95,15 @@ public abstract class Entity implements ImmutableEntity {
     protected void move(double deltaTime) {
         if (isValidDirection(_direction))
             _position = _position.add(_direction.toVector2().mul(deltaTime * _speed));
+        
+        Vector2 tunneled = _Map.tryTunneling(_position, _direction);
+        if (tunneled != null)
+            _position = tunneled;
+    }
+
+    protected void setSpeed(int speed) {
+        if (speed >= 0)
+            _speed = speed;
     }
 
     protected Sprite getSprite() {
@@ -112,7 +117,7 @@ public abstract class Entity implements ImmutableEntity {
 
 
     private final ImmutableMap _Map;
-    private double _speed;
+    private int _speed;
     private Vector2 _position;
     private Direction _direction;
     private Entity.State _state;

@@ -47,7 +47,7 @@ public abstract class Ghost extends Entity {
     }
 
     
-    protected Ghost(Vector2 gridPos, Direction direction, double speed, 
+    protected Ghost(Vector2 gridPos, Direction direction, int speed, 
                     BufferedImage[] baseSprite, BufferedImage[] preySprite, BufferedImage[] deathSprite, Sound deathSound,
                     ImmutableEntity pacman, ImmutableMap map) {
         super(

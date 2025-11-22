@@ -41,13 +41,19 @@ public class Map implements ImmutableMap {
     }
 
     @Override
-    public Vector2 getTunnelExit(Vector2 position) {
+    public Vector2 tryTunneling(Vector2 position, Direction direction) {
         if (!isCenteredInTile(position))
             return null;
+
         Vector2 p = toGridVector2(position);
-        if (_tiles[p.iy()][p.ix()] != Tile.TUNNEL)
-            return null;        
-        p = p.sub(new Vector2(Configs.Grid.MAP_SIZE.ix() - 1, 0)).abs();
+        if (!checkBound(p) || _tiles[p.iy()][p.ix()] != Tile.TUNNEL)
+            return null;
+
+        Vector2 dir = direction.opposite().toVector2();
+        p = dir.mul(Configs.Grid.MAP_SIZE.ix() - 1).add(p);
+        if (!checkBound(p) || _tiles[p.iy()][p.ix()] != Tile.TUNNEL)
+            return null;
+
         return Map.toPixelVector2(p);
     }
 
@@ -96,16 +102,7 @@ public class Map implements ImmutableMap {
 
     public void repaint(Graphics2D g) {
         g.drawImage(_mapImage, 0, 0, Configs.UI.MAP_SIZE.ix(), Configs.UI.MAP_SIZE.iy(), null);
-
-        for (int y = 0; y < _tiles.length; ++y)
-            for (int x = 0; x < _tiles[y].length; ++x)
-                if (_tiles[y][x] == Tile.PELLET || _tiles[y][x] == Tile.POWERUP) {
-                    BufferedImage image = _tiles[y][x] == Tile.PELLET ? _PELLET_IMAGE : _POWERUP_IMAGE;
-                    
-                    int offset = (Configs.UI.TILE_SIZE - image.getWidth() / 2);
-                    Vector2 p = toPixelVector2(new Vector2(x, y)).mul(Configs.SCALING).add(offset);
-                    g.drawImage(image, p.ix(), p.iy(), null);
-                }
+        paintConsumables(g);
     }
 
 
@@ -135,10 +132,27 @@ public class Map implements ImmutableMap {
     private void setTilemap(Tile[][] tileMap) {
         _tiles = tileMap;
         _pelletCounts = 0;
-        for (int y = 0; y < _tiles.length; ++y)
-            for (int x = 0; x < _tiles[y].length; ++x)
-                if (_tiles[y][x] == Tile.PELLET)
+        for (Tile[] row : _tiles)
+            for (Tile tile : row)
+                if (tile == Tile.PELLET)
                     ++_pelletCounts;
+    }
+
+    private void paintConsumables(Graphics2D g) {
+        for (int y = 0; y < _tiles.length; ++y)
+            for (int x = 0; x < _tiles[y].length; ++x) {
+                BufferedImage image = switch (_tiles[y][x]) {
+                    case PELLET  -> _PELLET_IMAGE;
+                    case POWERUP -> _POWERUP_IMAGE;
+                    default      -> null;
+                };
+                if (image == null)
+                    continue;
+                int offset = (Configs.UI.TILE_SIZE - image.getWidth() / 2);
+                Vector2 p = toPixelVector2(new Vector2(x, y)).mul(Configs.SCALING).add(offset);
+                g.drawImage(image, p.ix(), p.iy(), null);
+                
+            }
     }
 
     private static final BufferedImage _PELLET_IMAGE = createOval(Configs.UI.PELLET_SIZE);

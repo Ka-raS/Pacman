@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 
 import com.karas.pacman.Configs;
 import com.karas.pacman.commons.Direction;
-import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.maps.ImmutableMap;
 import com.karas.pacman.maps.Map;
 import com.karas.pacman.resources.Sound;
@@ -20,9 +19,7 @@ public class Pacman extends Entity {
             new Sprite(baseSprite, Direction.RIGHT.ordinal() * 2, 2),
             map
         );
-        _tunnelCooldown = 0.0;
         _nextDirection = Direction.RIGHT;
-
         _BaseSprite = getSprite();
         _DeathSprite = new Sprite(deathSprite, 0, 8);
         _DeathSound = deathSound;
@@ -41,8 +38,15 @@ public class Pacman extends Entity {
                 setSprite(_DeathSprite);
                 _DeathSound.play();
                 break;
-        
-            case PREY, HUNTER:
+            
+            case PREY:
+                setSpeed(Configs.PX.PACMAN_SPEED);
+                _BaseSprite.setOffset(getDirection().ordinal() * 2);
+                setSprite(_BaseSprite);
+                break;
+
+            case HUNTER:
+                setSpeed((int) (Configs.PX.PACMAN_SPEED * 1.25));
                 _BaseSprite.setOffset(getDirection().ordinal() * 2);
                 setSprite(_BaseSprite);
                 break;
@@ -72,27 +76,12 @@ public class Pacman extends Entity {
         setPosition(Map.toPixelVector2(Configs.Grid.PACMAN_POS));
         setDirection(Direction.RIGHT);
         _nextDirection = Direction.RIGHT;
-        _tunnelCooldown = 0.0;
         enterState(Entity.State.PREY);
     }
 
-    @Override
-    protected void move(double deltaTime) {
-        super.move(deltaTime);
-        if (_tunnelCooldown > 0.0) {
-            _tunnelCooldown -= deltaTime;
-            return;
-        }
-        Vector2 tunnel = getTunnelExit();
-        if (tunnel != null) {
-            setPosition(tunnel);
-            _tunnelCooldown = Configs.Time.TUNNEL_COOLDOWN;
-        }
-    }
 
     private final Sprite _BaseSprite, _DeathSprite;
     private final Sound _DeathSound;
-    private double _tunnelCooldown;
     private volatile Direction _nextDirection;
 
 }

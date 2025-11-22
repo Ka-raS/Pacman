@@ -38,7 +38,6 @@ public class Configs {
         public static final double UPDATE_INTERVAL      = 1.0 / UPS_TARGET;
         public static final double REPAINT_INTERVAL     = 1.0 / FPS_TARGET;
         public static final double SPRITE_INTERVAL      = 0.133;  // per sprite change
-        public static final double TUNNEL_COOLDOWN      = 1.0;
         public static final double POWERUP_DURATION     = 8.0;
         public static final double GHOST_FLASH_DURATION = POWERUP_DURATION - 6.0; // when powerup is expiring
         public static final double STARTING_DURATION    = 4.0;
@@ -83,10 +82,10 @@ public class Configs {
         
         // per second
         public static final int PACMAN_SPEED = 54; 
-        public static final int BLINKY_SPEED = 54;
-        public static final int PINKY_SPEED  = 50;
-        public static final int INKY_SPEED   = 50;
-        public static final int CLYDE_SPEED  = 46;
+        public static final int BLINKY_SPEED = 50;
+        public static final int PINKY_SPEED  = 46;
+        public static final int INKY_SPEED   = 46;
+        public static final int CLYDE_SPEED  = 42;
 
         public static final float FONT_SIZE_SMALL = 6.0f;
         public static final float FONT_SIZE_BASE  = 8.0f;

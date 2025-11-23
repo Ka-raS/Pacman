@@ -24,8 +24,13 @@ public abstract class Entity implements ImmutableEntity {
     }
 
     public void enterState(State nextState) {
+        if (nextState == null)
+            return;
+
         handleStateTransition(nextState);
-        setState(nextState);
+        if (_state != State.IDLE)
+            _preIdleState = _state;
+        _state = nextState;
     }
 
     @Override
@@ -109,14 +114,6 @@ public abstract class Entity implements ImmutableEntity {
             _sprite = sprite;
     }
 
-
-    private void setState(State state) {
-        if (state == null)
-            return;
-        if (_state != State.IDLE)
-            _preIdleState = _state;
-        _state = state;
-    }
 
     private final ImmutableMap _Map;
     private int _speed;

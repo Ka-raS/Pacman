@@ -23,7 +23,7 @@ public class Pacman extends Entity {
         _BaseSprite = getSprite();
         _DeathSprite = new Sprite(deathSprite, 0, 8);
         _DeathSound = deathSound;
-        enterState(Entity.State.PREY);
+        enterState(State.PREY);
     }
 
     public void setNextDirection(Direction d) {
@@ -32,43 +32,22 @@ public class Pacman extends Entity {
     }
 
     @Override
-    public void enterState(Entity.State nextState) {
-        switch (nextState) {
-            case DEAD:
-                setSprite(_DeathSprite);
-                _DeathSound.play();
-                break;
-            
-            case PREY:
-                setSpeed(Configs.PX.PACMAN_SPEED);
-                _BaseSprite.setOffset(getDirection().ordinal() * 2);
-                setSprite(_BaseSprite);
-                break;
-
-            case HUNTER:
-                setSpeed((int) (Configs.PX.PACMAN_SPEED * 1.25));
-                _BaseSprite.setOffset(getDirection().ordinal() * 2);
-                setSprite(_BaseSprite);
-                break;
-        }
-        setState(nextState);
-    }
-
-    @Override
     public void update(double deltaTime) {
-        if (getState() == Entity.State.DEAD) {
-            if (!getSprite().isAnimationEnded())
-                getSprite().update(deltaTime);
-            return;
-        }
+        switch (getState()) {
+            case PREY, HUNTER:
+                setDirection(_nextDirection);
+                move(deltaTime);
+                getSprite().setOffset(getDirection().ordinal() * 2);
 
-        // PREY | HUNTER
-        if (!isIdle()) {
-            setDirection(_nextDirection);
-            move(deltaTime);
-            getSprite().setOffset(getDirection().ordinal() * 2);
+            case IDLE:
+                getSprite().update(deltaTime);
+                break;
+        
+            case DEAD:
+                if (!getSprite().isAnimationEnded())
+                    getSprite().update(deltaTime);
+                break;
         }
-        getSprite().update(deltaTime);
     }
 
     @Override
@@ -76,7 +55,33 @@ public class Pacman extends Entity {
         setPosition(Map.toPixelVector2(Configs.Grid.PACMAN_POS));
         setDirection(Direction.RIGHT);
         _nextDirection = Direction.RIGHT;
-        enterState(Entity.State.PREY);
+        _BaseSprite.setOffset(Direction.RIGHT.ordinal() * 2);
+        setSprite(_BaseSprite);
+        enterState(State.PREY);
+    }
+
+
+    @Override
+    protected void handleStateTransition(State nextState) {
+        switch (nextState) {
+            case IDLE:
+                break;
+
+            case DEAD:
+                setSprite(_DeathSprite);
+                _DeathSound.play();
+                break;
+            
+            case PREY:
+                setSpeed(Configs.PX.PACMAN_SPEED);
+                getSprite().setOffset(getDirection().ordinal() * 2);
+                break;
+
+            case HUNTER:
+                setSpeed((int) (Configs.PX.PACMAN_SPEED * 1.25));
+                getSprite().setOffset(getDirection().ordinal() * 2);
+                break;
+        }
     }
 
 

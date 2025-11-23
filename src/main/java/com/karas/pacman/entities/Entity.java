@@ -12,14 +12,21 @@ import com.karas.pacman.resources.Sprite;
 public abstract class Entity implements ImmutableEntity {
     
     public static enum State {
-        HUNTER, PREY, DEAD;
+        IDLE, HUNTER, PREY, DEAD;
     }
-
-    public abstract void enterState(State nextState);
 
     public abstract void update(double deltaTime);
 
     public abstract void reset();
+
+    public State getState() {
+        return _state;
+    }
+
+    public void enterState(State nextState) {
+        handleStateTransition(nextState);
+        setState(nextState);
+    }
 
     @Override
     public Vector2 getPosition() {
@@ -36,14 +43,13 @@ public abstract class Entity implements ImmutableEntity {
         return Map.toGridVector2(_position);
     }
 
-    @Override
-    public boolean collidesWith(ImmutableEntity other) {
-        double delta = _position.distance(other.getPosition());
+    public boolean collidesWith(Entity other) {
+        double delta = _position.distance(other._position);
         return delta < Configs.PX.SPRITE_SIZE * 0.7;
     }
 
-    public void setIdle(boolean isIdle) {
-        _isIdling = isIdle;
+    public void enterPreIdleState() {
+        enterState(_preIdleState);
     }
 
     public void repaint(Graphics2D g) {
@@ -57,13 +63,10 @@ public abstract class Entity implements ImmutableEntity {
         _direction = direction;
         _speed = speed;
         _sprite = sprite;
-        _isIdling = true;
         _Map = map;
     }
 
-    protected boolean isIdle() {
-        return _isIdling;
-    }
+    protected abstract void handleStateTransition(State nextState);
 
     protected boolean isCenteredInTile() {
         return Map.isCenteredInTile(_position);
@@ -71,15 +74,6 @@ public abstract class Entity implements ImmutableEntity {
 
     protected boolean isValidDirection(Direction d) {
         return _Map.isValidDirection(_position, d);
-    }
-
-    protected Entity.State getState() {
-        return _state;
-    }
-
-    protected void setState(Entity.State state) {
-        if (state != null)
-            _state = state;
     }
 
     protected void setDirection(Direction d) {
@@ -116,12 +110,19 @@ public abstract class Entity implements ImmutableEntity {
     }
 
 
+    private void setState(State state) {
+        if (state == null)
+            return;
+        if (_state != State.IDLE)
+            _preIdleState = _state;
+        _state = state;
+    }
+
     private final ImmutableMap _Map;
     private int _speed;
     private Vector2 _position;
     private Direction _direction;
-    private Entity.State _state;
+    private State _state, _preIdleState;
     private Sprite _sprite;
-    private boolean _isIdling;
 
 }

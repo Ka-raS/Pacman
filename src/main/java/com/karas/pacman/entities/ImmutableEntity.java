@@ -11,6 +11,4 @@ public interface ImmutableEntity {
 
     Vector2 getGridPos();
 
-    boolean collidesWith(ImmutableEntity other);
-
 }

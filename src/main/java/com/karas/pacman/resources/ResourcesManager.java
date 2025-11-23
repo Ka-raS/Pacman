@@ -27,23 +27,29 @@ import com.karas.pacman.maps.Tile;
 public class ResourcesManager {
 
     public ResourcesManager() {
-        initSoundMap();
-        initImageMap();
-        initSpriteMap();
-        initTilemap();
-        initFont();
+        _soundMap  = createSoundMap();
+        _imageMap  = createImageMap();
+        _spriteMap = createSpriteMap(_imageMap.get(Resource.SPRITE_SHEET));
+        _tilemap   = createTilemap();
+        _font      = createFont();
     }
 
     public Sound getSound(Resource sound) {
-        return _soundMap.getOrDefault(sound, null);
+        if (sound == null)
+            return Sound.getDummy();
+        return _soundMap.get(sound);
     }
 
     public BufferedImage getImage(Resource image) {
-        return _imageMap.getOrDefault(image, null);
+        if (image == null)
+            return null;
+        return _imageMap.get(image);
     }
 
     public BufferedImage[] getSprite(SpriteSheet sheet) {
-        return _spriteMap.getOrDefault(sheet, null);
+        if (sheet == null)
+            return null;
+        return _spriteMap.get(sheet);
     }
 
     public Tile[][] getTilemap() {
@@ -54,6 +60,8 @@ public class ResourcesManager {
     }
 
     public Font getFont(float size) { 
+        if (!Float.isFinite(size) || size <= 0.0f)
+            size = Configs.UI.FONT_SIZE_BASE;
         return _font.deriveFont(size); 
     }
 
@@ -175,46 +183,47 @@ public class ResourcesManager {
         System.exit(1);
     }
 
-    private void initSoundMap() {
+    private static HashMap<Resource, Sound> createSoundMap() {
         Resource[] sounds = { 
             Resource.EAT_WA_SOUND, Resource.EAT_KA_SOUND, Resource.PACMAN_DEATH_SOUND, Resource.GHOST_DEATH_SOUND, 
             Resource.GAME_START_SOUND, Resource.GAME_NORMAL_SOUND, Resource.GAME_POWERUP_SOUND
         };
-        _soundMap = new HashMap<>(sounds.length);
-
+        HashMap<Resource, Sound> soundMap = new HashMap<>(sounds.length);
+        
         for (Resource sound : sounds) {
             try {
-                _soundMap.put(sound, loadSound(sound.getPath()));
+                soundMap.put(sound, loadSound(sound.getPath()));
             } catch (RuntimeException e) {
                 handleException(e, sound.isCritical());
-                _soundMap.put(sound, Sound.getDummy());
+                soundMap.put(sound, Sound.getDummy());
             }
         }
+        return soundMap;
     }
 
-    private void initImageMap() {
+    private static HashMap<Resource, BufferedImage> createImageMap() {
         Resource[] images = { Resource.WINDOW_ICON, Resource.TITLE_IMAGE, Resource.MAP_IMAGE, Resource.SPRITE_SHEET };
-        _imageMap = new HashMap<>(images.length);
+        HashMap<Resource, BufferedImage> imageMap = new HashMap<>(images.length);
 
         for (Resource image : images) {
             try {
-                _imageMap.put(image, loadImage(image.getPath()));
+                imageMap.put(image, loadImage(image.getPath()));
             } catch (RuntimeException e) {
                 handleException(e, image.isCritical());
-                _imageMap.put(image, null);
+                imageMap.put(image, null);
             }
         }
+        return imageMap;
     }
 
-    private void initSpriteMap() {
-        BufferedImage sheetImage = _imageMap.get(Resource.SPRITE_SHEET);
-        _spriteMap = new HashMap<>(SpriteSheet.values().length);
+    private static HashMap<SpriteSheet, BufferedImage[]> createSpriteMap(BufferedImage sheetImage) {
+        HashMap<SpriteSheet, BufferedImage[]> spriteMap = new HashMap<>(SpriteSheet.values().length);
         
         if (sheetImage == null) {
             _LOGGER.warning("Sprite sheet not initialized.");
             for (SpriteSheet sheet : SpriteSheet.values())
-                _spriteMap.put(sheet, null);
-            return;
+                spriteMap.put(sheet, new BufferedImage[sheet.getLen()]);
+            return spriteMap;
         }
 
         final int SIZE = Configs.PX.SPRITE_SIZE;
@@ -222,29 +231,32 @@ public class ResourcesManager {
             BufferedImage[] sprite = new BufferedImage[sheet.getLen()];
             for (int i = 0; i < sheet.getLen(); ++i)
                 sprite[i] = sheetImage.getSubimage((sheet.getCol() + i) * SIZE, sheet.getRow() * SIZE, SIZE, SIZE);
-            _spriteMap.put(sheet, sprite);
+            spriteMap.put(sheet, sprite);
         }
+        return spriteMap;
     }
 
-    private void initTilemap() {
+    private static Tile[][] createTilemap() {
         final Vector2 SIZE = Configs.Grid.MAP_SIZE;
         try {
-            _tilemap = loadTilemap(Resource.TILEMAP.getPath(), SIZE);
+            return loadTilemap(Resource.TILEMAP.getPath(), SIZE);
         } catch (RuntimeException e) {
             handleException(e, Resource.TILEMAP.isCritical());
-            _tilemap = new Tile[SIZE.iy()][SIZE.ix()];
-            for (Tile[] row : _tilemap)
+
+            Tile[][] tilemap = new Tile[SIZE.iy()][SIZE.ix()];
+            for (Tile[] row : tilemap)
                 for (int i = 0; i < SIZE.ix(); ++i)
                     row[i] = Tile.NONE;
+            return tilemap;
         }
     }
 
-    private void initFont() {
+    private static Font createFont() {
         try {
-            _font = loadFont(Resource.FONT.getPath(), Configs.UI.FONT_SIZE_BASE);
+            return loadFont(Resource.FONT.getPath(), Configs.UI.FONT_SIZE_BASE);
         } catch (RuntimeException e) {
             handleException(e, Resource.FONT.isCritical());
-            _font = new Font("Arial", Font.PLAIN, (int) Configs.UI.FONT_SIZE_BASE);
+            return new Font("Arial", Font.PLAIN, (int) Configs.UI.FONT_SIZE_BASE);
         }
     }
 

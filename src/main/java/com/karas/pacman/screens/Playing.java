@@ -54,8 +54,10 @@ public class Playing implements Screen {
         }
 
         _LOGGER.info("Resumed game!");
-        if (_state != State.START)
-            setAllIdle(false);
+        if (_state != State.START) {
+            _pacman.enterPreIdleState();
+            _ghosts.forEach(Ghost::enterPreIdleState);
+        }
 
         switch (_state) {
             case START -> _NewGameSound.play();
@@ -67,7 +69,8 @@ public class Playing implements Screen {
 
     @Override
     public void exit(Class<? extends Screen> toScreen) {
-        setAllIdle(true);
+        _pacman.enterState(Entity.State.IDLE);
+        _ghosts.forEach(ghost -> ghost.enterState(Entity.State.IDLE));
         _NewGameSound.pause();
         _NormalSound.pause();
         _PowerupSound.pause();
@@ -123,35 +126,42 @@ public class Playing implements Screen {
                 _pacman.reset();
                 _ghosts.forEach(Ghost::reset);
                 _map.reset(_resMgr.getTilemap());
-                setAllIdle(true);
+
+                _pacman.enterState(Entity.State.IDLE);
+                _ghosts.forEach(ghost -> ghost.enterState(Entity.State.IDLE));
                 _NewGameSound.play();
                 break;
 
             case NORMAL:
-                _pacman.enterState(Pacman.State.PREY);
-                _ghosts.forEach(ghost -> ghost.enterState(Entity.State.HUNTER));
+                _pacman.enterState(Entity.State.PREY);
+                for (Ghost ghost : _ghosts)
+                    if (ghost.getState() == Entity.State.PREY) 
+                        ghost.enterState(Entity.State.HUNTER);
                 _NormalSound.loop();
                 break;
 
             case POWERUP:
                 _LOGGER.info("Powerup eaten!");
                 _stateCooldown = Configs.Time.POWERUP_DURATION;
-                _pacman.enterState(Pacman.State.HUNTER);
-                _ghosts.forEach(ghost -> ghost.enterState(Entity.State.PREY));
+                _pacman.enterState(Entity.State.HUNTER);
+                for (Ghost ghost : _ghosts)
+                    if (ghost.getState() == Entity.State.HUNTER)
+                        ghost.enterState(Entity.State.PREY);
                 _PowerupSound.loop();
                 break;
 
             case LOST:
                 _LOGGER.info("Game lost!");
                 _stateCooldown = Configs.Time.GAMEOVER_DURATION;
-                _pacman.enterState(Pacman.State.DEAD);
-                setAllIdle(true);
+                _pacman.enterState(Entity.State.DEAD);
+                _ghosts.forEach(ghost -> ghost.enterState(Entity.State.IDLE));
                 break;
 
             case WON:
                 _LOGGER.info("Game won!");
                 _stateCooldown = Configs.Time.GAMEOVER_DURATION;
-                setAllIdle(true);
+                _pacman.enterState(Entity.State.IDLE);
+                _ghosts.forEach(ghost -> ghost.enterState(Entity.State.IDLE));
                 break;
         }
         _state = nextState;
@@ -164,7 +174,8 @@ public class Playing implements Screen {
         switch (_state) {
             case START:
                 if (_stateCooldown < 0.0) {
-                    setAllIdle(false);
+                    _pacman.enterState(Entity.State.PREY);
+                    _ghosts.forEach(ghost -> ghost.enterState(Entity.State.HUNTER));
                     enterState(State.NORMAL);
                 }
                 break;
@@ -182,11 +193,11 @@ public class Playing implements Screen {
                 } else if (_stateCooldown < Configs.Time.GHOST_FLASH_DURATION) // TODO: not the best
                     _ghosts.forEach(Ghost::enableFlashing);
 
-                evaluateCommonState(_PowerupSound);
+                handleCollision(_PowerupSound);
                 break;
 
             case NORMAL:
-                evaluateCommonState(_NormalSound);
+                handleCollision(_NormalSound);
                 break;
         }
     }
@@ -204,16 +215,24 @@ public class Playing implements Screen {
         return List.of(blinky, pinky, inky, clyde);
     }
 
-    private void setAllIdle(boolean isIdle) {
-        _pacman.setIdle(isIdle);
-        _ghosts.forEach(ghost -> ghost.setIdle(isIdle));
-    }
+    private void handleCollision(Sound currentSound) {
+        for (Ghost ghost : _ghosts) {
+            if (!_pacman.collidesWith(ghost))
+                continue;
 
-    private void evaluateCommonState(Sound currentSound) {
-        if (_ghosts.stream().anyMatch(Ghost::hasCaughtPacman)) {
-            currentSound.pause();
-            enterState(State.LOST);
-            return;
+            switch (ghost.getState()) {
+                case HUNTER:
+                    enterState(State.LOST);
+                    return;
+            
+                case PREY:
+                    ghost.enterState(Entity.State.DEAD);
+                    _LOGGER.info(ghost.getClass().getSimpleName() + " eaten!");
+                    break;
+
+                default:
+                    break;
+            }
         }
 
         if (_map.tryEatAt(_pacman.getPosition()) == Tile.POWERUP) {

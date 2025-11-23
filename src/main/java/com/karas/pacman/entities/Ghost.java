@@ -2,7 +2,6 @@ package com.karas.pacman.entities;
 
 import java.awt.image.BufferedImage;
 import java.util.EnumSet;
-import java.util.logging.Logger;
 
 import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Vector2;
@@ -13,37 +12,32 @@ import com.karas.pacman.resources.Sprite;
 
 public abstract class Ghost extends Entity {
 
-    public boolean hasCaughtPacman() {
-        return getState() == Entity.State.HUNTER && _caughtPacman;
-    }
-
     public void enableFlashing() {
-        if (getState() == Entity.State.PREY)
+        if (getState() == State.PREY)
             getSprite().setFrameCount(4);
     }
 
     @Override
-    public void enterState(Entity.State nextState) {
-        if ((getState() == Entity.State.HUNTER && nextState == Entity.State.PREY)
-         || (getState() == Entity.State.PREY   && nextState != Entity.State.DEAD))
-            enterStateInternal(nextState);
-    }
-
-    @Override
     public void update(double deltaTime) {
-        if (!isIdle()) {
-            updateDirection();
-            move(deltaTime);
-            handleCollision();
+        State state = getState();
+        if (state == State.IDLE) {
+            getSprite().update(deltaTime);
+            return;   
         }
+
+        updateDirection();
+        move(deltaTime);
         getSprite().update(deltaTime);
+
+        if (state == State.DEAD && getGridPos().equals(_HomeGridPos)) // a bit ugly, just a bit
+            enterState(State.HUNTER);
     }
   
     @Override
     public void reset() {
         setPosition(Map.toPixelVector2(_HomeGridPos));
         setDirection(_HomeDirection);
-        enterStateInternal(Entity.State.HUNTER);
+        enterState(State.HUNTER);
     }
 
     
@@ -57,8 +51,6 @@ public abstract class Ghost extends Entity {
             map
         );
         _prevGridPos = null;
-        _caughtPacman = false;
-
         _HomeGridPos = gridPos;
         _HomeDirection = direction;
         _BaseSprite = getSprite();
@@ -67,16 +59,15 @@ public abstract class Ghost extends Entity {
         _DeathSound = deathSound;
         _Pacman = pacman;
 
-        enterStateInternal(Entity.State.HUNTER);
+        enterState(State.HUNTER);
     }
 
     protected abstract Vector2 findHunterTarget(ImmutableEntity pacman);
 
-
-    private void enterStateInternal(Entity.State nextState) {
+    @Override
+    protected void handleStateTransition(State nextState) {
         switch (nextState) {
             case HUNTER:
-                _caughtPacman = false;
                 _BaseSprite.setOffset(getDirection().ordinal() * 2);
                 setSprite(_BaseSprite);
                 break;
@@ -87,14 +78,14 @@ public abstract class Ghost extends Entity {
                 break;
 
             case DEAD:
-                if (getState() == Entity.State.PREY)
-                    _LOGGER.info(getClass().getSimpleName() + " eaten!");
                 _DeathSprite.setOffset(getDirection().ordinal());
                 setSprite(_DeathSprite);
                 _DeathSound.play();
                 break;
+
+            case IDLE:
+                break;
         }
-        setState(nextState);
     }
 
     private void updateDirection() {
@@ -122,27 +113,11 @@ public abstract class Ghost extends Entity {
                 nextDir = currGridPos.closestTo(_HomeGridPos, validDirections);
                 getSprite().setOffset(nextDir.ordinal());
                 break;
+            
+            case IDLE:
+                break;
         }
         setDirection(nextDir);
-    }
-
-    private void handleCollision() {
-        Vector2 currGridPos = getGridPos();
-        switch (getState()) {
-            case HUNTER:
-                _caughtPacman |= collidesWith(_Pacman);       
-                break;
-        
-            case PREY:
-                if (collidesWith(_Pacman))
-                    enterStateInternal(Entity.State.DEAD);
-                break;
-
-            case DEAD:
-                if (currGridPos.equals(_HomeGridPos))
-                    enterStateInternal(Entity.State.HUNTER);
-                break;
-        }
     }
 
     private EnumSet<Direction> getValidDirections() {
@@ -156,14 +131,11 @@ public abstract class Ghost extends Entity {
         return result;
     }
 
-    private static final Logger _LOGGER = Logger.getLogger(Ghost.class.getName());
-
     private final Vector2 _HomeGridPos;
     private final Direction _HomeDirection;
     private final Sprite _BaseSprite, _PreySprite, _DeathSprite;
     private final Sound _DeathSound;
     private final ImmutableEntity _Pacman;
     private Vector2 _prevGridPos;
-    private boolean _caughtPacman;
 
 }

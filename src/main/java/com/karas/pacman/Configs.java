@@ -38,6 +38,7 @@ public class Configs {
         public static final double UPDATE_INTERVAL      = 1.0 / UPS_TARGET;
         public static final double REPAINT_INTERVAL     = 1.0 / FPS_TARGET;
         public static final double SPRITE_INTERVAL      = 0.133;  // per sprite change
+        public static final double SCORE_DURATION       = 1.0;
         public static final double POWERUP_DURATION     = 8.0;
         public static final double GHOST_FLASH_DURATION = POWERUP_DURATION - 6.0; // when powerup is expiring
         public static final double STARTING_DURATION    = 4.0;
@@ -48,6 +49,16 @@ public class Configs {
         public static final double GHOST_SCATTER_INTERVAL = 20.0 + GHOST_SCATTER_DURATION;
 
         private Time() {}
+
+    }
+
+    public static class Score {
+
+        public static final int PELLET  = 10;
+        public static final int POWERUP = 50;
+        public static final int GHOST   = 200;
+
+        private Score() {}
 
     }
 

@@ -11,7 +11,7 @@ import com.karas.pacman.resources.ResourcesManager;
 
 public class Paused implements Screen {
     
-    public Paused(Screen playingScreen, ResourcesManager resourcesManager) {
+    public Paused(ResourcesManager resourcesManager, Screen playingScreen) {
         _playingScreen = playingScreen;
         _FontLarge = resourcesManager.getFont(Configs.UI.FONT_SIZE_LARGE);
         _FontSmall = resourcesManager.getFont(Configs.UI.FONT_SIZE_SMALL);

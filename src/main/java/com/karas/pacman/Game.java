@@ -6,6 +6,8 @@ import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,8 +28,11 @@ public class Game extends JPanel implements Runnable, KeyListener {
 
         _frame.setResizable(false);
         _frame.setIconImage(_resourceManager.getImage(Resource.WINDOW_ICON));
-        _frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+        _frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) { exit(); }
+        });
+        
         setBackground(Configs.BACKGROUND_COLOR);
         setDoubleBuffered(true);
         setPreferredSize(new Dimension(Configs.UI.WINDOW_SIZE.ix(), Configs.UI.WINDOW_SIZE.iy()));

@@ -2,7 +2,7 @@ package com.karas.pacman.screens;
 
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
-import java.util.HashMap;
+import java.util.Map;
 
 import com.karas.pacman.resources.ResourcesManager;
 
@@ -10,13 +10,16 @@ public class ScreenManager {
     
     public ScreenManager(ResourcesManager resourcesManager) {
         Screen mainMenu = new MainMenu(resourcesManager);
-        Screen playing = new Playing(resourcesManager);
-        Screen paused = new Paused(playing, resourcesManager);
+        Screen playing  = new Playing(resourcesManager);
+        Screen paused   = new Paused(resourcesManager, playing);
+        Screen gameOver = new GameOver(resourcesManager);
 
-        _screens = new HashMap<>(3);
-        _screens.put(MainMenu.class, mainMenu);
-        _screens.put(Playing.class, playing);
-        _screens.put(Paused.class, paused);
+        _screens = Map.of(
+            MainMenu.class, mainMenu,
+            Playing.class,  playing,
+            Paused.class,   paused,
+            GameOver.class, gameOver
+        );
 
         _current = mainMenu;
         _current.enter(null);
@@ -25,7 +28,6 @@ public class ScreenManager {
     public void exit() {
         for (Screen screen : _screens.values())
             screen.exit(null);
-        _screens.clear();
     }
 
     public void input(KeyEvent e) {
@@ -36,7 +38,7 @@ public class ScreenManager {
         _current.repaint(g);
     }
 
-    /** @return isRunning */
+    /** @return shouldExit */
     public boolean update(double deltaTime) {
         Class<? extends Screen> nextScreen = _current.update(deltaTime);
         if (nextScreen == null)
@@ -53,6 +55,6 @@ public class ScreenManager {
 
 
     private Screen _current;
-    private HashMap<Class<? extends Screen>, Screen> _screens;
+    private Map<Class<? extends Screen>, Screen> _screens;
 
 }

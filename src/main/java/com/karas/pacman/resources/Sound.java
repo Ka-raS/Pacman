@@ -32,6 +32,7 @@ public class Sound {
     }
 
     public void close() {
+        _clip.stop();
         _clip.close();
     }
 

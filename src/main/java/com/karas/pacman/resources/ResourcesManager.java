@@ -8,7 +8,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,52 +29,47 @@ import com.karas.pacman.maps.Tile;
 public class ResourcesManager {
 
     public ResourcesManager() {
-        _soundMap  = createSoundMap();
-        _imageMap  = createImageMap();
-        _spriteMap = createSpriteMap(_imageMap.get(Resource.SPRITE_SHEET));
-        _tilemap   = createTilemap();
-        _font      = createFont();
+        _SoundMap  = Collections.unmodifiableMap(createSoundMap());
+        _ImageMap  = Collections.unmodifiableMap(createImageMap());
+        _SpriteMap = Collections.unmodifiableMap(createSpriteMap(_ImageMap.get(Resource.SPRITE_SHEET)));
+        _Tilemap   = createTilemap();
+        _Font      = createFont();
     }
 
     public Sound getSound(Resource sound) {
         if (sound == null)
             return Sound.getDummy();
-        return _soundMap.get(sound);
+        return _SoundMap.get(sound);
     }
 
     public BufferedImage getImage(Resource image) {
         if (image == null)
             return null;
-        return _imageMap.get(image);
+        return _ImageMap.get(image);
     }
 
     public BufferedImage[] getSprite(SpriteSheet sheet) {
         if (sheet == null)
             return null;
-        return _spriteMap.get(sheet);
+        return _SpriteMap.get(sheet);
     }
 
     public Tile[][] getTilemap() {
-        Tile[][] copy = new Tile[_tilemap.length][];
-        for (int y = 0; y < _tilemap.length; ++y)
-            copy[y] = _tilemap[y].clone();
+        Tile[][] copy = new Tile[_Tilemap.length][];
+        for (int y = 0; y < _Tilemap.length; ++y)
+            copy[y] = _Tilemap[y].clone();
         return copy;
     }
 
     public Font getFont(float size) { 
         if (!Float.isFinite(size) || size <= 0.0f)
             size = Configs.UI.FONT_SIZE_BASE;
-        return _font.deriveFont(size); 
+        return _Font.deriveFont(size); 
     }
 
     public void exit() {
-        for (Sound sound : _soundMap.values())
+        for (Sound sound : _SoundMap.values())
             sound.close();
-        _soundMap.clear();
-        _imageMap.clear();
-        _spriteMap.clear();
-        _tilemap = null;
-        _font = null;
     }
 
 
@@ -262,11 +259,11 @@ public class ResourcesManager {
 
     private static final Logger _LOGGER = Logger.getLogger(ResourcesManager.class.getName());
 
-    private HashMap<Resource, Sound> _soundMap;
-    private HashMap<Resource, BufferedImage> _imageMap;
-    private HashMap<SpriteSheet, BufferedImage[]> _spriteMap;
-    private Tile[][] _tilemap;
-    private Font _font;
+    private final Map<Resource, Sound> _SoundMap;
+    private final Map<Resource, BufferedImage> _ImageMap;
+    private final Map<SpriteSheet, BufferedImage[]> _SpriteMap;
+    private final Tile[][] _Tilemap;
+    private final Font _Font;
 
 }
 

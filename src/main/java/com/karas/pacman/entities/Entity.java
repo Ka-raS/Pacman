@@ -4,12 +4,13 @@ import java.awt.Graphics2D;
 
 import com.karas.pacman.Configs;
 import com.karas.pacman.commons.Direction;
+import com.karas.pacman.commons.Drawable;
 import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.maps.ImmutableMap;
 import com.karas.pacman.maps.Map;
 import com.karas.pacman.resources.Sprite;
 
-public abstract class Entity implements ImmutableEntity {
+public abstract class Entity implements ImmutableEntity, Drawable {
     
     public static enum State {
         IDLE, HUNTER, PREY, DEAD;
@@ -57,18 +58,19 @@ public abstract class Entity implements ImmutableEntity {
         enterState(_preIdleState);
     }
 
+    @Override
     public void repaint(Graphics2D g) {
-        Vector2 p = _position.mul(Configs.SCALING);
-        g.drawImage(_sprite.getFrame(), p.ix(), p.iy(), Configs.UI.SPRITE_SIZE, Configs.UI.SPRITE_SIZE, null);
+        _Sprite.setPosition(_position);
+        _Sprite.repaint(g);
     }
 
 
-    protected Entity(Vector2 gridPosition, Direction direction, int speed, Sprite sprite, ImmutableMap map) {
+    protected Entity(Vector2 gridPosition, Direction direction, int speed, Sprite SpriteRef, ImmutableMap MapRef) {
         _position = Map.toPixelVector2(gridPosition);
         _direction = direction;
         _speed = speed;
-        _sprite = sprite;
-        _Map = map;
+        _Sprite = SpriteRef;
+        _Map = MapRef;
     }
 
     protected abstract void handleStateTransition(State nextState);
@@ -106,20 +108,22 @@ public abstract class Entity implements ImmutableEntity {
     }
 
     protected Sprite getSprite() {
-        return _sprite;
+        return _Sprite;
     }
 
-    protected void setSprite(Sprite sprite) {
-        if (sprite != null)
-            _sprite = sprite;
+    protected void setSprite(Sprite SpriteRef) {
+        if (SpriteRef != null)
+            _Sprite = SpriteRef;
     }
 
 
     private final ImmutableMap _Map;
+    
+    private Sprite _Sprite;
+
     private int _speed;
     private Vector2 _position;
     private Direction _direction;
     private State _state, _preIdleState;
-    private Sprite _sprite;
 
 }

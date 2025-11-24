@@ -1,11 +1,13 @@
 package com.karas.pacman.screens;
 
+import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
+
 import com.karas.pacman.resources.ResourcesManager;
 
 public class GameOver implements Screen {
 
-    public GameOver(ResourcesManager resourcesManager) {
-        _resourcesManager = resourcesManager;
+    public GameOver(ResourcesManager ResourcesMgr) {
     }
 
     @Override
@@ -20,12 +22,9 @@ public class GameOver implements Screen {
     }
 
     @Override
-    public void repaint(java.awt.Graphics2D g) {}
+    public void repaint(Graphics2D g) {}
 
     @Override
-    public void input(java.awt.event.KeyEvent e) {}
-    
-
-    private ResourcesManager _resourcesManager;
+    public void input(KeyEvent e) {}
 
 }

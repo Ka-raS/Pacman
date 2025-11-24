@@ -7,10 +7,11 @@ import java.awt.image.BufferedImage;
 
 import com.karas.pacman.Configs;
 import com.karas.pacman.commons.Direction;
+import com.karas.pacman.commons.Drawable;
 import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.resources.Sound;
 
-public class Map implements ImmutableMap {
+public class Map implements ImmutableMap, Drawable {
 
     public static Vector2 toGridVector2(Vector2 position) {
         return position.div(Configs.PX.TILE_SIZE).ceil();
@@ -25,10 +26,12 @@ public class Map implements ImmutableMap {
         return centered[0] && centered[1];
     }
 
-    public Map(BufferedImage mapImgae, Tile[][] tileMap, Sound waSound, Sound kaSound) {
-        _mapImage = mapImgae;
+    public Map(BufferedImage MapImage, Tile[][] tileMap, Sound WaSound, Sound KaSound) {
         setTilemap(tileMap);
-        _WakaSounds = new Sound[] { waSound, kaSound };
+        _pelletImage = createOval(Configs.UI.PELLET_SIZE);
+        _powerupImage = createOval(Configs.UI.POWERUP_SIZE);
+        _MapImage = MapImage;
+        _WakaSounds = new Sound[] { WaSound, KaSound };
     }
 
     public void reset(Tile[][] tileMap) {
@@ -100,8 +103,9 @@ public class Map implements ImmutableMap {
         return tile;
     }
 
+    @Override
     public void repaint(Graphics2D g) {
-        g.drawImage(_mapImage, 0, 0, Configs.UI.MAP_SIZE.ix(), Configs.UI.MAP_SIZE.iy(), null);
+        g.drawImage(_MapImage, 0, 0, Configs.UI.MAP_SIZE.ix(), Configs.UI.MAP_SIZE.iy(), null);
         paintConsumables(g);
     }
 
@@ -142,8 +146,8 @@ public class Map implements ImmutableMap {
         for (int y = 0; y < _tiles.length; ++y)
             for (int x = 0; x < _tiles[y].length; ++x) {
                 BufferedImage image = switch (_tiles[y][x]) {
-                    case PELLET  -> _PELLET_IMAGE;
-                    case POWERUP -> _POWERUP_IMAGE;
+                    case PELLET  -> _pelletImage;
+                    case POWERUP -> _powerupImage;
                     default      -> null;
                 };
                 if (image == null)
@@ -155,12 +159,12 @@ public class Map implements ImmutableMap {
             }
     }
 
-    private static final BufferedImage _PELLET_IMAGE = createOval(Configs.UI.PELLET_SIZE);
-    private static final BufferedImage _POWERUP_IMAGE = createOval(Configs.UI.POWERUP_SIZE);
-    
     private final Sound[] _WakaSounds;
+    private final BufferedImage _MapImage;
+
+    private final BufferedImage _pelletImage, _powerupImage; // TODO
+
     private int _pelletCounts;
     private Tile[][] _tiles;
-    private BufferedImage _mapImage;
 
 }

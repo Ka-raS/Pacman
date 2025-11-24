@@ -10,18 +10,18 @@ import com.karas.pacman.resources.Sprite;
 
 public class Pacman extends Entity {
 
-    public Pacman(ImmutableMap map, BufferedImage[] baseSprite, BufferedImage[] deathSprite, Sound deathSound) {
+    public Pacman(ImmutableMap MapRef, BufferedImage[] BaseImages, BufferedImage[] DeathImages, Sound DeathSound) {
         super(
             Configs.Grid.PACMAN_POSITION,
             Direction.RIGHT,
             Configs.PX.PACMAN_SPEED,
-            new Sprite(baseSprite, Direction.RIGHT.ordinal() * 2, 2),
-            map
+            new Sprite(BaseImages, Direction.RIGHT.ordinal() * 2, 2),
+            MapRef
         );
         _nextDirection = Direction.RIGHT;
-        _BaseSprite = getSprite();
-        _DeathSprite = new Sprite(deathSprite, 0, 8);
-        _DeathSound = deathSound;
+        _baseSprite = getSprite();
+        _deathSprite = new Sprite(DeathImages, 0, 8);
+        _DeathSound = DeathSound;
         enterState(State.PREY);
     }
 
@@ -54,7 +54,7 @@ public class Pacman extends Entity {
         setGridPosition(Configs.Grid.PACMAN_POSITION);
         setDirection(Direction.RIGHT);
         _nextDirection = Direction.RIGHT;
-        setSprite(_BaseSprite);
+        setSprite(_baseSprite);
         enterState(State.PREY);
     }
 
@@ -66,7 +66,7 @@ public class Pacman extends Entity {
                 break;
 
             case DEAD:
-                setSprite(_DeathSprite);
+                setSprite(_deathSprite);
                 _DeathSound.play();
                 break;
             
@@ -83,8 +83,10 @@ public class Pacman extends Entity {
     }
 
 
-    private final Sprite _BaseSprite, _DeathSprite;
     private final Sound _DeathSound;
+    
+    private final Sprite _baseSprite, _deathSprite;
+
     private volatile Direction _nextDirection;
 
 }

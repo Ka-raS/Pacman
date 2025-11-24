@@ -1,35 +1,40 @@
 package com.karas.pacman.resources;
 
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import com.karas.pacman.Configs;
+import com.karas.pacman.commons.Drawable;
+import com.karas.pacman.commons.Vector2;
 
-public class Sprite {
+public class Sprite implements Drawable {
     
-    public Sprite(BufferedImage[] images, int offset, int frameCount) {
+    public Sprite(BufferedImage[] Images, int offset, int frameCount) {
+        _Images = Images;
         _timer = _index = 0;
-        _images = images;
         setOffset(offset);
-        _frameCount = 1;
+        _frameCount = Images.length - _offset;
         setFrameCount(frameCount);
+        _position = new Vector2(0, 0);
     }
 
     public boolean isAnimationEnded() {
         return _index == _frameCount - 1;
     }
-    
-    public BufferedImage getFrame() {
-        return _images[_index + _offset];
-    }
 
     public void setOffset(int offset) {
-        if (0 <= offset && offset <= _images.length - _frameCount)
+        if (0 <= offset && offset <= _Images.length)
             _offset = offset;
     }
 
     public void setFrameCount(int frameCount) {
-        if (0 < frameCount && frameCount <= _images.length)
+        if (0 < frameCount && frameCount <= _Images.length - _offset)
             _frameCount = frameCount;
+    }
+
+    public void setPosition(Vector2 position) {
+        if (position != null)
+            _position = position;
     }
 
     public void update(double deltaTime) {
@@ -40,8 +45,17 @@ public class Sprite {
         }
     }
 
+    @Override
+    public void repaint(Graphics2D g) {
+        Vector2 p = _position.mul(Configs.SCALING);
+        g.drawImage(_Images[_index + _offset], p.ix(), p.iy(), Configs.UI.SPRITE_SIZE, Configs.UI.SPRITE_SIZE, null);
+    }
+
+
+    private final BufferedImage[] _Images;
+
     private double _timer;
-    private BufferedImage[] _images;
     private int _index, _offset, _frameCount;
+    private Vector2 _position;
 
 }

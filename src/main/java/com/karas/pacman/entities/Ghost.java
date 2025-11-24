@@ -37,45 +37,45 @@ public abstract class Ghost extends Entity {
 
 
     protected Ghost(Vector2 gridPosition, Direction direction, int speed, 
-                    BufferedImage[] baseSprite, BufferedImage[] preySprite, BufferedImage[] deathSprite, Sound deathSound,
-                    ImmutableEntity pacman, ImmutableMap map) {
+                    BufferedImage[] BaseImages, BufferedImage[] PreyImages, BufferedImage[] DeathImages, Sound DeathSound,
+                    ImmutableEntity PacmanRef, ImmutableMap MapRef) {
         super(
             gridPosition, direction, speed,
-            new Sprite(baseSprite, direction.ordinal() * 2, 2),
-            map
+            new Sprite(BaseImages, direction.ordinal() * 2, 2),
+            MapRef
         );
         _prevGridPos = null;
-        _BaseSpeed = speed;
-        _BaseSprite = getSprite();
-        _PreySprite = new Sprite(preySprite, 0, 2);
-        _DeathSprite = new Sprite(deathSprite, direction.ordinal(), 1);
-        _DeathSound = deathSound;
-        _Pacman = pacman;
+        _baseSpeed = speed;
+        _baseSprite = getSprite();
+        _preySprite = new Sprite(PreyImages, 0, 2);
+        _deathSprite = new Sprite(DeathImages, direction.ordinal(), 1);
+        _DeathSound = DeathSound;
+        _Pacman = PacmanRef;
 
         enterState(State.HUNTER);
     }
 
-    protected abstract Vector2 findHunterTarget(ImmutableEntity pacman);
+    protected abstract Vector2 findHunterTarget(ImmutableEntity PacmanRef);
 
     @Override
     protected void handleStateTransition(State nextState) {
         switch (nextState) {
             case HUNTER:
-                setSpeed(_BaseSpeed);
-                _BaseSprite.setOffset(getDirection().ordinal() * 2);
-                setSprite(_BaseSprite);
+                setSpeed(_baseSpeed);
+                _baseSprite.setOffset(getDirection().ordinal() * 2);
+                setSprite(_baseSprite);
                 break;
 
             case PREY:
                 setSpeed(Configs.PX.GHOST_PREY_SPEED);
-                _PreySprite.setFrameCount(2);
-                setSprite(_PreySprite);
+                _preySprite.setFrameCount(2);
+                setSprite(_preySprite);
                 break;
 
             case DEAD:
                 setSpeed(Configs.PX.GHOST_DEAD_SPEED);
-                _DeathSprite.setOffset(getDirection().ordinal());
-                setSprite(_DeathSprite);
+                _deathSprite.setOffset(getDirection().ordinal());
+                setSprite(_deathSprite);
                 _DeathSound.play();
                 break;
 
@@ -137,10 +137,12 @@ public abstract class Ghost extends Entity {
 
     private static final Vector2 HOME_POSITION = Map.toPixelVector2(Configs.Grid.GHOST_HOME);
 
-    private final int _BaseSpeed;
-    private final Sprite _BaseSprite, _PreySprite, _DeathSprite;
     private final Sound _DeathSound;
     private final ImmutableEntity _Pacman;
+    
+    private final int _baseSpeed;
+    private final Sprite _baseSprite, _preySprite, _deathSprite;
+
     private Vector2 _prevGridPos;
 
 }

@@ -1,15 +1,16 @@
-package com.karas.pacman.maps;
+package com.karas.pacman.scores;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import com.karas.pacman.Configs;
+import com.karas.pacman.commons.Drawable;
 import com.karas.pacman.commons.Vector2;
 
-public class Score {
+public class Score implements Drawable {
     
-    public Score(BufferedImage sprite) {
-        _sprite = sprite;
+    public Score(BufferedImage image) {
+        _Image = image;
         _duration = 0.0;
         _position = null;
     }
@@ -26,16 +27,18 @@ public class Score {
             _duration -= deltaTime;
     }
 
+    @Override
     public void repaint(Graphics2D g) {
         if (_duration <= 0.0)
             return;
 
         Vector2 p = _position.mul(Configs.SCALING);
-        g.drawImage(_sprite, p.ix(), p.iy(), Configs.UI.SPRITE_SIZE, Configs.UI.SPRITE_SIZE, null);
+        g.drawImage(_Image, p.ix(), p.iy(), Configs.UI.SPRITE_SIZE, Configs.UI.SPRITE_SIZE, null);
     }
 
 
-    private BufferedImage _sprite;
+    private final BufferedImage _Image;
+
     private double _duration;
     private Vector2 _position;
 

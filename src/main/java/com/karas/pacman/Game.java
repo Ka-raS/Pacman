@@ -14,15 +14,17 @@ import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import com.karas.pacman.commons.Enterable;
 import com.karas.pacman.resources.Resource;
 import com.karas.pacman.resources.ResourcesManager;
 import com.karas.pacman.screens.ScreenManager;
 
-public class Game extends JPanel implements Runnable, KeyListener {
+public class Game extends JPanel implements Enterable, Runnable, KeyListener {
 
     public Game() {
         _running = false;
         _frame = new JFrame(Configs.TITLE);
+        _thread = new Thread(this, "Game Thread");
         _resourceManager = new ResourcesManager();
         _screenManager = new ScreenManager(_resourceManager);
 
@@ -43,19 +45,23 @@ public class Game extends JPanel implements Runnable, KeyListener {
         _frame.setLocationRelativeTo(null);
     }
 
+    @Override
     public synchronized void enter() {
         if (_running)
             return;
         _running = true;
 
         _LOGGER.info("Entering game...");
-        _thread = new Thread(this, "Game Thread");
         _updateTimer = _repaintTimer = _logTimer = _updateCount = _frameCount = 0;
+        _resourceManager.enter();
+        _screenManager.enter();
+
         _frame.setVisible(true);
         _frame.requestFocus();
         _thread.start(); // Game Thread calls run()
     }
 
+    @Override
     public synchronized void exit() {
         if (!_running)
             return;
@@ -156,11 +162,12 @@ public class Game extends JPanel implements Runnable, KeyListener {
 
     private static final Logger _LOGGER = Logger.getLogger(Game.class.getName());
 
+    private final JFrame _frame;
+    private final Thread _thread;
+    private final ScreenManager _screenManager;
+    private final ResourcesManager _resourceManager;
+
     private boolean _running;
-    private JFrame _frame;
-    private Thread _thread;
-    private ScreenManager _screenManager;
-    private ResourcesManager _resourceManager;
     private int _updateCount;
     private volatile int _frameCount;
     private double _updateTimer, _repaintTimer, _logTimer;

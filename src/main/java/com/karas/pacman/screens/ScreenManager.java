@@ -4,15 +4,17 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.util.Map;
 
+import com.karas.pacman.commons.Drawable;
+import com.karas.pacman.commons.Enterable;
 import com.karas.pacman.resources.ResourcesManager;
 
-public class ScreenManager {
+public class ScreenManager implements Enterable, Drawable {
     
-    public ScreenManager(ResourcesManager resourcesManager) {
-        Screen mainMenu = new MainMenu(resourcesManager);
-        Screen playing  = new Playing(resourcesManager);
-        Screen paused   = new Paused(resourcesManager, playing);
-        Screen gameOver = new GameOver(resourcesManager);
+    public ScreenManager(ResourcesManager ResourcesMgr) {
+        Screen mainMenu = new MainMenu(ResourcesMgr);
+        Screen playing  = new Playing(ResourcesMgr);
+        Screen paused   = new Paused(playing, ResourcesMgr);
+        Screen gameOver = new GameOver(ResourcesMgr);
 
         _screens = Map.of(
             MainMenu.class, mainMenu,
@@ -20,11 +22,15 @@ public class ScreenManager {
             Paused.class,   paused,
             GameOver.class, gameOver
         );
+        _current = _screens.get(MainMenu.class);
+    }
 
-        _current = mainMenu;
+    @Override
+    public void enter() {
         _current.enter(null);
     }
 
+    @Override
     public void exit() {
         for (Screen screen : _screens.values())
             screen.exit(null);
@@ -34,6 +40,7 @@ public class ScreenManager {
         _current.input(e);
     }
 
+    @Override
     public void repaint(Graphics2D g) {
         _current.repaint(g);
     }
@@ -54,7 +61,8 @@ public class ScreenManager {
     }
 
 
+    private final Map<Class<? extends Screen>, Screen> _screens;
+
     private Screen _current;
-    private Map<Class<? extends Screen>, Screen> _screens;
 
 }

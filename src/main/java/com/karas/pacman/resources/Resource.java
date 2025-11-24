@@ -19,16 +19,16 @@ public enum Resource {
     GAME_NORMAL_SOUND( Configs.Path.GAME_NORMAL_SOUND,  false),
     GAME_POWERUP_SOUND(Configs.Path.GAME_POWERUP_SOUND, false);
 
-    public String getPath()     { return _Path; }
-    public boolean isCritical() { return _IsCritical; }
+    public String getPath()     { return _path; }
+    public boolean isCritical() { return _isCritical; }
 
 
     private Resource(String path, boolean isCritical) {
-        _Path = path;
-        _IsCritical = isCritical;
+        _path = path;
+        _isCritical = isCritical;
     }
 
-    private final String _Path;
-    private final boolean _IsCritical;
+    private final String _path;
+    private final boolean _isCritical;
 
 }

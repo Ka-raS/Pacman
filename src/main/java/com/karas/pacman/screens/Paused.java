@@ -11,10 +11,10 @@ import com.karas.pacman.resources.ResourcesManager;
 
 public class Paused implements Screen {
     
-    public Paused(ResourcesManager resourcesManager, Screen playingScreen) {
-        _playingScreen = playingScreen;
-        _FontLarge = resourcesManager.getFont(Configs.UI.FONT_SIZE_LARGE);
-        _FontSmall = resourcesManager.getFont(Configs.UI.FONT_SIZE_SMALL);
+    public Paused(Screen PlayingScreen, ResourcesManager ResourcesMgr) {
+        _PlayingScreen = PlayingScreen;
+        _FontLarge = ResourcesMgr.getFont(Configs.UI.FONT_SIZE_LARGE);
+        _FontSmall = ResourcesMgr.getFont(Configs.UI.FONT_SIZE_SMALL);
     }
 
     @Override
@@ -29,13 +29,13 @@ public class Paused implements Screen {
 
     @Override
     public Class<? extends Screen> update(double deltaTime) {
-        _playingScreen.update(deltaTime);
+        _PlayingScreen.update(deltaTime);
         return _nextScreen;
     }
 
     @Override
     public void repaint(Graphics2D g) {
-        _playingScreen.repaint(g);
+        _PlayingScreen.repaint(g);
         paintOverlay(g);
         paintText(g);
     }
@@ -82,9 +82,10 @@ public class Paused implements Screen {
 
     private static final Logger _LOGGER = Logger.getLogger(Paused.class.getName());
     private static final String[] _OPTIONS = { "RESUME", "EXIT TO MENU" };
-    
+
     private final Font _FontLarge, _FontSmall;
-    private Screen _playingScreen;
+    private final Screen _PlayingScreen;
+
     private volatile int _selectedOption;
     private volatile Class<? extends Screen> _nextScreen;
 

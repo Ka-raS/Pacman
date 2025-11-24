@@ -118,9 +118,9 @@ public class Configs {
         public static final int POWERUP_SIZE = (int) (PX.POWERUP_SIZE * SCALING);
         public static final Vector2 MAP_SIZE = PX.MAP_SIZE.mul(SCALING);
         
-        public static final float FONT_SIZE_SMALL = (float) (PX.FONT_SIZE_SMALL * SCALING);
-        public static final float FONT_SIZE_BASE  = (float) (PX.FONT_SIZE_BASE  * SCALING);
-        public static final float FONT_SIZE_LARGE = (float) (PX.FONT_SIZE_LARGE * SCALING);
+        public static final int FONT_SIZE_SMALL = (int) (PX.FONT_SIZE_SMALL * SCALING);
+        public static final int FONT_SIZE_BASE  = (int) (PX.FONT_SIZE_BASE  * SCALING);
+        public static final int FONT_SIZE_LARGE = (int) (PX.FONT_SIZE_LARGE * SCALING);
         
         public static final Vector2 WINDOW_SIZE = MAP_SIZE; // TODO: temporary
         

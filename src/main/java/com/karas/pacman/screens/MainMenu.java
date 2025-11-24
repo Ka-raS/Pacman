@@ -12,9 +12,9 @@ import com.karas.pacman.resources.ResourcesManager;
 
 public class MainMenu implements Screen {
     
-    public MainMenu(ResourcesManager resourcesManager) {
-        _TitleImage = resourcesManager.getImage(Resource.TITLE_IMAGE);
-        _Font = resourcesManager.getFont(Configs.UI.FONT_SIZE_SMALL);
+    public MainMenu(ResourcesManager ResourcesMgr) {
+        _TitleImage = ResourcesMgr.getImage(Resource.TITLE_IMAGE);
+        _Font = ResourcesMgr.getFont(Configs.UI.FONT_SIZE_SMALL);
     }
 
     @Override
@@ -70,6 +70,7 @@ public class MainMenu implements Screen {
 
     private final BufferedImage _TitleImage;
     private final Font _Font;
+
     private volatile Class<? extends Screen> _nextScreen;
 
 }

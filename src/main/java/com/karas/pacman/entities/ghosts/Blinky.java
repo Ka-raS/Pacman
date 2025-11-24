@@ -12,14 +12,14 @@ import com.karas.pacman.resources.Sound;
 
 public class Blinky extends Ghost {
     
-    public Blinky(ImmutableEntity pacman, ImmutableMap map, BufferedImage[] baseSprite, 
-                  BufferedImage[] preySprite, BufferedImage[] deathSprite, Sound deathSound) {
+    public Blinky(ImmutableEntity PacmanRef, ImmutableMap MapRef, BufferedImage[] BaseImages, 
+                  BufferedImage[] PreyImages, BufferedImage[] DeathImages, Sound DeathSound) {
         super(
             Configs.Grid.BLINKY_POSITION,
             Direction.LEFT,
             Configs.PX.BLINKY_SPEED,
-            baseSprite, preySprite, deathSprite, deathSound,
-            pacman, map
+            BaseImages, PreyImages, DeathImages, DeathSound,
+            PacmanRef, MapRef
         );
     }
 
@@ -32,8 +32,8 @@ public class Blinky extends Ghost {
 
 
     @Override
-    protected Vector2 findHunterTarget(ImmutableEntity pacman) {
-        return pacman.getGridPosition();
+    protected Vector2 findHunterTarget(ImmutableEntity PacmanRef) {
+        return PacmanRef.getGridPosition();
     }
     
 }

@@ -2,7 +2,9 @@ package com.karas.pacman.resources;
 
 import javax.sound.sampled.Clip;
 
-public class Sound {
+import com.karas.pacman.commons.Enterable;
+
+public class Sound implements Enterable {
     
     public static Sound getDummy() {
         return _DUMMY;
@@ -13,7 +15,18 @@ public class Sound {
             throw new NullPointerException("Clip cannot be null");
         _clip = clip;
     }
-    
+
+    @Override
+    public void enter() {
+        _clip.setFramePosition(0);
+    }
+
+    @Override
+    public void exit() {
+        _clip.stop();
+        _clip.close();
+    }
+
     public void play() {
         if (_clip.isRunning())
             return;
@@ -31,25 +44,23 @@ public class Sound {
         _clip.stop();
     }
 
-    public void close() {
-        _clip.stop();
-        _clip.close();
-    }
-
 
     private static final Sound _DUMMY = new Sound() {
+        @Override public void enter() {}
+        @Override public void exit() {}
         @Override public void play() {}
         @Override public void loop() {}
         @Override public void pause() {}
-        @Override public void close() {}
     };
 
-    private Sound() {}
+    private Sound() {
+        _clip = null;
+    }
 
     private boolean isSoundEnded() {
         return _clip.getFramePosition() == _clip.getFrameLength();
     }
 
-    private Clip _clip;
+    private final Clip _clip;
     
 }

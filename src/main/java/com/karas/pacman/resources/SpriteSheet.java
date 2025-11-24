@@ -8,15 +8,15 @@ public enum SpriteSheet {
     INKY(  4, 0, 8), SCORES(     7, 0, 4),
     CLYDE( 5, 0, 8);
 
-    public int getRow() { return _Row; }
-    public int getCol() { return _Col; }
-    public int getLen() { return _Len; }
+    public int getRow() { return _row; }
+    public int getCol() { return _col; }
+    public int getLen() { return _len; }
 
 
     private SpriteSheet(int row, int col, int len) {
-        _Row = row; _Col = col; _Len = len;
+        _row = row; _col = col; _len = len;
     }
 
-    private final int _Row, _Col, _Len;
+    private final int _row, _col, _len;
 
 }

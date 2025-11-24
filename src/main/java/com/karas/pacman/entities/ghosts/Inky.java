@@ -12,16 +12,16 @@ import com.karas.pacman.resources.Sound;
 
 public class Inky extends Ghost {
     
-    public Inky(ImmutableEntity pacman, ImmutableMap map, ImmutableEntity blinky, BufferedImage[] baseSprite,
-                BufferedImage[] preySprite, BufferedImage[] deathSprite, Sound deathSound) {
+    public Inky(ImmutableEntity PacmanRef, ImmutableMap MapRef, ImmutableEntity BlinkyRef, 
+                BufferedImage[] BaseImages, BufferedImage[] PreyImages, BufferedImage[] DeathImages, Sound DeathSound) {
         super(
             Configs.Grid.INKY_POSITION,
             Direction.DOWN,
             Configs.PX.INKY_SPEED,
-            baseSprite, preySprite, deathSprite, deathSound,
-            pacman, map
+            BaseImages, PreyImages, DeathImages, DeathSound,
+            PacmanRef, MapRef
         );
-        _Blinky = blinky;
+        _Blinky = BlinkyRef;
     }
 
     @Override
@@ -33,10 +33,10 @@ public class Inky extends Ghost {
 
 
     @Override
-    protected Vector2 findHunterTarget(ImmutableEntity pacman) {
-        Direction pacmanDir = pacman.getDirection();
-        Vector2 pacmanPredict = pacman.getGridPosition().add(pacmanDir.toVector2().mul(2));
-        Vector2 target = pacmanPredict.mul(2).sub(_Blinky.getGridPosition());
+    protected Vector2 findHunterTarget(ImmutableEntity PacmanRef) {
+        Direction pacmanDir = PacmanRef.getDirection();
+        Vector2 predict = PacmanRef.getGridPosition().add(pacmanDir.toVector2().mul(2));
+        Vector2 target = predict.mul(2).sub(_Blinky.getGridPosition());
         return target;
     }
 

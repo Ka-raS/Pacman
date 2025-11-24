@@ -12,14 +12,14 @@ import com.karas.pacman.resources.Sound;
 
 public class Clyde extends Ghost {
     
-    public Clyde(ImmutableEntity pacman, ImmutableMap map, BufferedImage[] baseSprite, 
-                 BufferedImage[] preySprite, BufferedImage[] deathSprite, Sound deathSound) {
+    public Clyde(ImmutableEntity PacmanRef, ImmutableMap MapRef, BufferedImage[] BaseImages, 
+                 BufferedImage[] PreyImages, BufferedImage[] DeathImages, Sound DeathSound) {
         super(
             Configs.Grid.CLYDE_POSITION,
             Direction.UP,
             Configs.PX.CLYDE_SPEED,
-            baseSprite, preySprite, deathSprite, deathSound,
-            pacman, map
+            BaseImages, PreyImages, DeathImages, DeathSound,
+            PacmanRef, MapRef
         );
     }
 
@@ -32,8 +32,8 @@ public class Clyde extends Ghost {
 
 
     @Override
-    protected Vector2 findHunterTarget(ImmutableEntity pacman) {
-        Vector2 pacmanPos = pacman.getGridPosition();
+    protected Vector2 findHunterTarget(ImmutableEntity PacmanRef) {
+        Vector2 pacmanPos = PacmanRef.getGridPosition();
         Vector2 currPos = getGridPosition();
         double distance = currPos.distance(pacmanPos);
         return distance > Configs.Grid.CLYDE_TARGET_DISTANCE ? pacmanPos : Configs.Grid.CLYDE_SCATTER_POSITION;

@@ -8,9 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,53 +21,66 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JOptionPane;
 
 import com.karas.pacman.Configs;
+import com.karas.pacman.commons.Enterable;
 import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.maps.Tile;
 
-public class ResourcesManager {
+public class ResourcesManager implements Enterable {
 
     public ResourcesManager() {
-        _SoundMap  = Collections.unmodifiableMap(createSoundMap());
-        _ImageMap  = Collections.unmodifiableMap(createImageMap());
-        _SpriteMap = Collections.unmodifiableMap(createSpriteMap(_ImageMap.get(Resource.SPRITE_SHEET)));
-        _Tilemap   = createTilemap();
-        _Font      = createFont();
+        _soundMap  = createSoundMap();
+        _imageMap  = createImageMap();
+        _spriteMap = createSpriteMap(_imageMap.get(Resource.SPRITE_SHEET));
+        _tilemap   = createTilemap();
+        _fonts     = createFonts();
+    }
+
+    @Override
+    public void enter() {
+        for (Sound sound : _soundMap.values())
+            sound.enter();
+    }
+
+    @Override
+    public void exit() {
+        for (Sound sound : _soundMap.values())
+            sound.exit();
     }
 
     public Sound getSound(Resource sound) {
         if (sound == null)
             return Sound.getDummy();
-        return _SoundMap.get(sound);
+        return _soundMap.get(sound);
     }
 
     public BufferedImage getImage(Resource image) {
         if (image == null)
             return null;
-        return _ImageMap.get(image);
+        return _imageMap.get(image);
     }
 
     public BufferedImage[] getSprite(SpriteSheet sheet) {
         if (sheet == null)
             return null;
-        return _SpriteMap.get(sheet);
+        return _spriteMap.get(sheet);
     }
 
     public Tile[][] getTilemap() {
-        Tile[][] copy = new Tile[_Tilemap.length][];
-        for (int y = 0; y < _Tilemap.length; ++y)
-            copy[y] = _Tilemap[y].clone();
+        Tile[][] copy = new Tile[_tilemap.length][];
+        for (int y = 0; y < _tilemap.length; ++y)
+            copy[y] = _tilemap[y].clone();
         return copy;
     }
 
-    public Font getFont(float size) { 
-        if (!Float.isFinite(size) || size <= 0.0f)
-            size = Configs.UI.FONT_SIZE_BASE;
-        return _Font.deriveFont(size); 
-    }
-
-    public void exit() {
-        for (Sound sound : _SoundMap.values())
-            sound.close();
+    public Font getFont(int size) { 
+        if (size <= 0)
+            size = Configs.UI.FONT_SIZE_SMALL;
+        return switch (size) {
+            case Configs.UI.FONT_SIZE_SMALL -> _fonts[0];
+            case Configs.UI.FONT_SIZE_BASE  -> _fonts[1];
+            case Configs.UI.FONT_SIZE_LARGE -> _fonts[2];
+            default -> _fonts[1].deriveFont((float) size);
+        };
     }
 
 
@@ -248,22 +259,26 @@ public class ResourcesManager {
         }
     }
 
-    private static Font createFont() {
+    private static Font[] createFonts() {
+        Font font;
+
         try {
-            return loadFont(Resource.FONT.getPath(), Configs.UI.FONT_SIZE_BASE);
+            font = loadFont(Resource.FONT.getPath(), Configs.UI.FONT_SIZE_BASE);
         } catch (RuntimeException e) {
             handleException(e, Resource.FONT.isCritical());
-            return new Font("Arial", Font.PLAIN, (int) Configs.UI.FONT_SIZE_BASE);
+            font = new Font("Arial", Font.PLAIN, (int) Configs.UI.FONT_SIZE_BASE);
         }
+
+        return new Font[] { font.deriveFont(Configs.UI.FONT_SIZE_SMALL), font, font.deriveFont(Configs.UI.FONT_SIZE_LARGE) };
     }
 
     private static final Logger _LOGGER = Logger.getLogger(ResourcesManager.class.getName());
 
-    private final Map<Resource, Sound> _SoundMap;
-    private final Map<Resource, BufferedImage> _ImageMap;
-    private final Map<SpriteSheet, BufferedImage[]> _SpriteMap;
-    private final Tile[][] _Tilemap;
-    private final Font _Font;
+    private final HashMap<Resource, Sound> _soundMap;
+    private final HashMap<Resource, BufferedImage> _imageMap;
+    private final HashMap<SpriteSheet, BufferedImage[]> _spriteMap;
+    private final Tile[][] _tilemap;
+    private final Font[] _fonts;
 
 }
 

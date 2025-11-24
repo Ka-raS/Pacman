@@ -9,7 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -195,12 +195,12 @@ public class ResourcesManager implements Exitable {
         System.exit(1);
     }
 
-    private static HashMap<Resource, Sound> createSoundMap() {
+    private static EnumMap<Resource, Sound> createSoundMap() {
         Resource[] sounds = { 
             Resource.EAT_WA_SOUND, Resource.EAT_KA_SOUND, Resource.PACMAN_DEATH_SOUND, Resource.GHOST_DEATH_SOUND, 
             Resource.GAME_START_SOUND, Resource.GAME_NORMAL_SOUND, Resource.GAME_POWERUP_SOUND
         };
-        HashMap<Resource, Sound> soundMap = new HashMap<>(sounds.length);
+        EnumMap<Resource, Sound> soundMap = new EnumMap<>(Resource.class);
         
         for (Resource sound : sounds) {
             try {
@@ -213,9 +213,9 @@ public class ResourcesManager implements Exitable {
         return soundMap;
     }
 
-    private static HashMap<Resource, BufferedImage> createImageMap() {
+    private static EnumMap<Resource, BufferedImage> createImageMap() {
         Resource[] images = { Resource.WINDOW_ICON, Resource.TITLE_IMAGE, Resource.MAP_IMAGE, Resource.SPRITE_SHEET };
-        HashMap<Resource, BufferedImage> imageMap = new HashMap<>(images.length);
+        EnumMap<Resource, BufferedImage> imageMap = new EnumMap<>(Resource.class);
 
         for (Resource image : images) {
             try {
@@ -228,8 +228,8 @@ public class ResourcesManager implements Exitable {
         return imageMap;
     }
 
-    private static HashMap<SpriteSheet, BufferedImage[]> createSpriteMap(BufferedImage sheetImage) {
-        HashMap<SpriteSheet, BufferedImage[]> spriteMap = new HashMap<>(SpriteSheet.values().length);
+    private static EnumMap<SpriteSheet, BufferedImage[]> createSpriteMap(BufferedImage sheetImage) {
+        EnumMap<SpriteSheet, BufferedImage[]> spriteMap = new EnumMap<>(SpriteSheet.class);
         
         if (sheetImage == null) {
             _LOGGER.warning("Sprite sheet not initialized.");
@@ -286,9 +286,9 @@ public class ResourcesManager implements Exitable {
 
     private static final Logger _LOGGER = Logger.getLogger(ResourcesManager.class.getName());
 
-    private final HashMap<Resource, Sound> _soundMap;
-    private final HashMap<Resource, BufferedImage> _imageMap;
-    private final HashMap<SpriteSheet, BufferedImage[]> _spriteMap;
+    private final EnumMap<Resource, Sound> _soundMap;
+    private final EnumMap<Resource, BufferedImage> _imageMap;
+    private final EnumMap<SpriteSheet, BufferedImage[]> _spriteMap;
     private final Tile[][] _tilemap;
     private final Font[] _fonts;
 

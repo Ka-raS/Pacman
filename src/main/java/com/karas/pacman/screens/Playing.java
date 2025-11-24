@@ -87,9 +87,9 @@ public class Playing implements Screen {
 
     @Override
     public Class<? extends Screen> update(double deltaTime) {
-        _pacman.update(deltaTime);
-        _ghosts.forEach(ghost -> ghost.update(deltaTime));
         _scores.forEach(score -> score.update(deltaTime));
+        _ghosts.forEach(ghost -> ghost.update(deltaTime));
+        _pacman.update(deltaTime);
         
         boolean notPaused = _nextScreen == Playing.class;
         if (notPaused)

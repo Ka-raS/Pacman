@@ -15,8 +15,8 @@ public class Blinky extends Ghost {
     public Blinky(ImmutableEntity pacman, ImmutableMap map, BufferedImage[] baseSprite, 
                   BufferedImage[] preySprite, BufferedImage[] deathSprite, Sound deathSound) {
         super(
-            Configs.Grid.BLINKY_POS,
-            Direction.RIGHT,
+            Configs.Grid.BLINKY_POSITION,
+            Direction.LEFT,
             Configs.PX.BLINKY_SPEED,
             baseSprite, preySprite, deathSprite, deathSound,
             pacman, map
@@ -24,8 +24,16 @@ public class Blinky extends Ghost {
     }
 
     @Override
+    public void reset() {
+        setGridPosition(Configs.Grid.BLINKY_POSITION);
+        setDirection(Direction.LEFT);
+        enterState(State.HUNTER);
+    }
+
+
+    @Override
     protected Vector2 findHunterTarget(ImmutableEntity pacman) {
-        return pacman.getGridPos();
+        return pacman.getGridPosition();
     }
     
 }

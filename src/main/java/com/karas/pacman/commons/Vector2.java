@@ -1,5 +1,7 @@
 package com.karas.pacman.commons;
 
+import java.util.EnumSet;
+
 public record Vector2(double x, double y) {
 
     public int ix() { return (int) x; }
@@ -30,7 +32,7 @@ public record Vector2(double x, double y) {
     
     // Not the best placement bth, maybe DirectionUtils.java?
 
-    public Direction furthestFrom(Vector2 other, Iterable<Direction> directions) {
+    public Direction furthestFrom(Vector2 other, EnumSet<Direction> directions) {
         Direction result = null;
         double maxDistance = -1.0;
         for (Direction dir : directions) {
@@ -44,7 +46,7 @@ public record Vector2(double x, double y) {
         return result;
     }
 
-    public Direction closestTo(Vector2 other, Iterable<Direction> directions) {
+    public Direction closestTo(Vector2 other, EnumSet<Direction> directions) {
         Direction result = null;
         double minDistance = Double.MAX_VALUE;
         for (Direction dir : directions) {

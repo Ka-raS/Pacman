@@ -9,6 +9,6 @@ public interface ImmutableEntity {
 
     Direction getDirection();
 
-    Vector2 getGridPos();
+    Vector2 getGridPosition();
 
 }

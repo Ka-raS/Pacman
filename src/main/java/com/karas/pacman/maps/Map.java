@@ -16,8 +16,8 @@ public class Map implements ImmutableMap {
         return position.div(Configs.PX.TILE_SIZE).ceil();
     }
 
-    public static Vector2 toPixelVector2(Vector2 gridPos) {
-        return gridPos.sub(0.5).mul(Configs.PX.TILE_SIZE);
+    public static Vector2 toPixelVector2(Vector2 gridPosition) {
+        return gridPosition.sub(0.5).mul(Configs.PX.TILE_SIZE);
     }
 
     public static boolean isCenteredInTile(Vector2 position) {
@@ -58,9 +58,9 @@ public class Map implements ImmutableMap {
     }
 
     @Override
-    public boolean isNotWall(Vector2 gridPos) {
-        int x = gridPos.ix(), y = gridPos.iy();
-        return checkBound(gridPos) && _tiles[y][x] != Tile.WALL;
+    public boolean isNotWall(Vector2 gridPosition) {
+        int x = gridPosition.ix(), y = gridPosition.iy();
+        return checkBound(gridPosition) && _tiles[y][x] != Tile.WALL;
     }
 
     @Override
@@ -113,8 +113,8 @@ public class Map implements ImmutableMap {
         return new boolean[] { p.ix() == 0, p.iy() == 0 };
     }
 
-    private static boolean checkBound(Vector2 gridPos) {
-        int x = gridPos.ix(), y = gridPos.iy();
+    private static boolean checkBound(Vector2 gridPosition) {
+        int x = gridPosition.ix(), y = gridPosition.iy();
         return 0 <= y && y < Configs.Grid.MAP_SIZE.iy()
             && 0 <= x && x < Configs.Grid.MAP_SIZE.ix();
     }

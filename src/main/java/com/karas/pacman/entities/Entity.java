@@ -44,7 +44,7 @@ public abstract class Entity implements ImmutableEntity {
     }
 
     @Override
-    public Vector2 getGridPos() {
+    public Vector2 getGridPosition() {
         return Map.toGridVector2(_position);
     }
 
@@ -63,8 +63,8 @@ public abstract class Entity implements ImmutableEntity {
     }
 
 
-    protected Entity(Vector2 position, Direction direction, int speed, Sprite sprite, ImmutableMap map) {
-        _position = position;
+    protected Entity(Vector2 gridPosition, Direction direction, int speed, Sprite sprite, ImmutableMap map) {
+        _position = Map.toPixelVector2(gridPosition);
         _direction = direction;
         _speed = speed;
         _sprite = sprite;
@@ -86,9 +86,9 @@ public abstract class Entity implements ImmutableEntity {
             _direction = d;
     }
 
-    protected void setPosition(Vector2 p) {
-        if (_Map.isNotWall(Map.toGridVector2(p)))
-            _position = p;
+    protected void setGridPosition(Vector2 gridPosition) {
+        if (_Map.isNotWall(gridPosition))
+            _position = Map.toPixelVector2(gridPosition);
     }
 
     protected void move(double deltaTime) {

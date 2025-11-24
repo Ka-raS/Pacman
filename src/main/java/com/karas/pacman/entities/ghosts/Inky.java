@@ -15,8 +15,8 @@ public class Inky extends Ghost {
     public Inky(ImmutableEntity pacman, ImmutableMap map, ImmutableEntity blinky, BufferedImage[] baseSprite,
                 BufferedImage[] preySprite, BufferedImage[] deathSprite, Sound deathSound) {
         super(
-            Configs.Grid.INKY_POS,
-            Direction.RIGHT,
+            Configs.Grid.INKY_POSITION,
+            Direction.DOWN,
             Configs.PX.INKY_SPEED,
             baseSprite, preySprite, deathSprite, deathSound,
             pacman, map
@@ -24,12 +24,19 @@ public class Inky extends Ghost {
         _Blinky = blinky;
     }
 
+    @Override
+    public void reset() {
+        setGridPosition(Configs.Grid.INKY_POSITION);
+        setDirection(Direction.DOWN);
+        enterState(State.HUNTER);
+    }
+
 
     @Override
     protected Vector2 findHunterTarget(ImmutableEntity pacman) {
         Direction pacmanDir = pacman.getDirection();
-        Vector2 pacmanPredict = pacman.getGridPos().add(pacmanDir.toVector2().mul(2));
-        Vector2 target = pacmanPredict.mul(2).sub(_Blinky.getGridPos());
+        Vector2 pacmanPredict = pacman.getGridPosition().add(pacmanDir.toVector2().mul(2));
+        Vector2 target = pacmanPredict.mul(2).sub(_Blinky.getGridPosition());
         return target;
     }
 

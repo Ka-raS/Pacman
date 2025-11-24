@@ -15,8 +15,8 @@ public class Pinky extends Ghost {
     public Pinky(ImmutableEntity pacman, ImmutableMap map, BufferedImage[] baseSprite, 
                  BufferedImage[] preySprite, BufferedImage[] deathSprite, Sound deathSound) {
         super(
-            Configs.Grid.PINKY_POS,
-            Direction.LEFT,
+            Configs.Grid.PINKY_POSITION,
+            Direction.UP,
             Configs.PX.PINKY_SPEED,
             baseSprite, preySprite, deathSprite, deathSound,
             pacman, map
@@ -24,9 +24,17 @@ public class Pinky extends Ghost {
     }
 
     @Override
+    public void reset() {
+        setGridPosition(Configs.Grid.PINKY_POSITION);
+        setDirection(Direction.UP);
+        enterState(State.HUNTER);
+    }
+
+
+    @Override
     protected Vector2 findHunterTarget(ImmutableEntity pacman) {
         Direction pacmanDir = pacman.getDirection();
-        Vector2 pacmanPredict = pacman.getGridPos().add(pacmanDir.toVector2().mul(4));
+        Vector2 pacmanPredict = pacman.getGridPosition().add(pacmanDir.toVector2().mul(4));
         return pacmanPredict;
     }
 

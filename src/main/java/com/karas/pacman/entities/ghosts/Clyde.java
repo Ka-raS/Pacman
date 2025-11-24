@@ -15,8 +15,8 @@ public class Clyde extends Ghost {
     public Clyde(ImmutableEntity pacman, ImmutableMap map, BufferedImage[] baseSprite, 
                  BufferedImage[] preySprite, BufferedImage[] deathSprite, Sound deathSound) {
         super(
-            Configs.Grid.CLYDE_POS,
-            Direction.LEFT,
+            Configs.Grid.CLYDE_POSITION,
+            Direction.UP,
             Configs.PX.CLYDE_SPEED,
             baseSprite, preySprite, deathSprite, deathSound,
             pacman, map
@@ -24,11 +24,19 @@ public class Clyde extends Ghost {
     }
 
     @Override
+    public void reset() {
+        setGridPosition(Configs.Grid.CLYDE_POSITION);
+        setDirection(Direction.UP);
+        enterState(State.HUNTER);
+    }
+
+
+    @Override
     protected Vector2 findHunterTarget(ImmutableEntity pacman) {
-        Vector2 pacmanPos = pacman.getGridPos();
-        Vector2 currPos = getGridPos();
+        Vector2 pacmanPos = pacman.getGridPosition();
+        Vector2 currPos = getGridPosition();
         double distance = currPos.distance(pacmanPos);
-        return distance > Configs.Grid.CLYDE_TARGET_DISTANCE ? pacmanPos : Configs.Grid.CLYDE_SCATTER_POS;
+        return distance > Configs.Grid.CLYDE_TARGET_DISTANCE ? pacmanPos : Configs.Grid.CLYDE_SCATTER_POSITION;
     }
     
 }

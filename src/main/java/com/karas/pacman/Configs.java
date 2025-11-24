@@ -6,8 +6,8 @@ import com.karas.pacman.commons.Vector2;
 
 public class Configs {
 
-    public static final int UPS_TARGET = 60;
-    public static final int FPS_TARGET = 60;
+    public static final int UPS_TARGET = 144;
+    public static final int FPS_TARGET = Integer.MAX_VALUE;
     public static final double SCALING = 3.0;   // CHANGE THIS
     public static final String TITLE   = "Pacman";
     public static final Color BACKGROUND_COLOR = Color.BLACK;
@@ -64,20 +64,21 @@ public class Configs {
 
     public static class Grid {
 
-        public static final Vector2 MAP_SIZE   = new Vector2(28,   31);
-        public static final Vector2 PACMAN_POS = new Vector2(13.5, 23);
-        public static final Vector2 BLINKY_POS = new Vector2(15,   11);
-        public static final Vector2 PINKY_POS  = new Vector2(12,   14);
-        public static final Vector2 INKY_POS   = new Vector2(15,   14);
-        public static final Vector2 CLYDE_POS  = new Vector2(12,   11);
+        public static final Vector2 MAP_SIZE = new Vector2(28, 31);
+        public static final Vector2 PACMAN_POSITION = new Vector2(13.5, 23);
+        public static final Vector2 BLINKY_POSITION = new Vector2(13.5, 11);
+        public static final Vector2 PINKY_POSITION  = new Vector2(11.5, 14); // is squished between a wall and walkable tile
+        public static final Vector2 INKY_POSITION   = new Vector2(13.5, 14);
+        public static final Vector2 CLYDE_POSITION  = new Vector2(15.5, 14); // same goes for this one
+        public static final Vector2 GHOST_HOME      = new Vector2(13.5, 14);
 
         public static final int CLYDE_TARGET_DISTANCE = 8;
 
         // TODO
-        public static final Vector2 BLINKY_SCATTER_POS = new Vector2(MAP_SIZE.ix() - 1, 0);
-        public static final Vector2 PINKY_SCATTER_POS  = new Vector2(0, 0);
-        public static final Vector2 INKY_SCATTER_POS   = new Vector2(MAP_SIZE.ix() - 1, MAP_SIZE.iy() - 1);
-        public static final Vector2 CLYDE_SCATTER_POS  = new Vector2(0, MAP_SIZE.iy() - 1);
+        public static final Vector2 BLINKY_SCATTER_POSITION = new Vector2(MAP_SIZE.ix() - 1, 0);
+        public static final Vector2 PINKY_SCATTER_POSITION  = new Vector2(0, 0);
+        public static final Vector2 INKY_SCATTER_POSITION   = new Vector2(MAP_SIZE.ix() - 1, MAP_SIZE.iy() - 1);
+        public static final Vector2 CLYDE_SCATTER_POSITION  = new Vector2(0, MAP_SIZE.iy() - 1);
 
         private Grid() {}
 
@@ -92,11 +93,14 @@ public class Configs {
         public static final Vector2 MAP_SIZE = Grid.MAP_SIZE.mul(TILE_SIZE);
         
         // per second
-        public static final int PACMAN_SPEED = 54; 
-        public static final int BLINKY_SPEED = 50;
-        public static final int PINKY_SPEED  = 46;
-        public static final int INKY_SPEED   = 46;
-        public static final int CLYDE_SPEED  = 42;
+        public static final int PACMAN_SPEED = 56; 
+        public static final int BLINKY_SPEED = 52;
+        public static final int PINKY_SPEED  = 48;
+        public static final int INKY_SPEED   = 48;
+        public static final int CLYDE_SPEED  = 44;
+        public static final int PACMAN_HUNTER_SPEED = 64;
+        public static final int GHOST_PREY_SPEED    = 36;
+        public static final int GHOST_DEAD_SPEED    = 98;
 
         public static final float FONT_SIZE_SMALL = 6.0f;
         public static final float FONT_SIZE_BASE  = 8.0f;

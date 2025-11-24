@@ -5,7 +5,6 @@ import java.awt.image.BufferedImage;
 import com.karas.pacman.Configs;
 import com.karas.pacman.commons.Direction;
 import com.karas.pacman.maps.ImmutableMap;
-import com.karas.pacman.maps.Map;
 import com.karas.pacman.resources.Sound;
 import com.karas.pacman.resources.Sprite;
 
@@ -13,7 +12,7 @@ public class Pacman extends Entity {
 
     public Pacman(ImmutableMap map, BufferedImage[] baseSprite, BufferedImage[] deathSprite, Sound deathSound) {
         super(
-            Map.toPixelVector2(Configs.Grid.PACMAN_POS),
+            Configs.Grid.PACMAN_POSITION,
             Direction.RIGHT,
             Configs.PX.PACMAN_SPEED,
             new Sprite(baseSprite, Direction.RIGHT.ordinal() * 2, 2),
@@ -52,10 +51,9 @@ public class Pacman extends Entity {
 
     @Override
     public void reset() {
-        setPosition(Map.toPixelVector2(Configs.Grid.PACMAN_POS));
+        setGridPosition(Configs.Grid.PACMAN_POSITION);
         setDirection(Direction.RIGHT);
         _nextDirection = Direction.RIGHT;
-        _BaseSprite.setOffset(Direction.RIGHT.ordinal() * 2);
         setSprite(_BaseSprite);
         enterState(State.PREY);
     }
@@ -78,7 +76,7 @@ public class Pacman extends Entity {
                 break;
 
             case HUNTER:
-                setSpeed((int) (Configs.PX.PACMAN_SPEED * 1.25));
+                setSpeed(Configs.PX.PACMAN_HUNTER_SPEED);
                 getSprite().setOffset(getDirection().ordinal() * 2);
                 break;
         }

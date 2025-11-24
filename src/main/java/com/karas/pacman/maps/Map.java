@@ -103,7 +103,7 @@ public class Map implements ImmutableMap, Paintable {
 
     @Override
     public void repaint(Graphics2D G) {
-        G.drawImage(_MapImage, 0, 0, Configs.UI.MAP_SIZE.ix(), Configs.UI.MAP_SIZE.iy(), null);
+        G.drawImage(_MapImage, 0, 0, null);
         paintConsumables(G);
     }
 
@@ -140,8 +140,8 @@ public class Map implements ImmutableMap, Paintable {
                 };
                 if (image == null)
                     continue;
-                int offset = (Configs.UI.TILE_SIZE - image.getWidth() / 2);
-                Vector2 p = toPixelVector2(new Vector2(x, y)).mul(Configs.SCALING).add(offset);
+                int offset = (Configs.PX.TILE_SIZE - image.getWidth() / 2);
+                Vector2 p = toPixelVector2(new Vector2(x, y)).add(offset);
                 G.drawImage(image, p.ix(), p.iy(), null);
                 
             }

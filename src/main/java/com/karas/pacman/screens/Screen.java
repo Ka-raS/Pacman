@@ -2,13 +2,12 @@ package com.karas.pacman.screens;
 
 import java.awt.event.KeyEvent;
 
+import com.karas.pacman.commons.Exitable;
 import com.karas.pacman.commons.Paintable;
 
-public interface Screen extends Paintable {
+public interface Screen extends Exitable, Paintable {
     
-    void enter(Class<? extends Screen> fromScreen);
-
-    void exit(Class<? extends Screen> toScreen);
+    void enter(Class<? extends Screen> previous);
 
     /** @return next screen.class to switch, current screen.class to remain, or null to exit */
     Class<? extends Screen> update(double deltaTime);

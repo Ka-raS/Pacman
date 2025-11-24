@@ -29,11 +29,8 @@ public class Score implements Paintable {
 
     @Override
     public void repaint(Graphics2D G) {
-        if (_duration <= 0.0)
-            return;
-
-        Vector2 p = _position.mul(Configs.SCALING);
-        G.drawImage(_Image, p.ix(), p.iy(), Configs.UI.SPRITE_SIZE, Configs.UI.SPRITE_SIZE, null);
+        if (_duration > 0.0)
+            G.drawImage(_Image, _position.ix(), _position.iy(), null);
     }
 
 

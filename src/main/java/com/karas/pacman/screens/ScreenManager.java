@@ -5,10 +5,10 @@ import java.awt.event.KeyEvent;
 import java.util.Map;
 
 import com.karas.pacman.commons.Paintable;
-import com.karas.pacman.commons.Enterable;
+import com.karas.pacman.commons.Exitable;
 import com.karas.pacman.resources.ResourcesManager;
 
-public class ScreenManager implements Enterable, Paintable {
+public class ScreenManager implements Exitable, Paintable {
     
     public ScreenManager(ResourcesManager ResourcesMgr) {
         Screen mainMenu = new MainMenu(ResourcesMgr);
@@ -22,18 +22,14 @@ public class ScreenManager implements Enterable, Paintable {
             Paused.class,   paused,
             GameOver.class, gameOver
         );
-        _current = _screens.get(MainMenu.class);
-    }
-
-    @Override
-    public void enter() {
+        _current = mainMenu;
         _current.enter(null);
     }
 
     @Override
     public void exit() {
         for (Screen screen : _screens.values())
-            screen.exit(null);
+            screen.exit();
     }
 
     public void input(KeyEvent e) {
@@ -53,10 +49,10 @@ public class ScreenManager implements Enterable, Paintable {
         if (nextScreen == _current.getClass())
             return true;
 
-        Class<? extends Screen> fromScreen = _current.getClass();
-        _current.exit(nextScreen);
+        Class<? extends Screen> currentScreen = _current.getClass();
+        _current.exit();
         _current = _screens.get(nextScreen);
-        _current.enter(fromScreen);
+        _current.enter(currentScreen);
         return true;
     }
 

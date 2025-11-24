@@ -11,10 +11,10 @@ public class GameOver implements Screen {
     }
 
     @Override
-    public void enter(Class<? extends Screen> fromScreen) {}
+    public void enter(Class<? extends Screen> previous) {}
 
     @Override
-    public void exit(Class<? extends Screen> toScreen) {}
+    public void exit() {}
 
     @Override
     public Class<? extends Screen> update(double deltaTime) {

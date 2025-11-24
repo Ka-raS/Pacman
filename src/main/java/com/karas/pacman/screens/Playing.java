@@ -1,6 +1,5 @@
 package com.karas.pacman.screens;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
@@ -39,17 +38,17 @@ public class Playing implements Screen {
         _stateCooldown = 0.0;
         _nextScreen = Playing.class;
 
-        _Font         = ResourcesMgr.getFont(Configs.UI.FONT_SIZE_BASE);
+        _FontMedium   = ResourcesMgr.getFont(Configs.PX.FONT_SIZE_MEDIUM);
         _NewGameSound = ResourcesMgr.getSound(Resource.GAME_START_SOUND);
         _NormalSound  = ResourcesMgr.getSound(Resource.GAME_NORMAL_SOUND);
         _PowerupSound = ResourcesMgr.getSound(Resource.GAME_POWERUP_SOUND);
     }
 
     @Override
-    public void enter(Class<? extends Screen> fromScreen) {
+    public void enter(Class<? extends Screen> previous) {
         _nextScreen = Playing.class;
 
-        if (fromScreen == MainMenu.class) {
+        if (previous == MainMenu.class) {
             enterState(State.START);
             return;
         }
@@ -69,7 +68,7 @@ public class Playing implements Screen {
     }
 
     @Override
-    public void exit(Class<? extends Screen> toScreen) {
+    public void exit() {
         _pacman.enterState(Pacman.State.IDLE);
         _ghosts.forEach(ghost -> ghost.enterState(Ghost.State.IDLE));
         _NewGameSound.pause();
@@ -100,9 +99,6 @@ public class Playing implements Screen {
 
     @Override
     public void input(KeyEvent e) {
-        if (e.getID() != KeyEvent.KEY_PRESSED)
-            return;
-
         switch (e.getKeyCode()) {
             case KeyEvent.VK_UP,    KeyEvent.VK_W -> _pacman.setNextDirection(Direction.UP);
             case KeyEvent.VK_RIGHT, KeyEvent.VK_D -> _pacman.setNextDirection(Direction.RIGHT);
@@ -286,18 +282,18 @@ public class Playing implements Screen {
 
     private void paintTotalScore(Graphics2D G) {
         String text = String.format("%05d", _totalScore);
-        FontMetrics fm = G.getFontMetrics(_Font);
-        int x = (Configs.UI.WINDOW_SIZE.ix() - fm.stringWidth(text)) / 2;
-        int y = (Configs.UI.WINDOW_SIZE.iy() - fm.getHeight()) / 2;
+        FontMetrics fm = G.getFontMetrics(_FontMedium);
+        int x = (Configs.PX.WINDOW_SIZE.ix() - fm.stringWidth(text)) / 2;
+        int y = (Configs.PX.WINDOW_SIZE.iy() - fm.getHeight()) / 2;
         
-        G.setFont(_Font);
-        G.setColor(Color.CYAN);
+        G.setFont(_FontMedium);
+        G.setColor(Configs.Color.SCORE);
         G.drawString(text, x, y);
     }
 
     private static final Logger _LOGGER = Logger.getLogger(Playing.class.getName());
 
-    private final Font _Font;
+    private final Font _FontMedium;
     private final Sound _NewGameSound, _NormalSound, _PowerupSound;
     private final ResourcesManager _ResourcesManager;
 
@@ -309,6 +305,6 @@ public class Playing implements Screen {
     private State _state;
     private double _stateCooldown;
     private int _totalScore;
-    private Class<? extends Screen> _nextScreen;
+    private volatile Class<? extends Screen> _nextScreen;
 
 }

@@ -1,7 +1,5 @@
 package com.karas.pacman;
 
-import java.awt.Color;
-
 import com.karas.pacman.commons.Vector2;
 
 public class Configs {
@@ -10,7 +8,20 @@ public class Configs {
     public static final int FPS_TARGET = Integer.MAX_VALUE;
     public static final double SCALING = 3.0;   // CHANGE THIS
     public static final String TITLE   = "Pacman";
-    public static final Color BACKGROUND_COLOR = Color.BLACK;
+
+    public static class Color {
+
+        public static final java.awt.Color BACKGROUND = java.awt.Color.BLACK;
+        public static final java.awt.Color PELLET     = java.awt.Color.WHITE;
+        public static final java.awt.Color SCORE      = java.awt.Color.CYAN;
+        public static final java.awt.Color TEXT       = java.awt.Color.WHITE;
+        public static final java.awt.Color HIGHLIGHT  = java.awt.Color.YELLOW;
+        
+        public static final java.awt.Color MAIN_MENU  = new java.awt.Color(0, 16, 48);
+        public static final java.awt.Color PAUSE_MENU = new java.awt.Color(0, 0, 0, 192);
+
+
+    }
 
     public static class Path {
 
@@ -91,6 +102,7 @@ public class Configs {
         public static final int SPRITE_SIZE  = 16;
         public static final int POWERUP_SIZE = 6;
         public static final Vector2 MAP_SIZE = Grid.MAP_SIZE.mul(TILE_SIZE);
+        public static final Vector2 WINDOW_SIZE = MAP_SIZE; // TODO: temporary
         
         // per second
         public static final int PACMAN_SPEED = 56; 
@@ -102,31 +114,14 @@ public class Configs {
         public static final int GHOST_PREY_SPEED    = 36;
         public static final int GHOST_DEAD_SPEED    = 98;
 
-        public static final float FONT_SIZE_SMALL = 6.0f;
-        public static final float FONT_SIZE_BASE  = 8.0f;
-        public static final float FONT_SIZE_LARGE = 12.0f;
+        public static final int FONT_SIZE_SMALL  = 6;
+        public static final int FONT_SIZE_MEDIUM = 8;
+        public static final int FONT_SIZE_LARGE  = 12;
 
         private PX() {}
 
     }
 
-    public static class UI {
-
-        public static final int PELLET_SIZE  = (int) (PX.PELLET_SIZE  * SCALING);
-        public static final int TILE_SIZE    = (int) (PX.TILE_SIZE    * SCALING);
-        public static final int SPRITE_SIZE  = (int) (PX.SPRITE_SIZE  * SCALING);
-        public static final int POWERUP_SIZE = (int) (PX.POWERUP_SIZE * SCALING);
-        public static final Vector2 MAP_SIZE = PX.MAP_SIZE.mul(SCALING);
-        
-        public static final int FONT_SIZE_SMALL = (int) (PX.FONT_SIZE_SMALL * SCALING);
-        public static final int FONT_SIZE_BASE  = (int) (PX.FONT_SIZE_BASE  * SCALING);
-        public static final int FONT_SIZE_LARGE = (int) (PX.FONT_SIZE_LARGE * SCALING);
-        
-        public static final Vector2 WINDOW_SIZE = MAP_SIZE; // TODO: temporary
-        
-        private UI() {}
-
-    }
 
     private Configs() {}
 

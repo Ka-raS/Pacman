@@ -1,8 +1,6 @@
 package com.karas.pacman.commons;
 
-public interface Enterable {
-
-    void enter();
+public interface Exitable {
 
     void exit();
     

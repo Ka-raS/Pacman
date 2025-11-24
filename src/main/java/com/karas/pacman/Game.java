@@ -14,12 +14,13 @@ import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import com.karas.pacman.commons.Enterable;
+import com.karas.pacman.commons.Exitable;
+import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.resources.Resource;
 import com.karas.pacman.resources.ResourcesManager;
 import com.karas.pacman.screens.ScreenManager;
 
-public class Game extends JPanel implements Enterable, Runnable, KeyListener {
+public class Game extends JPanel implements Exitable, Runnable, KeyListener {
 
     public Game() {
         _running = false;
@@ -35,9 +36,11 @@ public class Game extends JPanel implements Enterable, Runnable, KeyListener {
             public void windowClosing(WindowEvent e) { exit(); }
         });
         
-        setBackground(Configs.BACKGROUND_COLOR);
+        setBackground(Configs.Color.BACKGROUND);
         setDoubleBuffered(true);
-        setPreferredSize(new Dimension(Configs.UI.WINDOW_SIZE.ix(), Configs.UI.WINDOW_SIZE.iy()));
+        
+        final Vector2 SIZE = Configs.PX.WINDOW_SIZE.mul(Configs.SCALING);
+        setPreferredSize(new Dimension(SIZE.ix(), SIZE.iy()));
 
         _frame.add(this);
         _frame.addKeyListener(this);
@@ -45,7 +48,6 @@ public class Game extends JPanel implements Enterable, Runnable, KeyListener {
         _frame.setLocationRelativeTo(null);
     }
 
-    @Override
     public synchronized void enter() {
         if (_running)
             return;
@@ -53,8 +55,6 @@ public class Game extends JPanel implements Enterable, Runnable, KeyListener {
 
         _LOGGER.info("Entering game...");
         _updateTimer = _repaintTimer = _logTimer = _updateCount = _frameCount = 0;
-        _resourceManager.enter();
-        _screenManager.enter();
 
         _frame.setVisible(true);
         _frame.requestFocus();
@@ -108,17 +108,11 @@ public class Game extends JPanel implements Enterable, Runnable, KeyListener {
         _screenManager.input(e);
     }
 
-    /** {@code KeyListener} method. Gets called by EDT. */
     @Override
-    public void keyReleased(KeyEvent e) {
-        _screenManager.input(e);
-    }
+    public void keyReleased(KeyEvent e) {}
 
-    /** {@code KeyListener} method. Gets called by EDT. */
     @Override
-    public void keyTyped(KeyEvent e) {
-        _screenManager.input(e);
-    }
+    public void keyTyped(KeyEvent e) {}
 
 
     /** {@code JPanel} method. Gets called by EDT. */
@@ -126,6 +120,7 @@ public class Game extends JPanel implements Enterable, Runnable, KeyListener {
     protected void paintComponent(Graphics G) {
         super.paintComponent(G);
         Graphics2D G2D = (Graphics2D) G;
+        G2D.scale(Configs.SCALING, Configs.SCALING);
         _screenManager.repaint(G2D);
         ++_frameCount;
         G2D.dispose();
@@ -137,10 +132,10 @@ public class Game extends JPanel implements Enterable, Runnable, KeyListener {
         deltaTime = Math.min(deltaTime, 0.25); // lag spike
         _updateTimer += deltaTime;
         while (_running && _updateTimer >= Configs.Time.UPDATE_INTERVAL) {
-            if (!_screenManager.update(Configs.Time.UPDATE_INTERVAL))
-                exit();
             ++_updateCount;
             _updateTimer -= Configs.Time.UPDATE_INTERVAL;
+            if (!_screenManager.update(Configs.Time.UPDATE_INTERVAL))
+                exit();
         }
     }
 

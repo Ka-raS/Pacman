@@ -2,9 +2,9 @@ package com.karas.pacman.resources;
 
 import javax.sound.sampled.Clip;
 
-import com.karas.pacman.commons.Enterable;
+import com.karas.pacman.commons.Exitable;
 
-public class Sound implements Enterable {
+public class Sound implements Exitable {
     
     public static Sound getDummy() {
         return _DUMMY;
@@ -17,13 +17,8 @@ public class Sound implements Enterable {
     }
 
     @Override
-    public void enter() {
-        _clip.setFramePosition(0);
-    }
-
-    @Override
     public void exit() {
-        _clip.stop();
+        pause();
         _clip.close();
     }
 
@@ -31,7 +26,7 @@ public class Sound implements Enterable {
         if (_clip.isRunning())
             return;
 
-        if (isSoundEnded())
+        if (_clip.getFramePosition() == _clip.getFrameLength())
             _clip.setFramePosition(0);
         _clip.start();
     }
@@ -40,13 +35,13 @@ public class Sound implements Enterable {
         _clip.loop(Clip.LOOP_CONTINUOUSLY);
     }
 
-    public void pause() {    
-        _clip.stop();
+    public void pause() {
+        if (_clip.isRunning())
+            _clip.stop();
     }
 
 
     private static final Sound _DUMMY = new Sound() {
-        @Override public void enter() {}
         @Override public void exit() {}
         @Override public void play() {}
         @Override public void loop() {}
@@ -55,10 +50,6 @@ public class Sound implements Enterable {
 
     private Sound() {
         _clip = null;
-    }
-
-    private boolean isSoundEnded() {
-        return _clip.getFramePosition() == _clip.getFrameLength();
     }
 
     private final Clip _clip;

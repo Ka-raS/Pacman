@@ -1,10 +1,8 @@
 package com.karas.pacman.resources;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -24,11 +22,11 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JOptionPane;
 
 import com.karas.pacman.Configs;
-import com.karas.pacman.commons.Enterable;
+import com.karas.pacman.commons.Exitable;
 import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.maps.Tile;
 
-public class ResourcesManager implements Enterable {
+public class ResourcesManager implements Exitable {
 
     public ResourcesManager() {
         _soundMap  = createSoundMap();
@@ -36,12 +34,6 @@ public class ResourcesManager implements Enterable {
         _spriteMap = createSpriteMap(_imageMap.get(Resource.SPRITE_SHEET));
         _tilemap   = createTilemap();
         _fonts     = createFonts();
-    }
-
-    @Override
-    public void enter() {
-        for (Sound sound : _soundMap.values())
-            sound.enter();
     }
 
     @Override
@@ -77,11 +69,11 @@ public class ResourcesManager implements Enterable {
 
     public Font getFont(int size) { 
         if (size <= 0)
-            size = Configs.UI.FONT_SIZE_SMALL;
+            size = Configs.PX.FONT_SIZE_SMALL;
         return switch (size) {
-            case Configs.UI.FONT_SIZE_SMALL -> _fonts[0];
-            case Configs.UI.FONT_SIZE_BASE  -> _fonts[1];
-            case Configs.UI.FONT_SIZE_LARGE -> _fonts[2];
+            case Configs.PX.FONT_SIZE_SMALL -> _fonts[0];
+            case Configs.PX.FONT_SIZE_MEDIUM  -> _fonts[1];
+            case Configs.PX.FONT_SIZE_LARGE -> _fonts[2];
             default -> _fonts[1].deriveFont((float) size);
         };
     }
@@ -178,12 +170,11 @@ public class ResourcesManager implements Enterable {
         }
     }
 
-    private static BufferedImage createOval(int size) {
+    private static BufferedImage createSquare(int size) {
         BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = image.createGraphics();        
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);    
-        g.setColor(Color.WHITE);
-        g.fillOval(0, 0, size, size);
+        g.setColor(Configs.Color.PELLET);
+        g.fillRect(0, 0, size, size);
         g.dispose();
         return image;
     }
@@ -248,8 +239,8 @@ public class ResourcesManager implements Enterable {
         }
 
         spriteMap.put(SpriteSheet.PELLETS, new BufferedImage[] {
-            createOval(Configs.UI.PELLET_SIZE),
-            createOval(Configs.UI.POWERUP_SIZE)
+            createSquare(Configs.PX.PELLET_SIZE),
+            createSquare(Configs.PX.POWERUP_SIZE)
         });
 
         final int SIZE = Configs.PX.SPRITE_SIZE;
@@ -284,13 +275,13 @@ public class ResourcesManager implements Enterable {
         Font font;
 
         try {
-            font = loadFont(Resource.FONT.getPath(), Configs.UI.FONT_SIZE_BASE);
+            font = loadFont(Resource.FONT.getPath(), Configs.PX.FONT_SIZE_MEDIUM);
         } catch (RuntimeException e) {
             handleException(e, Resource.FONT.isCritical());
-            font = new Font("Arial", Font.PLAIN, (int) Configs.UI.FONT_SIZE_BASE);
+            font = new Font("Arial", Font.PLAIN, (int) Configs.PX.FONT_SIZE_MEDIUM);
         }
 
-        return new Font[] { font.deriveFont(Configs.UI.FONT_SIZE_SMALL), font, font.deriveFont(Configs.UI.FONT_SIZE_LARGE) };
+        return new Font[] { font.deriveFont(Configs.PX.FONT_SIZE_SMALL), font, font.deriveFont(Configs.PX.FONT_SIZE_LARGE) };
     }
 
     private static final Logger _LOGGER = Logger.getLogger(ResourcesManager.class.getName());

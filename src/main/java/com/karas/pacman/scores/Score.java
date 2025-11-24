@@ -4,10 +4,10 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import com.karas.pacman.Configs;
-import com.karas.pacman.commons.Drawable;
+import com.karas.pacman.commons.Paintable;
 import com.karas.pacman.commons.Vector2;
 
-public class Score implements Drawable {
+public class Score implements Paintable {
     
     public Score(BufferedImage image) {
         _Image = image;

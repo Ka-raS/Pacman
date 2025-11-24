@@ -2,9 +2,9 @@ package com.karas.pacman.screens;
 
 import java.awt.event.KeyEvent;
 
-import com.karas.pacman.commons.Drawable;
+import com.karas.pacman.commons.Paintable;
 
-public interface Screen extends Drawable {
+public interface Screen extends Paintable {
     
     void enter(Class<? extends Screen> fromScreen);
 

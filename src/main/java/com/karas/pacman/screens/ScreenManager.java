@@ -4,11 +4,11 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.util.Map;
 
-import com.karas.pacman.commons.Drawable;
+import com.karas.pacman.commons.Paintable;
 import com.karas.pacman.commons.Enterable;
 import com.karas.pacman.resources.ResourcesManager;
 
-public class ScreenManager implements Enterable, Drawable {
+public class ScreenManager implements Enterable, Paintable {
     
     public ScreenManager(ResourcesManager ResourcesMgr) {
         Screen mainMenu = new MainMenu(ResourcesMgr);

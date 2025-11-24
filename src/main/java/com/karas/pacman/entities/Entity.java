@@ -4,13 +4,13 @@ import java.awt.Graphics2D;
 
 import com.karas.pacman.Configs;
 import com.karas.pacman.commons.Direction;
-import com.karas.pacman.commons.Drawable;
+import com.karas.pacman.commons.Paintable;
 import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.maps.ImmutableMap;
 import com.karas.pacman.maps.Map;
 import com.karas.pacman.resources.Sprite;
 
-public abstract class Entity implements ImmutableEntity, Drawable {
+public abstract class Entity implements ImmutableEntity, Paintable {
     
     public static enum State {
         IDLE, HUNTER, PREY, DEAD;

@@ -4,10 +4,10 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import com.karas.pacman.Configs;
-import com.karas.pacman.commons.Drawable;
+import com.karas.pacman.commons.Paintable;
 import com.karas.pacman.commons.Vector2;
 
-public class Sprite implements Drawable {
+public class Sprite implements Paintable {
     
     public Sprite(BufferedImage[] Images, int offset, int frameCount) {
         _Images = Images;

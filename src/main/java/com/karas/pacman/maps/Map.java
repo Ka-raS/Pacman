@@ -5,11 +5,11 @@ import java.awt.image.BufferedImage;
 
 import com.karas.pacman.Configs;
 import com.karas.pacman.commons.Direction;
-import com.karas.pacman.commons.Drawable;
+import com.karas.pacman.commons.Paintable;
 import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.resources.Sound;
 
-public class Map implements ImmutableMap, Drawable {
+public class Map implements ImmutableMap, Paintable {
 
     public static Vector2 toGridVector2(Vector2 position) {
         return position.div(Configs.PX.TILE_SIZE).ceil();

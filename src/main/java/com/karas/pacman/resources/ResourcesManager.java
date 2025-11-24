@@ -1,7 +1,10 @@
 package com.karas.pacman.resources;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -175,6 +178,16 @@ public class ResourcesManager implements Enterable {
         }
     }
 
+    private static BufferedImage createOval(int size) {
+        BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = image.createGraphics();        
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);    
+        g.setColor(Color.WHITE);
+        g.fillOval(0, 0, size, size);
+        g.dispose();
+        return image;
+    }
+
     private static void handleException(Exception e, boolean isCritical) {
         if (!isCritical) {
             _LOGGER.log(Level.WARNING, e.getMessage(), e);
@@ -234,8 +247,16 @@ public class ResourcesManager implements Enterable {
             return spriteMap;
         }
 
+        spriteMap.put(SpriteSheet.PELLETS, new BufferedImage[] {
+            createOval(Configs.UI.PELLET_SIZE),
+            createOval(Configs.UI.POWERUP_SIZE)
+        });
+
         final int SIZE = Configs.PX.SPRITE_SIZE;
         for (SpriteSheet sheet : SpriteSheet.values()) {
+            if (sheet == SpriteSheet.PELLETS)
+                continue;
+
             BufferedImage[] sprite = new BufferedImage[sheet.getLen()];
             for (int i = 0; i < sheet.getLen(); ++i)
                 sprite[i] = sheetImage.getSubimage((sheet.getCol() + i) * SIZE, sheet.getRow() * SIZE, SIZE, SIZE);

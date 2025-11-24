@@ -22,7 +22,7 @@ public class GameOver implements Screen {
     }
 
     @Override
-    public void repaint(Graphics2D g) {}
+    public void repaint(Graphics2D G) {}
 
     @Override
     public void input(KeyEvent e) {}

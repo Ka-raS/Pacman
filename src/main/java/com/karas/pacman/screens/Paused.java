@@ -34,10 +34,10 @@ public class Paused implements Screen {
     }
 
     @Override
-    public void repaint(Graphics2D g) {
-        _PlayingScreen.repaint(g);
-        paintOverlay(g);
-        paintText(g);
+    public void repaint(Graphics2D G) {
+        _PlayingScreen.repaint(G);
+        paintOverlay(G);
+        paintText(G);
     }
 
     @Override
@@ -63,20 +63,20 @@ public class Paused implements Screen {
     }
 
 
-    private void paintOverlay(Graphics2D g) {
-        g.setColor(new Color(0, 0, 0, 192));
-        g.fillRect(0, 0, Configs.UI.WINDOW_SIZE.ix(), Configs.UI.WINDOW_SIZE.iy());
+    private void paintOverlay(Graphics2D G) {
+        G.setColor(new Color(0, 0, 0, 192));
+        G.fillRect(0, 0, Configs.UI.WINDOW_SIZE.ix(), Configs.UI.WINDOW_SIZE.iy());
     }
 
-    private void paintText(Graphics2D g) {
-        g.setColor(Color.WHITE);
-        g.setFont(_FontLarge);
-        g.drawString("PAUSED", Configs.UI.WINDOW_SIZE.ix()/3, Configs.UI.WINDOW_SIZE.iy()/3);
+    private void paintText(Graphics2D G) {
+        G.setColor(Color.WHITE);
+        G.setFont(_FontLarge);
+        G.drawString("PAUSED", Configs.UI.WINDOW_SIZE.ix()/3, Configs.UI.WINDOW_SIZE.iy()/3);
 
-        g.setFont(_FontSmall);
+        G.setFont(_FontSmall);
         for (int i = 0; i < _OPTIONS.length; i++) {
-            g.setColor(i == _selectedOption ? Color.YELLOW : Color.WHITE);
-            g.drawString(_OPTIONS[i], Configs.UI.WINDOW_SIZE.ix()/3, Configs.UI.WINDOW_SIZE.iy()/2 + i * (_FontSmall.getSize() + 10));
+            G.setColor(i == _selectedOption ? Color.YELLOW : Color.WHITE);
+            G.drawString(_OPTIONS[i], Configs.UI.WINDOW_SIZE.ix()/3, Configs.UI.WINDOW_SIZE.iy()/2 + i * (_FontSmall.getSize() + 10));
         }
     }
 

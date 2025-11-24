@@ -123,12 +123,12 @@ public class Game extends JPanel implements Enterable, Runnable, KeyListener {
 
     /** {@code JPanel} method. Gets called by EDT. */
     @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        Graphics2D g2D = (Graphics2D) g;
-        _screenManager.repaint(g2D);
+    protected void paintComponent(Graphics G) {
+        super.paintComponent(G);
+        Graphics2D G2D = (Graphics2D) G;
+        _screenManager.repaint(G2D);
         ++_frameCount;
-        g2D.dispose();
+        G2D.dispose();
         Toolkit.getDefaultToolkit().sync();
     }
 

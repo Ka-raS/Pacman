@@ -28,12 +28,12 @@ public class Score implements Drawable {
     }
 
     @Override
-    public void repaint(Graphics2D g) {
+    public void repaint(Graphics2D G) {
         if (_duration <= 0.0)
             return;
 
         Vector2 p = _position.mul(Configs.SCALING);
-        g.drawImage(_Image, p.ix(), p.iy(), Configs.UI.SPRITE_SIZE, Configs.UI.SPRITE_SIZE, null);
+        G.drawImage(_Image, p.ix(), p.iy(), Configs.UI.SPRITE_SIZE, Configs.UI.SPRITE_SIZE, null);
     }
 
 

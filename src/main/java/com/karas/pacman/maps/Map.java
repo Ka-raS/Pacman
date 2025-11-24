@@ -1,8 +1,6 @@
 package com.karas.pacman.maps;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 
 import com.karas.pacman.Configs;
@@ -26,11 +24,11 @@ public class Map implements ImmutableMap, Drawable {
         return centered[0] && centered[1];
     }
 
-    public Map(BufferedImage MapImage, Tile[][] tileMap, Sound WaSound, Sound KaSound) {
+    public Map(Tile[][] tileMap, BufferedImage MapImage, BufferedImage[] PelletImages, Sound WaSound, Sound KaSound) {
         setTilemap(tileMap);
-        _pelletImage = createOval(Configs.UI.PELLET_SIZE);
-        _powerupImage = createOval(Configs.UI.POWERUP_SIZE);
         _MapImage = MapImage;
+        _PelletImage = PelletImages[0];
+        _PowerupImage = PelletImages[1];
         _WakaSounds = new Sound[] { WaSound, KaSound };
     }
 
@@ -104,9 +102,9 @@ public class Map implements ImmutableMap, Drawable {
     }
 
     @Override
-    public void repaint(Graphics2D g) {
-        g.drawImage(_MapImage, 0, 0, Configs.UI.MAP_SIZE.ix(), Configs.UI.MAP_SIZE.iy(), null);
-        paintConsumables(g);
+    public void repaint(Graphics2D G) {
+        G.drawImage(_MapImage, 0, 0, Configs.UI.MAP_SIZE.ix(), Configs.UI.MAP_SIZE.iy(), null);
+        paintConsumables(G);
     }
 
 
@@ -123,16 +121,6 @@ public class Map implements ImmutableMap, Drawable {
             && 0 <= x && x < Configs.Grid.MAP_SIZE.ix();
     }
 
-    private static BufferedImage createOval(int size) {
-        BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g2 = image.createGraphics();        
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);    
-        g2.setColor(Color.WHITE);
-        g2.fillOval(0, 0, size, size);
-        g2.dispose();
-        return image;
-    }
-
     private void setTilemap(Tile[][] tileMap) {
         _tiles = tileMap;
         _pelletCounts = 0;
@@ -142,27 +130,25 @@ public class Map implements ImmutableMap, Drawable {
                     ++_pelletCounts;
     }
 
-    private void paintConsumables(Graphics2D g) {
+    private void paintConsumables(Graphics2D G) {
         for (int y = 0; y < _tiles.length; ++y)
             for (int x = 0; x < _tiles[y].length; ++x) {
                 BufferedImage image = switch (_tiles[y][x]) {
-                    case PELLET  -> _pelletImage;
-                    case POWERUP -> _powerupImage;
+                    case PELLET  -> _PelletImage;
+                    case POWERUP -> _PowerupImage;
                     default      -> null;
                 };
                 if (image == null)
                     continue;
                 int offset = (Configs.UI.TILE_SIZE - image.getWidth() / 2);
                 Vector2 p = toPixelVector2(new Vector2(x, y)).mul(Configs.SCALING).add(offset);
-                g.drawImage(image, p.ix(), p.iy(), null);
+                G.drawImage(image, p.ix(), p.iy(), null);
                 
             }
     }
 
     private final Sound[] _WakaSounds;
-    private final BufferedImage _MapImage;
-
-    private final BufferedImage _pelletImage, _powerupImage; // TODO
+    private final BufferedImage _MapImage, _PelletImage, _PowerupImage;
 
     private int _pelletCounts;
     private Tile[][] _tiles;

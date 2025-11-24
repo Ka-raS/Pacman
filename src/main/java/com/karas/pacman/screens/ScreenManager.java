@@ -41,8 +41,8 @@ public class ScreenManager implements Enterable, Drawable {
     }
 
     @Override
-    public void repaint(Graphics2D g) {
-        _current.repaint(g);
+    public void repaint(Graphics2D G) {
+        _current.repaint(G);
     }
 
     /** @return shouldExit */

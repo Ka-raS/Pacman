@@ -31,10 +31,10 @@ public class MainMenu implements Screen {
     }
 
     @Override
-    public void repaint(Graphics2D g) {
-        paintBackgroundColor(g);
-        paintTitleImage(g);
-        paintPlayText(g);
+    public void repaint(Graphics2D G) {
+        paintBackgroundColor(G);
+        paintTitleImage(G);
+        paintPlayText(G);
     }
 
     @Override
@@ -44,26 +44,26 @@ public class MainMenu implements Screen {
     }
 
 
-    private void paintBackgroundColor(Graphics2D g) {
-        g.setColor(new Color(0, 16, 48));
-        g.fillRect(0, 0, Configs.UI.WINDOW_SIZE.ix(), Configs.UI.WINDOW_SIZE.iy());
+    private void paintBackgroundColor(Graphics2D G) {
+        G.setColor(new Color(0, 16, 48));
+        G.fillRect(0, 0, Configs.UI.WINDOW_SIZE.ix(), Configs.UI.WINDOW_SIZE.iy());
     }
 
-    private void paintTitleImage(Graphics2D g) {
+    private void paintTitleImage(Graphics2D G) {
         final double Ratio = (double) _TitleImage.getWidth() / _TitleImage.getHeight();
         int sizeX = (int) (Configs.UI.WINDOW_SIZE.ix() * 0.6);
         int sizeY = (int) (sizeX / Ratio);
         int x = (Configs.UI.WINDOW_SIZE.ix() - sizeX) / 2;
         int y = (Configs.UI.WINDOW_SIZE.iy() - sizeY) / 2 - (int) (64 * Configs.SCALING);
-        g.drawImage(_TitleImage, x, y, sizeX, sizeY, null);
+        G.drawImage(_TitleImage, x, y, sizeX, sizeY, null);
     }
 
-    private void paintPlayText(Graphics2D g) {
-        g.setColor(Color.YELLOW);
-        g.setFont(_Font);
-        int x = (Configs.UI.WINDOW_SIZE.ix() - g.getFontMetrics(_Font).stringWidth(_PLAY_TEXT)) / 2;
+    private void paintPlayText(Graphics2D G) {
+        G.setColor(Color.YELLOW);
+        G.setFont(_Font);
+        int x = (Configs.UI.WINDOW_SIZE.ix() - G.getFontMetrics(_Font).stringWidth(_PLAY_TEXT)) / 2;
         int y = (int) (Configs.UI.WINDOW_SIZE.iy() * 0.8);
-        g.drawString(_PLAY_TEXT, x, y);
+        G.drawString(_PLAY_TEXT, x, y);
     }
 
     private static final String _PLAY_TEXT = "PRESS ENTER TO PLAY!";

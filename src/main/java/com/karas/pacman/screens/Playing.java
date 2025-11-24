@@ -90,12 +90,12 @@ public class Playing implements Screen {
     }
 
     @Override
-    public void repaint(Graphics2D g) {
-        _map.repaint(g);
-        paintTotalScore(g);
-        _pacman.repaint(g);
-        _ghosts.forEach(ghost -> ghost.repaint(g));
-        _scores.forEach(score -> score.repaint(g));
+    public void repaint(Graphics2D G) {
+        _map.repaint(G);
+        paintTotalScore(G);
+        _pacman.repaint(G);
+        _ghosts.forEach(ghost -> ghost.repaint(G));
+        _scores.forEach(score -> score.repaint(G));
     }
 
     @Override
@@ -120,7 +120,7 @@ public class Playing implements Screen {
     
     private static Map createMap(ResourcesManager ResourcesMgr) {
         return new Map(
-            ResourcesMgr.getImage(Resource.MAP_IMAGE), ResourcesMgr.getTilemap(), 
+            ResourcesMgr.getTilemap(), ResourcesMgr.getImage(Resource.MAP_IMAGE), ResourcesMgr.getSprite(SpriteSheet.PELLETS),
             ResourcesMgr.getSound(Resource.EAT_WA_SOUND), ResourcesMgr.getSound(Resource.EAT_KA_SOUND)
         );
     }
@@ -284,15 +284,15 @@ public class Playing implements Screen {
         }
     }
 
-    private void paintTotalScore(Graphics2D g) {
+    private void paintTotalScore(Graphics2D G) {
         String text = String.format("%05d", _totalScore);
-        FontMetrics fm = g.getFontMetrics(_Font);
+        FontMetrics fm = G.getFontMetrics(_Font);
         int x = (Configs.UI.WINDOW_SIZE.ix() - fm.stringWidth(text)) / 2;
         int y = (Configs.UI.WINDOW_SIZE.iy() - fm.getHeight()) / 2;
         
-        g.setFont(_Font);
-        g.setColor(Color.CYAN);
-        g.drawString(text, x, y);
+        G.setFont(_Font);
+        G.setColor(Color.CYAN);
+        G.drawString(text, x, y);
     }
 
     private static final Logger _LOGGER = Logger.getLogger(Playing.class.getName());

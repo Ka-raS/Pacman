@@ -46,9 +46,9 @@ public class Sprite implements Drawable {
     }
 
     @Override
-    public void repaint(Graphics2D g) {
+    public void repaint(Graphics2D G) {
         Vector2 p = _position.mul(Configs.SCALING);
-        g.drawImage(_Images[_index + _offset], p.ix(), p.iy(), Configs.UI.SPRITE_SIZE, Configs.UI.SPRITE_SIZE, null);
+        G.drawImage(_Images[_index + _offset], p.ix(), p.iy(), Configs.UI.SPRITE_SIZE, Configs.UI.SPRITE_SIZE, null);
     }
 
 

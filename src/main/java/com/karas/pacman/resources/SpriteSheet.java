@@ -6,7 +6,7 @@ public enum SpriteSheet {
     BLINKY(2, 0, 8), PREY_GHOST( 6, 0, 4),
     PINKY( 3, 0, 8), DEAD_GHOST( 6, 4, 4),
     INKY(  4, 0, 8), SCORES(     7, 0, 4),
-    CLYDE( 5, 0, 8);
+    CLYDE( 5, 0, 8), PELLETS(   -1,-1, 2); // selfmade
 
     public int getRow() { return _row; }
     public int getCol() { return _col; }

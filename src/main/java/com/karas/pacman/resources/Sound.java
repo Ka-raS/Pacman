@@ -42,9 +42,9 @@ public class Sound implements Exitable {
 
 
     private static final Sound _DUMMY = new Sound() {
-        @Override public void exit() {}
-        @Override public void play() {}
-        @Override public void loop() {}
+        @Override public void exit()  {}
+        @Override public void play()  {}
+        @Override public void loop()  {}
         @Override public void pause() {}
     };
 

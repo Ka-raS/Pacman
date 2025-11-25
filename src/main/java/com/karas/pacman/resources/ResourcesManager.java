@@ -71,9 +71,9 @@ public class ResourcesManager implements Exitable {
         if (size <= 0)
             size = Configs.PX.FONT_SIZE_SMALL;
         return switch (size) {
-            case Configs.PX.FONT_SIZE_SMALL -> _fonts[0];
-            case Configs.PX.FONT_SIZE_MEDIUM  -> _fonts[1];
-            case Configs.PX.FONT_SIZE_LARGE -> _fonts[2];
+            case Configs.PX.FONT_SIZE_SMALL  -> _fonts[0];
+            case Configs.PX.FONT_SIZE_MEDIUM -> _fonts[1];
+            case Configs.PX.FONT_SIZE_LARGE  -> _fonts[2];
             default -> _fonts[1].deriveFont((float) size);
         };
     }

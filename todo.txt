@@ -1,0 +1,4 @@
+- ScoreManager database
+- GameOver Screen
+- fix Pinky starting position
+- review <Class<? extends Screen> Screen::update(double deltaTime)

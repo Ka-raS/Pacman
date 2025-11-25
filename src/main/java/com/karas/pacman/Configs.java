@@ -6,7 +6,7 @@ public class Configs {
 
     public static final int UPS_TARGET = 144;
     public static final int FPS_TARGET = Integer.MAX_VALUE;
-    public static final double SCALING = 3.0;   // CHANGE THIS
+    public static final double SCALE   = 3.0;
     public static final String TITLE   = "Pacman";
 
     public static class Color {
@@ -102,7 +102,7 @@ public class Configs {
         public static final int SPRITE_SIZE  = 16;
         public static final int POWERUP_SIZE = 6;
         public static final Vector2 MAP_SIZE = Grid.MAP_SIZE.mul(TILE_SIZE);
-        public static final Vector2 WINDOW_SIZE = MAP_SIZE; // TODO: temporary
+        public static final Vector2 WINDOW_SIZE = MAP_SIZE;
         
         // per second
         public static final int PACMAN_SPEED = 56; 

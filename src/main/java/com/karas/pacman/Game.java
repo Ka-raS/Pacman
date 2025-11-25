@@ -4,6 +4,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
@@ -15,7 +17,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import com.karas.pacman.commons.Exitable;
-import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.resources.Resource;
 import com.karas.pacman.resources.ResourcesManager;
 import com.karas.pacman.screens.ScreenManager;
@@ -24,28 +25,41 @@ public class Game extends JPanel implements Exitable, Runnable, KeyListener {
 
     public Game() {
         _running = false;
-        _frame = new JFrame(Configs.TITLE);
+        _scale = Configs.SCALE;
         _thread = new Thread(this, "Game Thread");
         _resourceManager = new ResourcesManager();
         _screenManager = new ScreenManager(_resourceManager);
 
-        _frame.setResizable(false);
-        _frame.setIconImage(_resourceManager.getImage(Resource.WINDOW_ICON));
-        _frame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) { exit(); }
-        });
-        
-        setBackground(Configs.Color.BACKGROUND);
+        setFocusable(true);
         setDoubleBuffered(true);
-        
-        final Vector2 SIZE = Configs.PX.WINDOW_SIZE.mul(Configs.SCALING);
-        setPreferredSize(new Dimension(SIZE.ix(), SIZE.iy()));
+        setBackground(Configs.Color.BACKGROUND);
+        setPreferredSize(new Dimension(
+            (int) (Configs.PX.WINDOW_SIZE.ix() * _scale),
+            (int) (Configs.PX.WINDOW_SIZE.iy() * _scale)
+        ));
 
+        _frame = new JFrame(Configs.TITLE);
         _frame.add(this);
         _frame.addKeyListener(this);
+        _frame.addWindowListener(new WindowAdapter() {
+            @Override 
+            public void windowClosing(WindowEvent e) { 
+                exit(); 
+            }
+        });
+        _frame.addComponentListener(new ComponentAdapter() {
+            @Override public void componentResized(ComponentEvent e) { 
+                _scale = Math.min(
+                    getWidth() / Configs.PX.WINDOW_SIZE.x(),
+                    getHeight() / Configs.PX.WINDOW_SIZE.y()
+                );
+            }
+        });
+
         _frame.pack();
+        _frame.setResizable(true);
         _frame.setLocationRelativeTo(null);
+        _frame.setIconImage(_resourceManager.getImage(Resource.WINDOW_ICON));
     }
 
     public synchronized void enter() {
@@ -108,19 +122,15 @@ public class Game extends JPanel implements Exitable, Runnable, KeyListener {
         _screenManager.input(e);
     }
 
-    @Override
-    public void keyReleased(KeyEvent e) {}
-
-    @Override
-    public void keyTyped(KeyEvent e) {}
-
+    @Override public void keyReleased(KeyEvent e) {}
+    @Override public void keyTyped(KeyEvent e)    {}
 
     /** {@code JPanel} method. Gets called by EDT. */
     @Override
     protected void paintComponent(Graphics G) {
         super.paintComponent(G);
         Graphics2D G2D = (Graphics2D) G;
-        G2D.scale(Configs.SCALING, Configs.SCALING);
+        G2D.scale(_scale, _scale);
         _screenManager.repaint(G2D);
         ++_frameCount;
         G2D.dispose();
@@ -166,5 +176,6 @@ public class Game extends JPanel implements Exitable, Runnable, KeyListener {
     private int _updateCount;
     private volatile int _frameCount;
     private double _updateTimer, _repaintTimer, _logTimer;
+    private volatile double _scale;
 
 }

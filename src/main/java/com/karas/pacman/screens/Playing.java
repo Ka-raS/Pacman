@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import com.karas.pacman.Configs;
+import com.karas.pacman.audio.Sound;
 import com.karas.pacman.commons.Direction;
 import com.karas.pacman.entities.Ghost;
 import com.karas.pacman.entities.Pacman;
@@ -17,12 +18,11 @@ import com.karas.pacman.entities.ghosts.Blinky;
 import com.karas.pacman.entities.ghosts.Clyde;
 import com.karas.pacman.entities.ghosts.Inky;
 import com.karas.pacman.entities.ghosts.Pinky;
+import com.karas.pacman.graphics.ScoreSprite;
 import com.karas.pacman.maps.Map;
 import com.karas.pacman.resources.Resource;
 import com.karas.pacman.resources.ResourcesManager;
-import com.karas.pacman.resources.Sound;
 import com.karas.pacman.resources.SpriteSheet;
-import com.karas.pacman.scores.Score;
 
 public class Playing implements Screen {
 
@@ -141,9 +141,9 @@ public class Playing implements Screen {
         return List.of(blinky, pinky, inky, clyde);
     }
 
-    private List<Score> createScores(ResourcesManager ResourcesMgr) {
+    private List<ScoreSprite> createScores(ResourcesManager ResourcesMgr) {
         return Arrays.stream(ResourcesMgr.getSprite(SpriteSheet.SCORES))
-                     .map(Score::new).toList();
+                     .map(ScoreSprite::new).toList();
     }
 
     private static enum State {
@@ -300,7 +300,7 @@ public class Playing implements Screen {
     private final Map _map;
     private final Pacman _pacman;
     private final List<Ghost> _ghosts;
-    private final List<Score> _scores;
+    private final List<ScoreSprite> _scores;
 
     private State _state;
     private double _stateCooldown;

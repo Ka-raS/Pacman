@@ -1,4 +1,4 @@
-package com.karas.pacman.screens;
+package com.karas.pacman.graphics;
 
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import com.karas.pacman.Configs;
 import com.karas.pacman.commons.Paintable;
 import com.karas.pacman.commons.Vector2;
+import com.karas.pacman.screens.Screen;
 
 public class MenuNavigator implements Paintable {
 

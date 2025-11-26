@@ -1,4 +1,4 @@
-package com.karas.pacman.resources;
+package com.karas.pacman.audio;
 
 import javax.sound.sampled.Clip;
 

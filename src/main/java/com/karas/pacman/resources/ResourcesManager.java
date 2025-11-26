@@ -22,6 +22,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JOptionPane;
 
 import com.karas.pacman.Configs;
+import com.karas.pacman.audio.Sound;
 import com.karas.pacman.commons.Exitable;
 import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.maps.Tile;
@@ -72,9 +73,8 @@ public class ResourcesManager implements Exitable {
             size = Configs.PX.FONT_SIZE_SMALL;
         return switch (size) {
             case Configs.PX.FONT_SIZE_SMALL  -> _fonts[0];
-            case Configs.PX.FONT_SIZE_MEDIUM -> _fonts[1];
+            default                          -> _fonts[1];
             case Configs.PX.FONT_SIZE_LARGE  -> _fonts[2];
-            default -> _fonts[1].deriveFont((float) size);
         };
     }
 

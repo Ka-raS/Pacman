@@ -6,8 +6,8 @@ public class Configs {
 
     public static final int UPS_TARGET = 144;
     public static final int FPS_TARGET = Integer.MAX_VALUE;
-    public static final double SCALE   = 3.0;
     public static final String TITLE   = "Pacman";
+    public static final double DEFAULT_SCALE = 3.0;
 
     public static class Color {
 

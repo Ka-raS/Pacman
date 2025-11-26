@@ -3,12 +3,12 @@ package com.karas.pacman.entities.ghosts;
 import java.awt.image.BufferedImage;
 
 import com.karas.pacman.Configs;
+import com.karas.pacman.audio.Sound;
 import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.entities.Ghost;
 import com.karas.pacman.entities.ImmutableEntity;
 import com.karas.pacman.maps.ImmutableMap;
-import com.karas.pacman.resources.Sound;
 
 public class Clyde extends Ghost {
     

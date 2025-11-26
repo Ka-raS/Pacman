@@ -1,4 +1,4 @@
-package com.karas.pacman.scores;
+package com.karas.pacman.graphics;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -7,9 +7,9 @@ import com.karas.pacman.Configs;
 import com.karas.pacman.commons.Paintable;
 import com.karas.pacman.commons.Vector2;
 
-public class Score implements Paintable {
+public class ScoreSprite implements Paintable {
     
-    public Score(BufferedImage image) {
+    public ScoreSprite(BufferedImage image) {
         _Image = image;
         _duration = 0.0;
         _position = null;

@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import com.karas.pacman.Configs;
 import com.karas.pacman.commons.Vector2;
+import com.karas.pacman.graphics.MenuNavigator;
 import com.karas.pacman.resources.ResourcesManager;
 
 public class Paused implements Screen {

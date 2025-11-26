@@ -3,10 +3,10 @@ package com.karas.pacman.entities;
 import java.awt.image.BufferedImage;
 
 import com.karas.pacman.Configs;
+import com.karas.pacman.audio.Sound;
 import com.karas.pacman.commons.Direction;
+import com.karas.pacman.graphics.EntitySprite;
 import com.karas.pacman.maps.ImmutableMap;
-import com.karas.pacman.resources.Sound;
-import com.karas.pacman.resources.Sprite;
 
 public class Pacman extends Entity {
 
@@ -15,12 +15,12 @@ public class Pacman extends Entity {
             Configs.Grid.PACMAN_POSITION,
             Direction.RIGHT,
             Configs.PX.PACMAN_SPEED,
-            new Sprite(BaseImages, Direction.RIGHT.ordinal() * 2, 2),
+            new EntitySprite(BaseImages, Direction.RIGHT.ordinal() * 2, 2),
             MapRef
         );
         _nextDirection = Direction.RIGHT;
         _baseSprite = getSprite();
-        _deathSprite = new Sprite(DeathImages, 0, 8);
+        _deathSprite = new EntitySprite(DeathImages, 0, 8);
         _DeathSound = DeathSound;
         enterState(State.PREY);
     }
@@ -85,7 +85,7 @@ public class Pacman extends Entity {
 
     private final Sound _DeathSound;
     
-    private final Sprite _baseSprite, _deathSprite;
+    private final EntitySprite _baseSprite, _deathSprite;
 
     private volatile Direction _nextDirection;
 

@@ -25,7 +25,7 @@ public class Game extends JPanel implements Exitable, Runnable, KeyListener {
 
     public Game() {
         _running = false;
-        _scale = Configs.SCALE;
+        _scale = Configs.DEFAULT_SCALE;
         _thread = new Thread(this, "Game Thread");
         _resourceManager = new ResourcesManager();
         _screenManager = new ScreenManager(_resourceManager);

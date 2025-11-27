@@ -5,9 +5,9 @@ import java.awt.event.KeyEvent;
 
 import com.karas.pacman.resources.ResourcesManager;
 
-public class GameOver implements Screen {
+public class HighScores implements Screen {
 
-    public GameOver(ResourcesManager ResourcesMgr) {
+    public HighScores(ResourcesManager ResourcesMgr) {
     }
 
     @Override
@@ -18,7 +18,7 @@ public class GameOver implements Screen {
 
     @Override
     public Class<? extends Screen> update(double deltaTime) {
-        return null;
+        return MainMenu.class;
     }
 
     @Override

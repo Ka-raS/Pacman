@@ -219,7 +219,7 @@ public class Playing implements Screen {
 
             case LOST, WON:
                 if (_stateCooldown < 0.0)
-                    _nextScreen = GameOver.class;
+                    _nextScreen = HighScores.class;
                 break;
 
             case POWERUP:

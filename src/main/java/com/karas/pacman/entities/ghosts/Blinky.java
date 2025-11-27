@@ -23,13 +23,6 @@ public class Blinky extends Ghost {
         );
     }
 
-    @Override
-    public void reset() {
-        setGridPosition(Configs.Grid.BLINKY_POSITION);
-        setDirection(Direction.LEFT);
-        enterState(State.HUNTER);
-    }
-
 
     @Override
     protected Vector2 findHunterTarget(ImmutableEntity PacmanRef) {

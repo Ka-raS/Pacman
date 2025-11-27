@@ -7,9 +7,9 @@ public interface ImmutableMap {
     
     int getPelletCounts();
 
-    boolean isNotWall(Vector2 gridPosition);
+    boolean isMovableAt(Vector2 gridPosition);
 
-    boolean isValidDirection(Vector2 position, Direction nextDirection);
+    boolean canMoveInDirection(Vector2 position, Direction nextDirection);
 
     Vector2 tryTunneling(Vector2 position, Direction direction);
 

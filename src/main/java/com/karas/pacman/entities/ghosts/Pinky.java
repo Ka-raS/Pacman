@@ -23,13 +23,6 @@ public class Pinky extends Ghost {
         );
     }
 
-    @Override
-    public void reset() {
-        setGridPosition(Configs.Grid.PINKY_POSITION);
-        setDirection(Direction.UP);
-        enterState(State.HUNTER);
-    }
-
 
     @Override
     protected Vector2 findHunterTarget(ImmutableEntity PacmanRef) {

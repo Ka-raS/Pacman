@@ -59,21 +59,26 @@ public class Map implements ImmutableMap, Paintable {
     }
 
     @Override
-    public boolean isNotWall(Vector2 gridPosition) {
+    public boolean isMovableAt(Vector2 gridPosition) {
         int x = gridPosition.ix(), y = gridPosition.iy();
+        if ((double) x != gridPosition.x() || (double) y != gridPosition.y())
+            return checkBound(gridPosition);
         return checkBound(gridPosition) && _tiles[y][x] != Tile.WALL;
     }
 
     @Override
-    public boolean isValidDirection(Vector2 position, Direction nextDirection) {
+    public boolean canMoveInDirection(Vector2 position, Direction nextDirection) {
         boolean[] centered = isXYCenteredInTile(position);
         boolean isXCentered = centered[0];
         boolean isYCentered = centered[1];
         
         if (isXCentered && isYCentered) {
             Vector2 p = toGridVector2(position).add(nextDirection.toVector2());
-            return isNotWall(p);
+            return isMovableAt(p);
         }
+        
+        //  currentDirection.isVertical() -> isXCentered
+        // !currentDirection.isVertical() -> isYCentered
         return nextDirection.isVertical() ? isXCentered : isYCentered;
     }
 

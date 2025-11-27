@@ -34,7 +34,8 @@ public class Pacman extends Entity {
     public void update(double deltaTime) {
         switch (getState()) {
             case PREY, HUNTER:
-                setDirection(_nextDirection);
+                if (canMoveInDirection(_nextDirection))
+                    setDirection(_nextDirection);
                 move(deltaTime);
                 getSprite().setOffset(getDirection().ordinal() * 2);
 
@@ -55,6 +56,7 @@ public class Pacman extends Entity {
         setDirection(Direction.RIGHT);
         _nextDirection = Direction.RIGHT;
         setSprite(_baseSprite);
+        _DeathSound.reset();
         enterState(State.PREY);
     }
 
@@ -63,9 +65,11 @@ public class Pacman extends Entity {
     protected void handleStateTransition(State nextState) {
         switch (nextState) {
             case IDLE:
+                _DeathSound.pause();
                 break;
 
             case DEAD:
+                _deathSprite.setOffset(0);
                 setSprite(_deathSprite);
                 _DeathSound.play();
                 break;

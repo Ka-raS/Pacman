@@ -162,6 +162,10 @@ public class Playing implements Screen {
 
                 _pacman.enterState(Pacman.State.IDLE);
                 _ghosts.forEach(ghost -> ghost.enterState(Ghost.State.IDLE));
+
+                _NewGameSound.reset();
+                _NormalSound.reset();
+                _PowerupSound.reset();
                 _NewGameSound.play();
                 break;
 

@@ -23,13 +23,6 @@ public class Clyde extends Ghost {
         );
     }
 
-    @Override
-    public void reset() {
-        setGridPosition(Configs.Grid.CLYDE_POSITION);
-        setDirection(Direction.UP);
-        enterState(State.HUNTER);
-    }
-
 
     @Override
     protected Vector2 findHunterTarget(ImmutableEntity PacmanRef) {

@@ -35,6 +35,14 @@ public abstract class Ghost extends Entity {
         }
     }
 
+    @Override
+    public void reset() {
+        setGridPosition(_startGridPosition);
+        _prevGridPos = null;
+        setDirection(_startDirection);
+        _DeathSound.reset();
+        enterState(State.HUNTER);
+    }
 
     protected Ghost(Vector2 gridPosition, Direction direction, int speed, 
                     BufferedImage[] BaseImages, BufferedImage[] PreyImages, BufferedImage[] DeathImages, Sound DeathSound,
@@ -46,9 +54,13 @@ public abstract class Ghost extends Entity {
         );
         _prevGridPos = null;
         _baseSpeed = speed;
+        _startGridPosition = gridPosition;
+        _startDirection = direction;
+
         _baseSprite = getSprite();
         _preySprite = new EntitySprite(PreyImages, 0, 2);
         _deathSprite = new EntitySprite(DeathImages, direction.ordinal(), 1);
+
         _DeathSound = DeathSound;
         _Pacman = PacmanRef;
 
@@ -80,6 +92,7 @@ public abstract class Ghost extends Entity {
                 break;
 
             case IDLE:
+                _DeathSound.pause();
                 break;
         }
     }
@@ -122,7 +135,7 @@ public abstract class Ghost extends Entity {
     private EnumSet<Direction> getValidDirections() {
         EnumSet<Direction> result = EnumSet.noneOf(Direction.class);
         for (Direction d : Direction.values())
-            if (isValidDirection(d))
+            if (canMoveInDirection(d))
                 result.add(d);
 
         if (result.size() > 1)
@@ -141,6 +154,8 @@ public abstract class Ghost extends Entity {
     private final ImmutableEntity _Pacman;
     
     private final int _baseSpeed;
+    private final Vector2 _startGridPosition;
+    private final Direction _startDirection;
     private final EntitySprite _baseSprite, _preySprite, _deathSprite;
 
     private Vector2 _prevGridPos;

@@ -79,22 +79,22 @@ public abstract class Entity implements ImmutableEntity, Paintable {
         return Map.isCenteredInTile(_position);
     }
 
-    protected boolean isValidDirection(Direction d) {
-        return _Map.isValidDirection(_position, d);
+    protected boolean canMoveInDirection(Direction d) {
+        return _Map.canMoveInDirection(_position, d);
     }
 
     protected void setDirection(Direction d) {
-        if (_direction != d && isValidDirection(d))
+        if (_direction != null)
             _direction = d;
     }
 
     protected void setGridPosition(Vector2 gridPosition) {
-        if (_Map.isNotWall(gridPosition))
+        if (_Map.isMovableAt(gridPosition))
             _position = Map.toPixelVector2(gridPosition);
     }
 
     protected void move(double deltaTime) {
-        if (isValidDirection(_direction))
+        if (canMoveInDirection(_direction))
             _position = _position.add(_direction.toVector2().mul(deltaTime * _speed));
         
         Vector2 tunneled = _Map.tryTunneling(_position, _direction);

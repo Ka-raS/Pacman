@@ -40,12 +40,16 @@ public class Sound implements Exitable {
             _clip.stop();
     }
 
+    public void reset() {
+        _clip.setFramePosition(0);
+    }
 
     private static final Sound _DUMMY = new Sound() {
         @Override public void exit()  {}
         @Override public void play()  {}
         @Override public void loop()  {}
         @Override public void pause() {}
+        @Override public void reset() {}
     };
 
     private Sound() {

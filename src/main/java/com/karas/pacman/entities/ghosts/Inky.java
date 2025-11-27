@@ -24,13 +24,6 @@ public class Inky extends Ghost {
         _Blinky = BlinkyRef;
     }
 
-    @Override
-    public void reset() {
-        setGridPosition(Configs.Grid.INKY_POSITION);
-        setDirection(Direction.DOWN);
-        enterState(State.HUNTER);
-    }
-
 
     @Override
     protected Vector2 findHunterTarget(ImmutableEntity PacmanRef) {

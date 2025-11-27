@@ -249,6 +249,7 @@ public class Playing implements Screen {
             if (_pacman.collidesWith(ghost))
                 switch (ghost.getState()) {
                     case HUNTER:
+                        currentSound.pause();
                         enterState(State.LOST);
                         return;
                 

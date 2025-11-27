@@ -77,9 +77,8 @@ public class Map implements ImmutableMap, Paintable {
             return isMovableAt(p);
         }
         
-        //  currentDirection.isVertical() -> isXCentered
-        // !currentDirection.isVertical() -> isYCentered
-        return nextDirection.isVertical() ? isXCentered : isYCentered;
+        boolean currentDirectionIsVertical = isXCentered;
+        return nextDirection.isVertical() == currentDirectionIsVertical;
     }
 
     /** @return Tile value eaten at {@code position} */

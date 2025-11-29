@@ -39,7 +39,7 @@ public class EntitySprite implements Paintable {
 
     public void update(double deltaTime) {
         _timer += deltaTime;
-        if (_timer > Configs.Time.SPRITE_INTERVAL) {
+        if (_timer >= Configs.Time.SPRITE_INTERVAL) {
             _timer = 0.0;
             _index = (_index + 1) % _frameCount;
         }

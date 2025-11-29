@@ -4,120 +4,126 @@ import java.awt.Graphics2D;
 
 import com.karas.pacman.Configs;
 import com.karas.pacman.commons.Direction;
+import com.karas.pacman.commons.Paintable;
 import com.karas.pacman.commons.Vector2;
+import com.karas.pacman.graphics.EntitySprite;
 import com.karas.pacman.maps.ImmutableMap;
 import com.karas.pacman.maps.Map;
-import com.karas.pacman.resources.Sprites;
 
-public abstract class Entity implements ImmutableEntity {
+public abstract class Entity implements ImmutableEntity, Paintable {
     
     public static enum State {
-        HUNTER, PREY, DEAD;
+        IDLE, HUNTER, PREY, DEAD;
     }
 
-    public abstract void enterState(State nextState);
-
     public abstract void update(double deltaTime);
+
+    public abstract void reset();
+
+    public State getState() {
+        return _state;
+    }
+
+    public void enterState(State nextState) {
+        if (nextState == null)
+            return;
+
+        handleStateTransition(nextState);
+        if (_state != State.IDLE)
+            _preIdleState = _state;
+        _state = nextState;
+    }
 
     @Override
     public Vector2 getPosition() {
         return _position;
-    }
+    } 
 
     @Override
-    public Vector2 getNearestMovableGridPos() {
-        return _Map.nearestMovableGridPos(_position);
-    }
-
-    @Override
-    public boolean collidesWith(ImmutableEntity other) {
-        final double BOUND = Configs.PX.SPRITE_SIZE * 0.8;
-        Vector2 delta = _position.sub(other.getPosition()).abs();
-        return delta.x() < BOUND && delta.y() < BOUND;
-    }
-
-    public void toggleIdle() {
-        _isIdle = !_isIdle;
-    }
-
-    public void repaint(Graphics2D g) {
-        Vector2 p = _position.mul(Configs.SCALING);
-        g.drawImage(_sprites.getFrame(), p.ix(), p.iy(), Configs.UI.SPRITE_SIZE, Configs.UI.SPRITE_SIZE, null);
-    }
-
-
-    protected Entity(Vector2 position, Direction direction, double speed, Sprites sprites, ImmutableMap map) {
-        _position = position;
-        _direction = direction;
-        _speed = speed;
-        _sprites = sprites;
-        _isIdle = false;
-        _Map = map;
-    }
-
-    protected boolean isIdle() {
-        return _isIdle;
-    }
-
-    protected Direction getDirection() {
+    public Direction getDirection() {
         return _direction;
     }
 
-    protected void setDirection(Direction d) {
-        if (_direction != d && _Map.validDirection(_position, d))
-            _direction = d;
+    @Override
+    public Vector2 getGridPosition() {
+        return Map.toGridVector2(_position);
     }
 
-    // protected boolean validNextDirection(Direction d) {
-    //     return _Map.validDirection(_position, d);
-    // }
+    public boolean collidesWith(Entity other) {
+        double delta = _position.distance(other._position);
+        return delta < Configs.PX.SPRITE_SIZE * 0.7;
+    }
+
+    public void enterPreIdleState() {
+        enterState(_preIdleState);
+    }
+
+    @Override
+    public void repaint(Graphics2D G) {
+        _Sprite.setPosition(_position);
+        _Sprite.repaint(G);
+    }
+
+
+    protected Entity(Vector2 gridPosition, Direction direction, int speed, EntitySprite SpriteRef, ImmutableMap MapRef) {
+        _position = Map.toPixelVector2(gridPosition);
+        _direction = direction;
+        _speed = speed;
+        _Sprite = SpriteRef;
+        _Map = MapRef;
+    }
+
+    protected abstract void handleStateTransition(State nextState);
 
     protected boolean isCenteredInTile() {
         return Map.isCenteredInTile(_position);
     }
 
-    protected Vector2 getGridPos() {
-        return Map.toGridVector2(_position);
+    protected boolean canMoveInDirection(Direction d) {
+        return _Map.canMoveInDirection(_position, d);
+    }
+
+    protected void setDirection(Direction d) {
+        if (_direction != null)
+            _direction = d;
+    }
+
+    protected void setGridPosition(Vector2 gridPosition) {
+        if (_Map.isMovableAt(gridPosition))
+            _position = Map.toPixelVector2(gridPosition);
     }
 
     protected void move(double deltaTime) {
-        if (_Map.validDirection(_position, _direction))
+        if (canMoveInDirection(_direction))
             _position = _position.add(_direction.toVector2().mul(deltaTime * _speed));
+        
+        Vector2 tunneled = _Map.tryTunneling(_position, _direction);
+        if (tunneled != null)
+            _position = tunneled;
     }
 
-    protected void setSprites(Sprites sprites) {
-        if (sprites != null)
-            _sprites = sprites;
+    protected void setSpeed(int speed) {
+        if (speed >= 0)
+            _speed = speed;
     }
 
-    protected void setSpritesOffset(int offset) {
-        _sprites.setOffset(offset);
+    protected EntitySprite getSprite() {
+        return _Sprite;
     }
 
-    protected void setSpritesFrameCount(int count) {
-        _sprites.setFrameCount(count);
+    protected void setSprite(EntitySprite SpriteRef) {
+        if (SpriteRef != null)
+            _Sprite = SpriteRef;
     }
 
-    protected void updateSprites(double deltaTime) {
-        _sprites.update(deltaTime);
-    }
-
-    protected Entity.State getState() {
-        return _state;
-    }
-
-    protected void setState(Entity.State state) {
-        if (state != null)
-            _state = state;
-    }
 
     private final ImmutableMap _Map;
+    
+    private EntitySprite _Sprite;
 
-    private double _speed;
+    private int _speed;
     private Vector2 _position;
     private Direction _direction;
-    private Entity.State _state;
-    private Sprites _sprites;
-    private boolean _isIdle;
+    private State _state, _preIdleState;
 
 }

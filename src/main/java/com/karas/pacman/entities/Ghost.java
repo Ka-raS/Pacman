@@ -1,165 +1,163 @@
 package com.karas.pacman.entities;
 
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.Queue;
+import java.awt.image.BufferedImage;
+import java.util.EnumSet;
 
+import com.karas.pacman.Configs;
+import com.karas.pacman.audio.Sound;
 import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Vector2;
+import com.karas.pacman.graphics.EntitySprite;
 import com.karas.pacman.maps.ImmutableMap;
 import com.karas.pacman.maps.Map;
-import com.karas.pacman.resources.SpriteSheet;
-import com.karas.pacman.resources.Sprites;
 
 public abstract class Ghost extends Entity {
 
-    public boolean hasCaughtPacman() {
-        return getState() == Entity.State.HUNTER && _caughtPacman;
-    }
-
     public void enableFlashing() {
-        if (getState() == Entity.State.PREY)
-            setSpritesFrameCount(4);
-    }
-
-    @Override
-    public void enterState(Entity.State nextState) {
-        if ((getState() == Entity.State.HUNTER && nextState == Entity.State.PREY)
-         || (getState() == Entity.State.PREY   && nextState != Entity.State.DEAD))
-            enterStateInternal(nextState);
+        if (getState() == State.PREY)
+            getSprite().setFrameCount(4);
     }
 
     @Override
     public void update(double deltaTime) {
-        if (isIdle()) {
-            updateSprites(deltaTime);
-            return;
+        switch (getState()) {
+            case DEAD:
+                if (isAtHomePosition())
+                    enterState(State.HUNTER);
+            
+            default:
+                updateDirection();
+                move(deltaTime);
+
+            case IDLE:
+                getSprite().update(deltaTime);
+                break;
         }
-
-        // update direction and stuffs
-        boolean earlyReturn = switch (getState()) {
-            case HUNTER -> updateHunter();
-            case PREY   -> updatePrey();
-            case DEAD   -> updateDead();
-        };
-        if (earlyReturn)
-            return;
-
-        move(deltaTime);
-        updateSprites(deltaTime);
     }
-  
 
-    protected Ghost(Vector2 gridPos, Direction direction, double speed, SpriteSheet spriteName, ImmutableEntity pacman, ImmutableMap map) {
+    @Override
+    public void reset() {
+        setGridPosition(_startGridPosition);
+        _prevGridPos = null;
+        setDirection(_startDirection);
+        _DeathSound.reset();
+        enterState(State.HUNTER);
+    }
+
+    protected Ghost(Vector2 gridPosition, Direction direction, int speed, 
+                    BufferedImage[] BaseImages, BufferedImage[] PreyImages, BufferedImage[] DeathImages, Sound DeathSound,
+                    ImmutableEntity PacmanRef, ImmutableMap MapRef) {
         super(
-            Map.toPixelVector2(gridPos),
-            direction,
-            speed,
-            null, // set in enterStateInternal()
-            map
+            gridPosition, direction, speed,
+            new EntitySprite(BaseImages, direction.ordinal() * 2, 2),
+            MapRef
         );
-        _nextDirections = new ArrayDeque<>(32);
-        _Pacman = pacman;
-        enterStateInternal(Entity.State.HUNTER);
+        _prevGridPos = null;
+        _baseSpeed = speed;
+        _startGridPosition = gridPosition;
+        _startDirection = direction;
+
+        _baseSprite = getSprite();
+        _preySprite = new EntitySprite(PreyImages, 0, 2);
+        _deathSprite = new EntitySprite(DeathImages, direction.ordinal(), 1);
+
+        _DeathSound = DeathSound;
+        _Pacman = PacmanRef;
+
+        enterState(State.HUNTER);
     }
 
-    protected abstract Vector2 getHomeGridPos();
-    
-    protected abstract SpriteSheet getSpriteName();
+    protected abstract Vector2 findHunterTarget(ImmutableEntity PacmanRef);
 
-    protected abstract Collection<Direction> findPathToPacman(Vector2 begin, Vector2 target);
-    
-    protected abstract Collection<Direction> findPathToRunaway(Vector2 begin, Vector2 target);
-
-    protected abstract Collection<Direction> findPathToHome(Vector2 begin, Vector2 target);
-
-
-    private void enterStateInternal(Entity.State nextState) {
+    @Override
+    protected void handleStateTransition(State nextState) {
         switch (nextState) {
             case HUNTER:
-                _caughtPacman = false;
-                setSprites(new Sprites(getSpriteName(), getDirection().ordinal() * 2, 2));
+                setSpeed(_baseSpeed);
+                _baseSprite.setOffset(getDirection().ordinal() * 2);
+                setSprite(_baseSprite);
                 break;
 
             case PREY:
-                setSprites(new Sprites(SpriteSheet.PREY_GHOST, 0, 2));
+                setSpeed(Configs.PX.GHOST_PREY_SPEED);
+                _preySprite.setFrameCount(2);
+                setSprite(_preySprite);
                 break;
 
             case DEAD:
-                if (getState() == Entity.State.PREY)
-                    System.out.println(getClass().getSimpleName() + " eaten!");
-                setSprites(new Sprites(SpriteSheet.DEAD_GHOST, getDirection().ordinal(), 1));
+                setSpeed(Configs.PX.GHOST_DEAD_SPEED);
+                _deathSprite.setOffset(getDirection().ordinal());
+                setSprite(_deathSprite);
+                _DeathSound.play();
+                break;
+
+            case IDLE:
+                _DeathSound.pause();
                 break;
         }
-        setState(nextState);
     }
 
-    private boolean updateHunter() {
-        _caughtPacman |= collidesWith(_Pacman);
-        
-        final boolean RETURN = false;
-        if (!isCenteredInTile())
-            return RETURN;
 
-        Vector2 currGridPos = getGridPos();
-        if (currGridPos.equals(_prevGridPos))
-            return RETURN;
-
+    private void updateDirection() {
+        Vector2 currGridPos = getGridPosition();
+        if ((!isCenteredInTile() || currGridPos.equals(_prevGridPos)) && _prevGridPos != null)
+            return;
         _prevGridPos = currGridPos;
-        if (_nextDirections.isEmpty())
-            _nextDirections.addAll(findPathToPacman(currGridPos, _Pacman.getNearestMovableGridPos()));
-        
-        setDirection(_nextDirections.poll());
-        setSpritesOffset(getDirection().ordinal() * 2);
-        return RETURN;
-    }
 
-    private boolean updatePrey() {
-        if (collidesWith(_Pacman)) {
-            enterStateInternal(Entity.State.DEAD);
-            return true;
+        EnumSet<Direction> validDirections = getValidDirections();
+        if (validDirections.isEmpty())
+            return;
+
+        switch (getState()) {
+            case HUNTER -> {
+                Vector2 target = findHunterTarget(_Pacman);
+                Direction nextDir = currGridPos.closestTo(target, validDirections);
+                setDirection(nextDir);
+                getSprite().setOffset(nextDir.ordinal() * 2);
+            }
+
+            case PREY -> {
+                Vector2 threat = _Pacman.getGridPosition();
+                Direction nextDir = currGridPos.furthestFrom(threat, validDirections);
+                setDirection(nextDir);
+            }
+                
+            case DEAD -> {
+                Direction nextDir = currGridPos.closestTo(Configs.Grid.GHOST_HOME, validDirections);
+                setDirection(nextDir);
+                getSprite().setOffset(nextDir.ordinal());
+            }
+            
+            case IDLE -> {}
         }
-
-        final boolean RETURN = false;
-        if (!isCenteredInTile())
-            return RETURN;
-
-        Vector2 currGridPos = getGridPos();
-        if (currGridPos.equals(_prevGridPos))
-            return RETURN;
-        
-        _prevGridPos = currGridPos;
-        if (_nextDirections.isEmpty())
-            _nextDirections.addAll(findPathToRunaway(currGridPos, _Pacman.getNearestMovableGridPos()));
-        setDirection(_nextDirections.poll());
-        return RETURN;
     }
 
-    private boolean updateDead() {
-        if (!isCenteredInTile())
-            return false;
+    private EnumSet<Direction> getValidDirections() {
+        EnumSet<Direction> result = EnumSet.noneOf(Direction.class);
+        for (Direction d : Direction.values())
+            if (canMoveInDirection(d))
+                result.add(d);
 
-        Vector2 currGridPos = getGridPos();
-        if (currGridPos.equals(getHomeGridPos())) {
-            enterStateInternal(Entity.State.HUNTER);
-            return true;
-        }
-
-        final boolean RETURN = false;
-        if (currGridPos.equals(_prevGridPos))
-            return RETURN;
-        
-        _prevGridPos = currGridPos;
-        if (_nextDirections.isEmpty())
-            _nextDirections.addAll(findPathToHome(currGridPos, _Pacman.getNearestMovableGridPos()));
-        setDirection(_nextDirections.poll());
-        setSpritesOffset(getDirection().ordinal());
-        return RETURN;
+        if (result.size() > 1)
+            result.remove(getDirection().opposite());
+        return result;
     }
 
+    private boolean isAtHomePosition() {
+        Vector2 p = getPosition().sub(HOME_POSITION).abs();
+        return p.ix() <= 1.0 && p.iy() <= 1.0;
+    }
+
+    private static final Vector2 HOME_POSITION = Map.toPixelVector2(Configs.Grid.GHOST_HOME);
+
+    private final Sound _DeathSound;
     private final ImmutableEntity _Pacman;
+    
+    private final int _baseSpeed;
+    private final Vector2 _startGridPosition;
+    private final Direction _startDirection;
+    private final EntitySprite _baseSprite, _preySprite, _deathSprite;
+
     private Vector2 _prevGridPos;
-    private Queue<Direction> _nextDirections;
-    private boolean _caughtPacman;
 
 }

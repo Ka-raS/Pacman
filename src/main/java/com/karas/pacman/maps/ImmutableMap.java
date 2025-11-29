@@ -5,12 +5,12 @@ import com.karas.pacman.commons.Vector2;
 
 public interface ImmutableMap {
     
-    int getDotCounts();
+    int getPelletCounts();
 
-    boolean validDirection(Vector2 position, Direction nextDirection);
+    boolean isMovableAt(Vector2 gridPosition);
 
-    boolean validGridDirection(Vector2 gridPos, Direction nextDirection);
+    boolean canMoveInDirection(Vector2 position, Direction nextDirection);
 
-    Vector2 nearestMovableGridPos(Vector2 position);
+    Vector2 tryTunneling(Vector2 position, Direction direction);
 
 }

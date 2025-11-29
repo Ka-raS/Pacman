@@ -10,14 +10,14 @@ import com.karas.pacman.entities.Ghost;
 import com.karas.pacman.entities.ImmutableEntity;
 import com.karas.pacman.maps.ImmutableMap;
 
-public class Blinky extends Ghost {
+public class Pinky extends Ghost {
     
-    public Blinky(ImmutableEntity PacmanRef, ImmutableMap MapRef, BufferedImage[] BaseImages, 
-                  BufferedImage[] PreyImages, BufferedImage[] DeathImages, Sound DeathSound) {
+    public Pinky(ImmutableEntity PacmanRef, ImmutableMap MapRef, BufferedImage[] BaseImages, 
+                 BufferedImage[] PreyImages, BufferedImage[] DeathImages, Sound DeathSound) {
         super(
-            Configs.Grid.BLINKY_POSITION,
-            Direction.LEFT,
-            Configs.PX.BLINKY_SPEED,
+            Configs.Grid.PINKY_POSITION,
+            Direction.UP,
+            Configs.PX.PINKY_SPEED,
             BaseImages, PreyImages, DeathImages, DeathSound,
             PacmanRef, MapRef
         );
@@ -26,7 +26,9 @@ public class Blinky extends Ghost {
 
     @Override
     protected Vector2 findHunterTarget(ImmutableEntity PacmanRef) {
-        return PacmanRef.getGridPosition();
+        Direction pacmanDir = PacmanRef.getDirection();
+        Vector2 pacmanPredict = PacmanRef.getGridPosition().add(pacmanDir.toVector2().mul(4));
+        return pacmanPredict;
     }
-    
+
 }

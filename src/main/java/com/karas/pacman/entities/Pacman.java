@@ -1,54 +1,98 @@
 package com.karas.pacman.entities;
 
+import java.awt.image.BufferedImage;
+
 import com.karas.pacman.Configs;
+import com.karas.pacman.audio.Sound;
 import com.karas.pacman.commons.Direction;
+import com.karas.pacman.graphics.EntitySprite;
 import com.karas.pacman.maps.ImmutableMap;
-import com.karas.pacman.maps.Map;
-import com.karas.pacman.resources.SpriteSheet;
-import com.karas.pacman.resources.Sprites;
 
 public class Pacman extends Entity {
 
-    public Pacman(ImmutableMap map) {
+    public Pacman(ImmutableMap MapRef, BufferedImage[] BaseImages, BufferedImage[] DeathImages, Sound DeathSound) {
         super(
-            Map.toPixelVector2(Configs.Grid.PACMAN_POS),
+            Configs.Grid.PACMAN_POSITION,
             Direction.RIGHT,
             Configs.PX.PACMAN_SPEED,
-            new Sprites(SpriteSheet.PACMAN, 0, 2),    
-            map
+            new EntitySprite(BaseImages, Direction.RIGHT.ordinal() * 2, 2),
+            MapRef
         );
         _nextDirection = Direction.RIGHT;
-        enterState(Entity.State.PREY);
-        
+        _baseSprite = getSprite();
+        _deathSprite = new EntitySprite(DeathImages, 0, 8);
+        _DeathSound = DeathSound;
+        enterState(State.PREY);
     }
 
     public void setNextDirection(Direction d) {
-        _nextDirection = d;
-    }
-
-    @Override
-    public void enterState(Entity.State nextState) {
-        if (getState() == Entity.State.DEAD)
-            return;
-
-        if (nextState != Entity.State.DEAD)
-            setSpritesOffset(getDirection().ordinal() * 2);
-        else
-            setSprites(new Sprites(SpriteSheet.DEAD_PACMAN, 0, 8));
-
-        setState(nextState);
+        if (d != null)
+            _nextDirection = d;
     }
 
     @Override
     public void update(double deltaTime) {
-        if (!isIdle()) {
-            setDirection(_nextDirection);
-            setSpritesOffset(getDirection().ordinal() * 2);
-            move(deltaTime);
+        switch (getState()) {
+            case PREY, HUNTER:
+                if (canMoveInDirection(_nextDirection))
+                    setDirection(_nextDirection);
+                move(deltaTime);
+                getSprite().setOffset(getDirection().ordinal() * 2);
+
+            case IDLE:
+                getSprite().update(deltaTime);
+                break;
+        
+            case DEAD:
+                if (!getSprite().isAnimationEnded())
+                    getSprite().update(deltaTime);
+                break;
         }
-        updateSprites(deltaTime);
     }
 
+    @Override
+    public void reset() {
+        setGridPosition(Configs.Grid.PACMAN_POSITION);
+        setDirection(Direction.RIGHT);
+        _nextDirection = Direction.RIGHT;
+        setSprite(_baseSprite);
+
+        if (_deathSprite.isAnimationEnded())
+            _deathSprite.update(Configs.Time.SPRITE_INTERVAL);
+        _DeathSound.reset();
+        enterState(State.PREY);
+    }
+
+
+    @Override
+    protected void handleStateTransition(State nextState) {
+        switch (nextState) {
+            case IDLE:
+                _DeathSound.pause();
+                break;
+
+            case DEAD:
+                _deathSprite.setOffset(0);
+                setSprite(_deathSprite);
+                _DeathSound.play();
+                break;
+            
+            case PREY:
+                setSpeed(Configs.PX.PACMAN_SPEED);
+                getSprite().setOffset(getDirection().ordinal() * 2);
+                break;
+
+            case HUNTER:
+                setSpeed(Configs.PX.PACMAN_HUNTER_SPEED);
+                getSprite().setOffset(getDirection().ordinal() * 2);
+                break;
+        }
+    }
+
+
+    private final Sound _DeathSound;
+    
+    private final EntitySprite _baseSprite, _deathSprite;
 
     private volatile Direction _nextDirection;
 

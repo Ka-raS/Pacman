@@ -1,13 +1,14 @@
 package com.karas.pacman.entities;
 
+import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Vector2;
 
 public interface ImmutableEntity {
     
     Vector2 getPosition();
 
-    Vector2 getNearestMovableGridPos();
+    Direction getDirection();
 
-    boolean collidesWith(ImmutableEntity other);
+    Vector2 getGridPosition();
 
 }

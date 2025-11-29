@@ -1,16 +1,16 @@
 package com.karas.pacman.screens;
 
-import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 
-public interface Screen {
+import com.karas.pacman.commons.Exitable;
+import com.karas.pacman.commons.Paintable;
+
+public interface Screen extends Exitable, Paintable {
     
-    void enter();
+    void enter(Class<? extends Screen> previous);
 
-    /** @return the next Screen, can be itself */
-    Screen update(double deltaTime);
-
-    void repaint(Graphics2D g);
+    /** @return next screen.class to switch, current screen.class to remain, or null to exit */
+    Class<? extends Screen> update(double deltaTime);
 
     void input(KeyEvent e);
     

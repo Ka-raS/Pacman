@@ -1,157 +1,328 @@
 package com.karas.pacman.screens;
 
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 import com.karas.pacman.Configs;
+import com.karas.pacman.audio.Sound;
 import com.karas.pacman.commons.Direction;
-import com.karas.pacman.entities.Entity;
+import com.karas.pacman.data.ScoreDatabase;
 import com.karas.pacman.entities.Ghost;
 import com.karas.pacman.entities.Pacman;
 import com.karas.pacman.entities.ghosts.Blinky;
+import com.karas.pacman.entities.ghosts.Clyde;
+import com.karas.pacman.entities.ghosts.Inky;
+import com.karas.pacman.entities.ghosts.Pinky;
+import com.karas.pacman.graphics.ScoreSprite;
 import com.karas.pacman.maps.Map;
-import com.karas.pacman.maps.Tile;
+import com.karas.pacman.resources.Resource;
+import com.karas.pacman.resources.ResourcesManager;
+import com.karas.pacman.resources.SpriteSheet;
 
 public class Playing implements Screen {
 
-    public Playing() {
-        _map = new Map();
-        _pacman = new Pacman(_map);
-        _ghosts = List.of(new Blinky(_pacman, _map));
-        _state = _preIdleState = State.NORMAL;
+    public Playing(ResourcesManager ResourcesMgr) {
+        _ResourcesManager = ResourcesMgr;
+        _ScoreDatabase = ResourcesMgr.getDatabase();
+
+        _map = createMap(ResourcesMgr);
+        _pacman = createPacman(_map, ResourcesMgr);
+        _ghosts = createGhosts(_pacman, _map, ResourcesMgr);
+        _scores = createScores(ResourcesMgr);
+
+        _totalScore = 0;
+        _state = null;
+        _stateCooldown = 0.0;
+        _nextScreen = Playing.class;
+
+        _FontMedium   = ResourcesMgr.getFont(Configs.PX.FONT_SIZE_MEDIUM);
+        _NewGameSound = ResourcesMgr.getSound(Resource.GAME_START_SOUND);
+        _NormalSound  = ResourcesMgr.getSound(Resource.GAME_NORMAL_SOUND);
+        _PowerupSound = ResourcesMgr.getSound(Resource.GAME_POWERUP_SOUND);
+        _WonSound     = ResourcesMgr.getSound(Resource.GAME_WON_SOUND);
     }
 
     @Override
-    public void enter() {
-        _nextScreen = this;
-        enterState(State.IDLE);
+    public void enter(Class<? extends Screen> previous) {
+        _nextScreen = Playing.class;
+
+        if (previous != Paused.class) {
+            enterState(State.START);
+            return;
+        }
+
+        _LOGGER.info("Resumed game!");
+        if (_state != State.START) {
+            _pacman.enterPreIdleState();
+            _ghosts.forEach(Ghost::enterPreIdleState);
+        }
+
+        switch (_state) {
+            case START   -> _NewGameSound.play();
+            case NORMAL  -> _NormalSound.loop();
+            case POWERUP -> _PowerupSound.loop();
+            case WON     -> _WonSound.play();
+            default      -> {}
+        };
     }
 
     @Override
-    public Screen update(double deltaTime) {
-        _pacman.update(deltaTime);
+    public void exit() {
+        _pacman.enterState(Pacman.State.IDLE);
+        _ghosts.forEach(ghost -> ghost.enterState(Ghost.State.IDLE));
+        _NewGameSound.pause();
+        _NormalSound.pause();
+        _PowerupSound.pause();
+        _WonSound.pause();
+    }        
+
+    @Override
+    public Class<? extends Screen> update(double deltaTime) {
+        _scores.forEach(score -> score.update(deltaTime));
         _ghosts.forEach(ghost -> ghost.update(deltaTime));
-        updateState(deltaTime);
+        _pacman.update(deltaTime);
+        
+        boolean notPaused = _nextScreen == Playing.class;
+        if (notPaused)
+            updateState(deltaTime);
         return _nextScreen;
     }
 
     @Override
-    public void repaint(Graphics2D g) {
-        _map.repaint(g);
-        _pacman.repaint(g);
-        _ghosts.forEach(ghost -> ghost.repaint(g));
+    public void repaint(Graphics2D G) {
+        _map.repaint(G);
+        paintTotalScore(G);
+        _pacman.repaint(G);
+        _ghosts.forEach(ghost -> ghost.repaint(G));
+        _scores.forEach(score -> score.repaint(G));
     }
 
     @Override
     public void input(KeyEvent e) {
-        if (e.getID() != KeyEvent.KEY_PRESSED)
-            return;
-
-        Direction d = null;
         switch (e.getKeyCode()) {
-            case KeyEvent.VK_UP,    KeyEvent.VK_W -> d = Direction.UP;
-            case KeyEvent.VK_RIGHT, KeyEvent.VK_D -> d = Direction.RIGHT;
-            case KeyEvent.VK_DOWN,  KeyEvent.VK_S -> d = Direction.DOWN;
-            case KeyEvent.VK_LEFT,  KeyEvent.VK_A -> d = Direction.LEFT;
+            case KeyEvent.VK_UP,    KeyEvent.VK_W -> _pacman.setNextDirection(Direction.UP);
+            case KeyEvent.VK_RIGHT, KeyEvent.VK_D -> _pacman.setNextDirection(Direction.RIGHT);
+            case KeyEvent.VK_DOWN,  KeyEvent.VK_S -> _pacman.setNextDirection(Direction.DOWN);
+            case KeyEvent.VK_LEFT,  KeyEvent.VK_A -> _pacman.setNextDirection(Direction.LEFT);
 
             case KeyEvent.VK_ESCAPE -> {
-                if (_nextScreen == this)
-                    _nextScreen = new Paused(this);
+                boolean hasNewScreen = _nextScreen != Playing.class;
+                if (!hasNewScreen)
+                    _nextScreen = Paused.class;
             }
         }
-        if (d != null)
-            _pacman.setNextDirection(d);
     }
 
     
-    private enum State {
-        IDLE, NORMAL, POWERUP, LOST, WON
+    private static Map createMap(ResourcesManager ResourcesMgr) {
+        return new Map(
+            ResourcesMgr.getTilemap(), ResourcesMgr.getImage(Resource.MAP_IMAGE), ResourcesMgr.getSprite(SpriteSheet.PELLETS),
+            ResourcesMgr.getSound(Resource.EAT_WA_SOUND), ResourcesMgr.getSound(Resource.EAT_KA_SOUND)
+        );
+    }
+
+    private static Pacman createPacman(Map MapRef, ResourcesManager ResourcesMgr) {
+        return new Pacman(MapRef,
+            ResourcesMgr.getSprite(SpriteSheet.PACMAN), ResourcesMgr.getSprite(SpriteSheet.DEAD_PACMAN),
+            ResourcesMgr.getSound(Resource.PACMAN_DEATH_SOUND)
+        );
+    }
+
+    private static List<Ghost> createGhosts(Pacman PacmanRef, Map MapRef, ResourcesManager ResourcesMgr) {
+        BufferedImage[] PreySprite  = ResourcesMgr.getSprite(SpriteSheet.PREY_GHOST);
+        BufferedImage[] DeathSprite = ResourcesMgr.getSprite(SpriteSheet.DEAD_GHOST);
+        Sound DeathSound = ResourcesMgr.getSound(Resource.GHOST_DEATH_SOUND);
+
+        Ghost blinky = new Blinky(PacmanRef, MapRef,         ResourcesMgr.getSprite(SpriteSheet.BLINKY), PreySprite, DeathSprite, DeathSound);
+        Ghost pinky  = new Pinky (PacmanRef, MapRef,         ResourcesMgr.getSprite(SpriteSheet.PINKY),  PreySprite, DeathSprite, DeathSound);
+        Ghost inky   = new Inky(  PacmanRef, MapRef, blinky, ResourcesMgr.getSprite(SpriteSheet.INKY),   PreySprite, DeathSprite, DeathSound);
+        Ghost clyde  = new Clyde (PacmanRef, MapRef,         ResourcesMgr.getSprite(SpriteSheet.CLYDE),  PreySprite, DeathSprite, DeathSound);
+        
+        return List.of(blinky, pinky, inky, clyde);
+    }
+
+    private List<ScoreSprite> createScores(ResourcesManager ResourcesMgr) {
+        return Arrays.stream(ResourcesMgr.getSprite(SpriteSheet.SCORES))
+                     .map(ScoreSprite::new).toList();
+    }
+
+    private static enum State {
+        START, NORMAL, POWERUP, LOST, WON
     }
 
     private void enterState(State nextState) {
         switch (nextState) {
-            case IDLE:
-                _stateTimer = Configs.IDLE_DURATION;
-                if (_state != State.IDLE)
-                    _preIdleState = _state;
-                _pacman.toggleIdle();
-                _ghosts.forEach(Ghost::toggleIdle);
+            case START:
+                _LOGGER.info("Started new playing!");
+                _totalScore = 0;
+                _stateCooldown = Configs.Time.STARTING_DURATION;
+                
+                _pacman.reset();
+                _ghosts.forEach(Ghost::reset);
+                _map.reset(_ResourcesManager.getTilemap());
+                for (Sound sound : List.of(_NewGameSound, _NormalSound, _PowerupSound, _WonSound))
+                    sound.reset();
+
+                _pacman.enterState(Pacman.State.IDLE);
+                _ghosts.forEach(ghost -> ghost.enterState(Ghost.State.IDLE));
+                _NewGameSound.play();
                 break;
 
             case NORMAL:
                 _pacman.enterState(Pacman.State.PREY);
-                _ghosts.forEach(ghost -> ghost.enterState(Entity.State.HUNTER));
+                for (Ghost ghost : _ghosts)
+                    if (ghost.getState() == Ghost.State.PREY) 
+                        ghost.enterState(Ghost.State.HUNTER);
+                _NormalSound.loop();
                 break;
 
             case POWERUP:
-                System.out.println("Powerup eaten!");
-                _stateTimer = Configs.POWERUP_DURATION;
-                _isGhostsFlashing = false;
+                _LOGGER.info("Powerup eaten!");
+                _stateCooldown = Configs.Time.POWERUP_DURATION;
                 _pacman.enterState(Pacman.State.HUNTER);
-                _ghosts.forEach(ghost -> ghost.enterState(Entity.State.PREY));
+                for (Ghost ghost : _ghosts)
+                    if (ghost.getState() != Ghost.State.DEAD)
+                        ghost.enterState(Ghost.State.PREY);
+                _PowerupSound.loop();
                 break;
 
             case LOST:
-                System.out.println("Game lost!");
-                _stateTimer = Configs.ENDGAME_DURATION;
+                _LOGGER.info("Game lost!");
+                _stateCooldown = Configs.Time.GAMELOST_DURATION;
                 _pacman.enterState(Pacman.State.DEAD);
-                _ghosts.forEach(Ghost::toggleIdle);
+                _ghosts.forEach(ghost -> ghost.enterState(Ghost.State.IDLE));
                 break;
 
             case WON:
-                System.out.println("Game won!");
-                _stateTimer = Configs.ENDGAME_DURATION;
-                _pacman.toggleIdle();;
-                _ghosts.forEach(Ghost::toggleIdle);
+                _LOGGER.info("Game won!");
+                _stateCooldown = Configs.Time.GAMEWON_DURATION;
+                _pacman.enterState(Pacman.State.IDLE);
+                _ghosts.forEach(ghost -> ghost.enterState(Ghost.State.IDLE));
+                _WonSound.play();
                 break;
         }
         _state = nextState;
     }
 
     private void updateState(double deltaTime) {
-        if (_stateTimer > 0.0)
-            _stateTimer -= deltaTime;
+        if (_stateCooldown > 0.0)
+            _stateCooldown -= deltaTime;
 
-            switch (_state) {
-            case IDLE:
-                if (_stateTimer < 0.0) {
-                    _pacman.toggleIdle();
-                    _ghosts.forEach(Ghost::toggleIdle);
-                    enterState(_preIdleState);
+        switch (_state) {
+            case START:
+                if (_stateCooldown < 0.0) {
+                    _pacman.enterState(Pacman.State.PREY);
+                    _ghosts.forEach(ghost -> ghost.enterState(Ghost.State.HUNTER));
+                    enterState(State.NORMAL);
+                }
+                break;
+
+            case LOST:
+                if (_stateCooldown < 0.0)
+                    _nextScreen = HighScores.class;
+                break;
+
+            case WON:
+                if (_stateCooldown < 0.0) {
+                    _ScoreDatabase.addEntry(_totalScore);
+                    _nextScreen = HighScores.class;
                 }
                 break;
 
             case POWERUP:
-                if (_stateTimer < 0.0)
+                if (_stateCooldown < 0.0) {
+                    _PowerupSound.pause();
                     enterState(State.NORMAL);
-                else if (!_isGhostsFlashing && _stateTimer < Configs.GHOST_FLASH_TIME) {
-                    _isGhostsFlashing = true;
+                    break;
+                } else if (_stateCooldown < Configs.Time.GHOST_FLASH_DURATION) // TODO: not the best
                     _ghosts.forEach(Ghost::enableFlashing);
-                }
 
-            case NORMAL:
-                if (_ghosts.stream().anyMatch(Ghost::hasCaughtPacman))
-                    enterState(State.LOST);
-                else if (_map.tryEatAt(_pacman.getPosition()) == Tile.POWERUP)
-                    enterState(State.POWERUP);
-                else if (_map.getDotCounts() == 0)
-                    enterState(State.WON);
+                handleCollision(_PowerupSound);
                 break;
 
-            case LOST, WON:
-                if (_stateTimer < 0.0)
-                    _nextScreen = null; // TODO: _nextScreen = new GameOver();
+            case NORMAL:
+                handleCollision(_NormalSound);
                 break;
         }
     }
 
-    private Map _map;
-    private Pacman _pacman;
-    private List<Ghost> _ghosts;
-    private State _state, _preIdleState;
-    private double _stateTimer;
-    private boolean _isGhostsFlashing;
-    private volatile Screen _nextScreen;
+    private void handleCollision(Sound currentSound) {
+        int _deadGhostCount = 0;
+        for (Ghost ghost : _ghosts)
+            if (ghost.getState() == Ghost.State.DEAD)
+                ++_deadGhostCount;
+
+        for (Ghost ghost : _ghosts)
+            if (_pacman.collidesWith(ghost))
+                switch (ghost.getState()) {
+                    case HUNTER:
+                        enterState(State.LOST);
+                        return;
+                
+                    case PREY:
+                        ghost.enterState(Ghost.State.DEAD);
+                        _LOGGER.info(ghost.getClass().getSimpleName() + " eaten!");
+                        _totalScore += Configs.Score.GHOST * (1 << _deadGhostCount);
+                        _scores.get(_deadGhostCount).setDisplay(ghost.getPosition());
+                        ++_deadGhostCount;
+                        break;
+
+                    default:
+                        break;
+                }
+
+        switch (_map.tryEatAt(_pacman.getPosition())) {
+            case PELLET:
+                _totalScore += Configs.Score.PELLET;
+                if (_map.getPelletCounts() == 0) {
+                    currentSound.pause();
+                    enterState(State.WON);
+                }
+                break;
+        
+            case POWERUP:
+                _totalScore += Configs.Score.POWERUP;
+                currentSound.pause();
+                enterState(State.POWERUP);
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    private void paintTotalScore(Graphics2D G) {
+        String text = String.format("%05d", _totalScore);
+        FontMetrics fm = G.getFontMetrics(_FontMedium);
+        int x = (Configs.PX.WINDOW_SIZE.ix() - fm.stringWidth(text)) / 2;
+        int y = (Configs.PX.WINDOW_SIZE.iy() - fm.getHeight()) / 2;
+        
+        G.setFont(_FontMedium);
+        G.setColor(Configs.Color.SCORE);
+        G.drawString(text, x, y);
+    }
+
+    private static final Logger _LOGGER = Logger.getLogger(Playing.class.getName());
+
+    private final Font _FontMedium;
+    private final Sound _NewGameSound, _NormalSound, _PowerupSound, _WonSound;
+    private final ScoreDatabase _ScoreDatabase;
+    private final ResourcesManager _ResourcesManager;
+
+    private final Map _map;
+    private final Pacman _pacman;
+    private final List<Ghost> _ghosts;
+    private final List<ScoreSprite> _scores;
+
+    private State _state;
+    private double _stateCooldown;
+    private int _totalScore;
+    private volatile Class<? extends Screen> _nextScreen;
 
 }

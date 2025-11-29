@@ -1,12 +1,15 @@
 package com.karas.pacman.commons;
 
+import java.util.EnumSet;
+
 public record Vector2(double x, double y) {
 
     public int ix() { return (int) x; }
     public int iy() { return (int) y; }
 
-    public Vector2 abs()  { return new Vector2(Math.abs(x),  Math.abs(y)); }
-    public Vector2 ceil() { return new Vector2(Math.ceil(x), Math.ceil(y)); }
+    public Vector2 abs()   { return new Vector2(Math.abs(x),   Math.abs(y)); }
+    public Vector2 ceil()  { return new Vector2(Math.ceil(x),  Math.ceil(y)); }
+    public Vector2 floor() { return new Vector2(Math.floor(x), Math.floor(y)); }
 
     public Vector2 add(double n) { return new Vector2(x + n, y + n); }
     public Vector2 sub(double n) { return new Vector2(x - n, y - n); }
@@ -17,19 +20,44 @@ public record Vector2(double x, double y) {
     public Vector2 add(Vector2 other) { return new Vector2(x + other.x, y + other.y); }
     public Vector2 sub(Vector2 other) { return new Vector2(x - other.x, y - other.y); }
 
-    public double heuristic(Vector2 other) { 
-        return Math.abs(x - other.x) + Math.abs(y - other.y); 
+    // public double distance(Vector2 other) {   // Manhattan
+    //     return Math.abs(x - other.x) + Math.abs(y - other.y);
+    // }
+    
+    public double distance(Vector2 other) {   // Euclidean
+        double dx = x - other.x;
+        double dy = y - other.y;
+        return Math.sqrt(dx * dx + dy * dy);
     }
     
-    public Direction toDirection() {
-        for (int pos = 0; pos < Direction.VECTORS.length; ++pos)
-            if (Direction.VECTORS[pos].equals(this))
-                return Direction.values()[pos];
-        return null;
+    // Not the best placement bth, maybe DirectionUtils.java?
+
+    public Direction furthestFrom(Vector2 other, EnumSet<Direction> directions) {
+        Direction result = null;
+        double maxDistance = -1.0;
+        for (Direction dir : directions) {
+            Vector2 next = this.add(dir.toVector2());
+            double distance = other.distance(next);
+            if (maxDistance < distance) {
+                maxDistance = distance;
+                result = dir;
+            }
+        }
+        return result;
     }
 
-    public Direction toDirection(Vector2 target) {
-        return target.sub(this).toDirection();
+    public Direction closestTo(Vector2 other, EnumSet<Direction> directions) {
+        Direction result = null;
+        double minDistance = Double.MAX_VALUE;
+        for (Direction dir : directions) {
+            Vector2 next = this.add(dir.toVector2());
+            double distance = other.distance(next);
+            if (minDistance > distance) {
+                minDistance = distance;
+                result = dir;
+            }
+        }
+        return result;
     }
 
 }

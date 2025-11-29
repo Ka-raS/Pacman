@@ -1,23 +1,22 @@
 package com.karas.pacman.maps;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 
 import com.karas.pacman.Configs;
+import com.karas.pacman.audio.Sound;
 import com.karas.pacman.commons.Direction;
+import com.karas.pacman.commons.Paintable;
 import com.karas.pacman.commons.Vector2;
-import com.karas.pacman.resources.ResourcesLoader;
 
-public class Map implements ImmutableMap {
+public class Map implements ImmutableMap, Paintable {
 
     public static Vector2 toGridVector2(Vector2 position) {
         return position.div(Configs.PX.TILE_SIZE).ceil();
     }
 
-    public static Vector2 toPixelVector2(Vector2 gridPos) {
-        return gridPos.sub(0.5).mul(Configs.PX.TILE_SIZE);
+    public static Vector2 toPixelVector2(Vector2 gridPosition) {
+        return gridPosition.sub(0.5).mul(Configs.PX.TILE_SIZE);
     }
 
     public static boolean isCenteredInTile(Vector2 position) {
@@ -25,105 +24,137 @@ public class Map implements ImmutableMap {
         return centered[0] && centered[1];
     }
 
-    public Map() {
-        _mapImage = ResourcesLoader.loadImage(Configs.MAP_PATH, true);
-        _tiles = ResourcesLoader.loadTilemap(
-            Configs.TILEMAP_PATH,
-            Configs.Grid.MAP_SIZE.iy(),
-            Configs.Grid.MAP_SIZE.ix()
-        );
+    public Map(Tile[][] tileMap, BufferedImage MapImage, BufferedImage[] PelletImages, Sound WaSound, Sound KaSound) {
+        setTilemap(tileMap);
+        _MapImage = MapImage;
+        _PelletImage = PelletImages[0];
+        _PowerupImage = PelletImages[1];
+        _WakaSounds = new Sound[] { WaSound, KaSound };
+    }
 
-        _dotCounts = 0;
-        for (Tile[] row : _tiles)
-            for (Tile tile : row)
-                if (tile == Tile.DOT)
-                    ++_dotCounts;
+    public void reset(Tile[][] tileMap) {
+        setTilemap(tileMap);
     }
 
     @Override
-    public int getDotCounts() {
-        return _dotCounts;
+    public int getPelletCounts() {
+        return _pelletCounts;
     }
 
     @Override
-    public boolean validDirection(Vector2 position, Direction nextDirection) {
+    public Vector2 tryTunneling(Vector2 position, Direction direction) {
+        if (!isCenteredInTile(position))
+            return null;
+
+        Vector2 p = toGridVector2(position);
+        if (!checkBound(p) || _tiles[p.iy()][p.ix()] != Tile.TUNNEL)
+            return null;
+
+        Vector2 dir = direction.opposite().toVector2();
+        p = dir.mul(Configs.Grid.MAP_SIZE.ix() - 1).add(p);
+        if (!checkBound(p) || _tiles[p.iy()][p.ix()] != Tile.TUNNEL)
+            return null;
+
+        return Map.toPixelVector2(p);
+    }
+
+    @Override
+    public boolean isMovableAt(Vector2 gridPosition) {
+        int x = gridPosition.ix(), y = gridPosition.iy();
+        if ((double) x != gridPosition.x() || (double) y != gridPosition.y())
+            return checkBound(gridPosition);
+        return checkBound(gridPosition) && _tiles[y][x] != Tile.WALL;
+    }
+
+    @Override
+    public boolean canMoveInDirection(Vector2 position, Direction nextDirection) {
         boolean[] centered = isXYCenteredInTile(position);
         boolean isXCentered = centered[0];
         boolean isYCentered = centered[1];
         
         if (isXCentered && isYCentered) {
             Vector2 p = toGridVector2(position).add(nextDirection.toVector2());
-            return _tiles[p.iy()][p.ix()] != Tile.WALL;
+            return isMovableAt(p);
         }
-        return nextDirection.isVertical() ? isXCentered : isYCentered;
+        
+        boolean currentDirectionIsVertical = isXCentered;
+        return nextDirection.isVertical() == currentDirectionIsVertical;
     }
 
-    @Override
-    public boolean validGridDirection(Vector2 gridPos, Direction nextDirection) {
-        Vector2 p = gridPos.add(nextDirection.toVector2());
-        return _tiles[p.iy()][p.ix()] != Tile.WALL;
-    }
-
-    @Override
-    public Vector2 nearestMovableGridPos(Vector2 position) {
-        return Map.toGridVector2(position); // TODO
-    }
-    
-    
     /** @return Tile value eaten at {@code position} */
     public Tile tryEatAt(Vector2 position) {
         if (isCenteredInTile(position))
             return Tile.NONE;
-
         Vector2 p = toGridVector2(position);
+        if (!checkBound(p))
+            return Tile.NONE;
+
         Tile tile = _tiles[p.iy()][p.ix()];
         switch (tile) {
-            case DOT:
-                --_dotCounts;
+            case PELLET:
+                _WakaSounds[_pelletCounts % 2].play();
+                --_pelletCounts;
+
             case POWERUP:
                 _tiles[p.iy()][p.ix()] = Tile.NONE;
+                break;
+                
             default:
                 break;
         }
         return tile;
     }
 
-    public void repaint(Graphics2D g) {
-        g.drawImage(_mapImage, 0, 0, Configs.UI.MAP_SIZE.ix(), Configs.UI.MAP_SIZE.iy(), null);
-
-        for (int y = 0; y < _tiles.length; ++y)
-            for (int x = 0; x < _tiles[y].length; ++x)
-                if (_tiles[y][x] == Tile.DOT || _tiles[y][x] == Tile.POWERUP) {
-                    BufferedImage image = _tiles[y][x] == Tile.DOT ? DOT_IMAGE : POWERUP_IMAGE;
-                    int offset = (Configs.UI.TILE_SIZE - image.getWidth() / 2);
-                    Vector2 p = toPixelVector2(new Vector2(x, y)).mul(Configs.SCALING).add(offset);
-                    g.drawImage(image, p.ix(), p.iy(), null);
-                }
+    @Override
+    public void repaint(Graphics2D G) {
+        G.drawImage(_MapImage, 0, 0, null);
+        paintConsumables(G);
     }
 
 
     /** @return { isXCentered, isYCentered } */
     private static boolean[] isXYCenteredInTile(Vector2 position) {
-        final int HALF_TILE = Configs.PX.TILE_SIZE / 2;
-        Vector2 p = position.mod(Configs.PX.TILE_SIZE).sub(HALF_TILE);
+        Vector2 p = position.mod(Configs.PX.TILE_SIZE).abs()
+                            .sub(Configs.PX.TILE_SIZE / 2);
         return new boolean[] { p.ix() == 0, p.iy() == 0 };
     }
 
-    private static BufferedImage createOval(int size) {
-        BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g2 = image.createGraphics();        
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);    
-        g2.setColor(Color.WHITE);
-        g2.fillOval(0, 0, size, size);
-        g2.dispose();
-        return image;
+    private static boolean checkBound(Vector2 gridPosition) {
+        int x = gridPosition.ix(), y = gridPosition.iy();
+        return 0 <= y && y < Configs.Grid.MAP_SIZE.iy()
+            && 0 <= x && x < Configs.Grid.MAP_SIZE.ix();
     }
 
-    private static final BufferedImage DOT_IMAGE = createOval(Configs.UI.DOT_SIZE);
-    private static final BufferedImage POWERUP_IMAGE = createOval(Configs.UI.POWERUP_SIZE);
+    private void setTilemap(Tile[][] tileMap) {
+        _tiles = tileMap;
+        _pelletCounts = 0;
+        for (Tile[] row : _tiles)
+            for (Tile tile : row)
+                if (tile == Tile.PELLET)
+                    ++_pelletCounts;
+    }
 
-    private int _dotCounts;
+    private void paintConsumables(Graphics2D G) {
+        for (int y = 0; y < _tiles.length; ++y)
+            for (int x = 0; x < _tiles[y].length; ++x) {
+                BufferedImage image = switch (_tiles[y][x]) {
+                    case PELLET  -> _PelletImage;
+                    case POWERUP -> _PowerupImage;
+                    default      -> null;
+                };
+                if (image == null)
+                    continue;
+                int offset = (Configs.PX.TILE_SIZE - image.getWidth() / 2);
+                Vector2 p = toPixelVector2(new Vector2(x, y)).add(offset);
+                G.drawImage(image, p.ix(), p.iy(), null);
+                
+            }
+    }
+
+    private final Sound[] _WakaSounds;
+    private final BufferedImage _MapImage, _PelletImage, _PowerupImage;
+
+    private int _pelletCounts;
     private Tile[][] _tiles;
-    private BufferedImage _mapImage;
 
 }

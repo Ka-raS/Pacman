@@ -15,9 +15,9 @@ public class Paused implements Screen {
     public Paused(Screen PlayingScreen, ResourcesManager ResourcesMgr) {
         _PlayingScreen = PlayingScreen;
         _FontLarge = ResourcesMgr.getFont(Configs.PX.FONT_SIZE_LARGE);
-
+        
         _navigator = new MenuNavigator(
-            new Vector2(Configs.PX.WINDOW_SIZE.ix() / 3, Configs.PX.WINDOW_SIZE.iy() / 2),
+            new Vector2(Configs.PX.WINDOW_SIZE.ix() * 0.375, Configs.PX.WINDOW_SIZE.iy() / 2),
             ResourcesMgr.getFont(Configs.PX.FONT_SIZE_SMALL),
             new MenuNavigator.MenuOption("Resume",    Playing.class),
             new MenuNavigator.MenuOption("Main Menu", MainMenu.class)
@@ -43,7 +43,8 @@ public class Paused implements Screen {
     public void repaint(Graphics2D G) {
         _PlayingScreen.repaint(G);
         paintOverlay(G);
-        paintText(G);
+        paintPausedText(G);
+        _navigator.repaint(G);
     }
 
     @Override
@@ -66,11 +67,10 @@ public class Paused implements Screen {
         G.fillRect(0, 0, Configs.PX.WINDOW_SIZE.ix(), Configs.PX.WINDOW_SIZE.iy());
     }
 
-    private void paintText(Graphics2D G) {
+    private void paintPausedText(Graphics2D G) {
         G.setColor(Configs.Color.TEXT);
         G.setFont(_FontLarge);
         G.drawString("PAUSED", Configs.PX.WINDOW_SIZE.ix() / 3, Configs.PX.WINDOW_SIZE.iy() / 3);
-        _navigator.repaint(G);
     }
 
     private static final Logger _LOGGER = Logger.getLogger(Paused.class.getName());

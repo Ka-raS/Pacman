@@ -45,13 +45,14 @@ public class Playing implements Screen {
         _NewGameSound = ResourcesMgr.getSound(Resource.GAME_START_SOUND);
         _NormalSound  = ResourcesMgr.getSound(Resource.GAME_NORMAL_SOUND);
         _PowerupSound = ResourcesMgr.getSound(Resource.GAME_POWERUP_SOUND);
+        _WonSound     = ResourcesMgr.getSound(Resource.GAME_WON_SOUND);
     }
 
     @Override
     public void enter(Class<? extends Screen> previous) {
         _nextScreen = Playing.class;
 
-        if (previous == MainMenu.class) {
+        if (previous != Paused.class) {
             enterState(State.START);
             return;
         }
@@ -66,7 +67,8 @@ public class Playing implements Screen {
             case START   -> _NewGameSound.play();
             case NORMAL  -> _NormalSound.loop();
             case POWERUP -> _PowerupSound.loop();
-            default -> {}
+            case WON     -> _WonSound.play();
+            default      -> {}
         };
     }
 
@@ -77,6 +79,7 @@ public class Playing implements Screen {
         _NewGameSound.pause();
         _NormalSound.pause();
         _PowerupSound.pause();
+        _WonSound.pause();
     }        
 
     @Override
@@ -159,16 +162,15 @@ public class Playing implements Screen {
                 _LOGGER.info("Started new playing!");
                 _totalScore = 0;
                 _stateCooldown = Configs.Time.STARTING_DURATION;
+                
                 _pacman.reset();
                 _ghosts.forEach(Ghost::reset);
                 _map.reset(_ResourcesManager.getTilemap());
+                for (Sound sound : List.of(_NewGameSound, _NormalSound, _PowerupSound, _WonSound))
+                    sound.reset();
 
                 _pacman.enterState(Pacman.State.IDLE);
                 _ghosts.forEach(ghost -> ghost.enterState(Ghost.State.IDLE));
-
-                _NewGameSound.reset();
-                _NormalSound.reset();
-                _PowerupSound.reset();
                 _NewGameSound.play();
                 break;
 
@@ -192,16 +194,17 @@ public class Playing implements Screen {
 
             case LOST:
                 _LOGGER.info("Game lost!");
-                _stateCooldown = Configs.Time.GAMEOVER_DURATION;
+                _stateCooldown = Configs.Time.GAMELOST_DURATION;
                 _pacman.enterState(Pacman.State.DEAD);
                 _ghosts.forEach(ghost -> ghost.enterState(Ghost.State.IDLE));
                 break;
 
             case WON:
                 _LOGGER.info("Game won!");
-                _stateCooldown = Configs.Time.GAMEOVER_DURATION;
+                _stateCooldown = Configs.Time.GAMEWON_DURATION;
                 _pacman.enterState(Pacman.State.IDLE);
                 _ghosts.forEach(ghost -> ghost.enterState(Ghost.State.IDLE));
+                _WonSound.play();
                 break;
         }
         _state = nextState;
@@ -308,7 +311,7 @@ public class Playing implements Screen {
     private static final Logger _LOGGER = Logger.getLogger(Playing.class.getName());
 
     private final Font _FontMedium;
-    private final Sound _NewGameSound, _NormalSound, _PowerupSound;
+    private final Sound _NewGameSound, _NormalSound, _PowerupSound, _WonSound;
     private final ScoreDatabase _ScoreDatabase;
     private final ResourcesManager _ResourcesManager;
 

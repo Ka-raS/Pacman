@@ -24,13 +24,14 @@ public class Configs {
 
     public static class Path {
 
-        public static final String WINDOW_ICON   = "/images/icon.png";
-        public static final String TITLE_IMAGE   = "/images/game_title.png";
-        public static final String MAP_IMAGE     = "/images/map.png";
-        public static final String SPRITE_SHEET  = "/images/spritesheet.png";
-        public static final String FONT          = "/fonts/Emulogic-zrEw.ttf";
-        public static final String TILEMAP       = "/tilemap.txt";
-        public static final String DATABASE_FILE = "/highscores.txt";
+        public static final String WINDOW_ICON     = "/images/icon.png";
+        public static final String TITLE_IMAGE     = "/images/game_title.png";
+        public static final String HIGHSCORE_IMAGE = "/images/highscore.png";
+        public static final String MAP_IMAGE       = "/images/map.png";
+        public static final String SPRITE_SHEET    = "/images/spritesheet.png";
+        public static final String FONT            = "/fonts/Emulogic-zrEw.ttf";
+        public static final String TILEMAP         = "/tilemap.txt";
+        public static final String DATABASE_FILE   = "/highscores.txt";
 
         public static final String EAT_WA_SOUND       = "/sounds/eat_wa.wav";
         public static final String EAT_KA_SOUND       = "/sounds/eat_ka.wav";
@@ -39,6 +40,7 @@ public class Configs {
         public static final String GAME_START_SOUND   = "/sounds/game_start.wav";
         public static final String GAME_NORMAL_SOUND  = "/sounds/game_normal.wav";
         public static final String GAME_POWERUP_SOUND = "/sounds/game_powerup.wav";
+        public static final String GAME_WON_SOUND     = "/sounds/game_won.wav";
 
         private Path() {}
 
@@ -51,9 +53,10 @@ public class Configs {
         public static final double SPRITE_INTERVAL      = 0.133;  // per sprite change
         public static final double SCORE_DURATION       = 1.0;
         public static final double POWERUP_DURATION     = 8.0;
-        public static final double GHOST_FLASH_DURATION = POWERUP_DURATION - 6.0; // when powerup is expiring
+        public static final double GHOST_FLASH_DURATION = POWERUP_DURATION * 0.25; // when powerup is expiring
         public static final double STARTING_DURATION    = 4.0;
-        public static final double GAMEOVER_DURATION    = 4.0;
+        public static final double GAMELOST_DURATION    = 2.0;
+        public static final double GAMEWON_DURATION     = 5.2;
 
         // TODO
         public static final double GHOST_SCATTER_DURATION = 7.0; 

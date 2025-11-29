@@ -15,7 +15,7 @@ public class MainMenu implements Screen {
     public MainMenu(ResourcesManager ResourcesMgr) {
         _TitleImage = ResourcesMgr.getImage(Resource.TITLE_IMAGE);
         _navigator = new MenuNavigator(
-            new Vector2(Configs.PX.WINDOW_SIZE.ix() / 3, Configs.PX.WINDOW_SIZE.iy() * 0.75),
+            new Vector2(Configs.PX.WINDOW_SIZE.ix() * 0.375, Configs.PX.WINDOW_SIZE.iy() * 0.75),
             ResourcesMgr.getFont(Configs.PX.FONT_SIZE_SMALL),
             new MenuNavigator.MenuOption("Start Game", Playing.class),
             new MenuNavigator.MenuOption("Exit Game",  null)
@@ -59,10 +59,10 @@ public class MainMenu implements Screen {
 
     private void paintTitleImage(Graphics2D G) {
         final double Ratio = (double) _TitleImage.getWidth() / _TitleImage.getHeight();
-        int sizeX = (int) (Configs.PX.WINDOW_SIZE.ix() * 0.6);
+        int sizeX = (int) (Configs.PX.WINDOW_SIZE.ix() * 0.75);
         int sizeY = (int) (sizeX / Ratio);
         int x = (Configs.PX.WINDOW_SIZE.ix() - sizeX) / 2;
-        int y = (Configs.PX.WINDOW_SIZE.iy() - sizeY) / 2 - 64;
+        int y = Configs.PX.WINDOW_SIZE.iy() / 8;
         G.drawImage(_TitleImage, x, y, sizeX, sizeY, null);
     }
 

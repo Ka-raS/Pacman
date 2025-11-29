@@ -209,7 +209,7 @@ public class ResourcesManager implements Exitable {
     private static EnumMap<Resource, Sound> initSoundMap() {
         Resource[] sounds = { 
             Resource.EAT_WA_SOUND, Resource.EAT_KA_SOUND, Resource.PACMAN_DEATH_SOUND, Resource.GHOST_DEATH_SOUND, 
-            Resource.GAME_START_SOUND, Resource.GAME_NORMAL_SOUND, Resource.GAME_POWERUP_SOUND
+            Resource.GAME_START_SOUND, Resource.GAME_NORMAL_SOUND, Resource.GAME_POWERUP_SOUND, Resource.GAME_WON_SOUND
         };
         EnumMap<Resource, Sound> soundMap = new EnumMap<>(Resource.class);
         
@@ -225,7 +225,7 @@ public class ResourcesManager implements Exitable {
     }
 
     private static EnumMap<Resource, BufferedImage> initImageMap() {
-        Resource[] images = { Resource.WINDOW_ICON, Resource.TITLE_IMAGE, Resource.MAP_IMAGE, Resource.SPRITE_SHEET };
+        Resource[] images = { Resource.WINDOW_ICON, Resource.TITLE_IMAGE, Resource.HIGHSCORE_IMAGE, Resource.MAP_IMAGE, Resource.SPRITE_SHEET };
         EnumMap<Resource, BufferedImage> imageMap = new EnumMap<>(Resource.class);
 
         for (Resource image : images) {
@@ -292,7 +292,7 @@ public class ResourcesManager implements Exitable {
             font = new Font("Arial", Font.PLAIN, (int) Configs.PX.FONT_SIZE_MEDIUM);
         }
 
-        return new Font[] { font.deriveFont(Configs.PX.FONT_SIZE_SMALL), font, font.deriveFont(Configs.PX.FONT_SIZE_LARGE) };
+        return new Font[] { font.deriveFont((float)Configs.PX.FONT_SIZE_SMALL), font, font.deriveFont((float)Configs.PX.FONT_SIZE_LARGE) };
     }
 
     private static ScoreDatabase initDatabase() {

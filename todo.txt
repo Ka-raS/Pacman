@@ -1,4 +1,5 @@
-- HighScores Screen
 - Ghost scatter mechanism
+- Ghost chases Pacman in MainMenu
+- Pacman eats Pellets in HighScore Screen
 - review <Class<? extends Screen> Screen::update(double deltaTime)
 - replace java.io with java.nio

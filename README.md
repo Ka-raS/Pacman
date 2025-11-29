@@ -20,7 +20,9 @@
 
 ## Download Prebuilt
 
-### Latest Release: https://github.com/Ka-raS/Pacman/releases/download/v1.0.0/pacman-1.0.0.jar
+### Latest Release: 
+
+https://github.com/Ka-raS/Pacman/releases/download/v1.0.0/pacman-1.0.0.jar
 
 ## Build And Run From Source
 

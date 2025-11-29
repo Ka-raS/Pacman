@@ -1,4 +1,4 @@
-# Pacman
+# Pacman - [GOOGLE DOCS](https://docs.google.com/document/d/1JSNmsaUpo7F_79v0KnDgIm43mmWj34H-XWaklDsGeGo)
 
 | ![Main Menu](/screenshots/MainMenu.png) | ![Playing](    /screenshots/Playing.png)    |
 |:-------------------------------------------------------------:|:---------------------:|

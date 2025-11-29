@@ -45,8 +45,8 @@ public class MainMenu implements Screen {
     @Override
     public void input(KeyEvent e) {
         switch (e.getKeyCode()) {
-            case KeyEvent.VK_UP    -> _navigator.previous();
-            case KeyEvent.VK_DOWN  -> _navigator.next();
+            case KeyEvent.VK_UP,   KeyEvent.VK_W -> _navigator.previous();
+            case KeyEvent.VK_DOWN, KeyEvent.VK_S -> _navigator.next();
             case KeyEvent.VK_ENTER -> _nextScreen = _navigator.select();
         }
     }

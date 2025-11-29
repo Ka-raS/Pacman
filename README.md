@@ -1,4 +1,4 @@
-# Pacman - [GOOGLE DOCS](https://docs.google.com/document/d/1JSNmsaUpo7F_79v0KnDgIm43mmWj34H-XWaklDsGeGo)
+# Pacman
 
 | ![Main Menu](/screenshots/MainMenu.png) | ![Playing](    /screenshots/Playing.png)    |
 |:-------------------------------------------------------------:|:---------------------:|
@@ -11,6 +11,7 @@
 - Ghosts have Normal Sprite, Scared Sprite and Dead Sprite
 - Sound effect when eating Pellets, Ghosts, Powerup, when Win or Lose...
 - High scores are saved and displayed the next time the game is launched 
+- Resizable Window
 
 ## Controls
 
@@ -20,7 +21,9 @@
 
 ## Download Prebuilt
 
-### Latest Release: https://github.com/Ka-raS/Pacman/releases/download/v1.0.0/pacman-1.0.0.jar
+### Latest Release: 
+
+https://github.com/Ka-raS/Pacman/releases/download/v1.0.0/pacman-1.0.0.jar
 
 ## Build And Run From Source
 

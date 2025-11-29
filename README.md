@@ -20,7 +20,7 @@
 
 ## Download Prebuilt
 
-### Latest Release:
+### Latest Release: https://github.com/Ka-raS/Pacman/releases/download/v1.0.0/pacman-1.0.0.jar
 
 ## Build And Run From Source
 
@@ -33,5 +33,5 @@
 git clone https://github.com/Ka-raS/Pacman.git
 cd pacman
 mvn package
-java -jar target/pacman-0.0.1-SNAPSHOT.jar
+java -jar target/pacman-1.0.0.jar
 ```

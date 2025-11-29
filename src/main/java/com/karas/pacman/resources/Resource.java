@@ -4,12 +4,13 @@ import com.karas.pacman.Configs;
 
 public enum Resource {
     
-    WINDOW_ICON( Configs.Path.WINDOW_ICON,  false),
-    TITLE_IMAGE( Configs.Path.TITLE_IMAGE,  false),
-    MAP_IMAGE(   Configs.Path.MAP_IMAGE,    true),
-    SPRITE_SHEET(Configs.Path.SPRITE_SHEET, true),
-    TILEMAP(     Configs.Path.TILEMAP,      true),
-    FONT(        Configs.Path.FONT,         false),
+    WINDOW_ICON(  Configs.Path.WINDOW_ICON,   false),
+    TITLE_IMAGE(  Configs.Path.TITLE_IMAGE,   false),
+    MAP_IMAGE(    Configs.Path.MAP_IMAGE,     true),
+    SPRITE_SHEET( Configs.Path.SPRITE_SHEET,  true),
+    TILEMAP(      Configs.Path.TILEMAP,       true),
+    FONT(         Configs.Path.FONT,          false),
+    DATABASE_FILE(Configs.Path.DATABASE_FILE, false),
 
     EAT_WA_SOUND(      Configs.Path.EAT_WA_SOUND,       false),
     EAT_KA_SOUND(      Configs.Path.EAT_KA_SOUND,       false),

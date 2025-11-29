@@ -20,17 +20,17 @@ public class Configs {
         public static final java.awt.Color MAIN_MENU  = new java.awt.Color(0, 16, 48);
         public static final java.awt.Color PAUSE_MENU = new java.awt.Color(0, 0, 0, 192);
 
-
     }
 
     public static class Path {
 
-        public static final String WINDOW_ICON  = "/images/icon.png";
-        public static final String TITLE_IMAGE  = "/images/game_title.png";
-        public static final String MAP_IMAGE    = "/images/map.png";
-        public static final String SPRITE_SHEET = "/images/spritesheet.png";
-        public static final String TILEMAP      = "/tilemap.txt";
-        public static final String FONT         = "/fonts/Emulogic-zrEw.ttf";
+        public static final String WINDOW_ICON   = "/images/icon.png";
+        public static final String TITLE_IMAGE   = "/images/game_title.png";
+        public static final String MAP_IMAGE     = "/images/map.png";
+        public static final String SPRITE_SHEET  = "/images/spritesheet.png";
+        public static final String FONT          = "/fonts/Emulogic-zrEw.ttf";
+        public static final String TILEMAP       = "/tilemap.txt";
+        public static final String DATABASE_FILE = "/highscores.txt";
 
         public static final String EAT_WA_SOUND       = "/sounds/eat_wa.wav";
         public static final String EAT_KA_SOUND       = "/sounds/eat_ka.wav";
@@ -121,7 +121,6 @@ public class Configs {
         private PX() {}
 
     }
-
 
     private Configs() {}
 

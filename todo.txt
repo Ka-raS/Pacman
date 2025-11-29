@@ -1,3 +1,4 @@
-- ScoreDatabase database
 - HighScores Screen
+- Ghost scatter mechanism
 - review <Class<? extends Screen> Screen::update(double deltaTime)
+- replace java.io with java.nio

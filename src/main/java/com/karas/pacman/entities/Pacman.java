@@ -56,6 +56,7 @@ public class Pacman extends Entity {
         setDirection(Direction.RIGHT);
         _nextDirection = Direction.RIGHT;
         setSprite(_baseSprite);
+        _deathSprite.setOffset(0);
         _DeathSound.reset();
         enterState(State.PREY);
     }

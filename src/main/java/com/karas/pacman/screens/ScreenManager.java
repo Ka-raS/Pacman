@@ -11,16 +11,16 @@ import com.karas.pacman.resources.ResourcesManager;
 public class ScreenManager implements Exitable, Paintable {
     
     public ScreenManager(ResourcesManager ResourcesMgr) {
-        Screen mainMenu = new MainMenu(ResourcesMgr);
-        Screen playing  = new Playing(ResourcesMgr);
-        Screen paused   = new Paused(playing, ResourcesMgr);
-        Screen gameOver = new HighScores(ResourcesMgr);
+        Screen mainMenu   = new MainMenu(ResourcesMgr);
+        Screen playing    = new Playing(ResourcesMgr);
+        Screen paused     = new Paused(playing, ResourcesMgr);
+        Screen highScores = new HighScores(ResourcesMgr);
 
         _screens = Map.of(
-            MainMenu.class, mainMenu,
-            Playing.class,  playing,
-            Paused.class,   paused,
-            HighScores.class, gameOver
+            MainMenu.class,   mainMenu,
+            Playing.class,    playing,
+            Paused.class,     paused,
+            HighScores.class, highScores
         );
         _current = mainMenu;
         _current.enter(null);

@@ -5,6 +5,7 @@ import java.awt.FontFormatException;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,40 +26,42 @@ import com.karas.pacman.Configs;
 import com.karas.pacman.audio.Sound;
 import com.karas.pacman.commons.Exitable;
 import com.karas.pacman.commons.Vector2;
+import com.karas.pacman.data.ScoreDatabase;
 import com.karas.pacman.maps.Tile;
 
 public class ResourcesManager implements Exitable {
 
     public ResourcesManager() {
-        _soundMap  = createSoundMap();
-        _imageMap  = createImageMap();
-        _spriteMap = createSpriteMap(_imageMap.get(Resource.SPRITE_SHEET));
-        _tilemap   = createTilemap();
-        _fonts     = createFonts();
+        _soundMap  = initSoundMap();
+        _imageMap  = initImageMap();
+        _spriteMap = initSpriteMap(_imageMap.get(Resource.SPRITE_SHEET));
+        _tilemap   = initTilemap();
+        _fonts     = initFonts();
+        _database  = initDatabase();
     }
 
     @Override
     public void exit() {
         for (Sound sound : _soundMap.values())
             sound.exit();
+
+        try {
+            _database.save();
+        } catch (IOException e) {
+            _LOGGER.log(Level.SEVERE, "Failed Saving Database On Exit", e);
+        }
     }
 
     public Sound getSound(Resource sound) {
-        if (sound == null)
-            return Sound.getDummy();
-        return _soundMap.get(sound);
+        return _soundMap.getOrDefault(sound, Sound.getDummy());
     }
 
     public BufferedImage getImage(Resource image) {
-        if (image == null)
-            return null;
-        return _imageMap.get(image);
+        return _imageMap.getOrDefault(image, null);
     }
 
     public BufferedImage[] getSprite(SpriteSheet sheet) {
-        if (sheet == null)
-            return null;
-        return _spriteMap.get(sheet);
+        return _spriteMap.getOrDefault(sheet, null);
     }
 
     public Tile[][] getTilemap() {
@@ -68,14 +71,16 @@ public class ResourcesManager implements Exitable {
         return copy;
     }
 
-    public Font getFont(int size) { 
-        if (size <= 0)
-            size = Configs.PX.FONT_SIZE_SMALL;
-        return switch (size) {
-            case Configs.PX.FONT_SIZE_SMALL  -> _fonts[0];
-            default                          -> _fonts[1];
-            case Configs.PX.FONT_SIZE_LARGE  -> _fonts[2];
-        };
+    public Font getFont(int size) {
+        if (size <= Configs.PX.FONT_SIZE_SMALL)
+            return _fonts[0];
+        if (size < Configs.PX.FONT_SIZE_LARGE)
+            return _fonts[1];
+        return _fonts[2];
+    }
+
+    public ScoreDatabase getDatabase() {
+        return _database;
     }
 
 
@@ -170,6 +175,28 @@ public class ResourcesManager implements Exitable {
         }
     }
 
+    private static ScoreDatabase loadOrCreateDatabase(String path) throws RuntimeException {
+        File file = new File(ResourcesManager.class.getResource("/").getPath() + path);
+
+        if (!file.exists()) {
+            _LOGGER.info("Creating New Database File At: " + path);
+            file.getParentFile().mkdirs();
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException("Failed Creating Database File.", e);
+            }
+        }
+
+        try {
+            return new ScoreDatabase(file);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("[UNEXPECTED] Database File Not Found: " + path, e);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed Reading Database File: " + path, e);
+        }
+    }
+
     private static BufferedImage createSquare(int size) {
         BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = image.createGraphics();        
@@ -179,23 +206,7 @@ public class ResourcesManager implements Exitable {
         return image;
     }
 
-    private static void handleException(Exception e, boolean isCritical) {
-        if (!isCritical) {
-            _LOGGER.log(Level.WARNING, e.getMessage(), e);
-            return;
-        }
-
-        _LOGGER.log(Level.SEVERE, e.getMessage(), e);
-        JOptionPane.showMessageDialog(
-            null,
-            e.getMessage(),
-            "ERROR",
-            JOptionPane.ERROR_MESSAGE
-        );
-        System.exit(1);
-    }
-
-    private static EnumMap<Resource, Sound> createSoundMap() {
+    private static EnumMap<Resource, Sound> initSoundMap() {
         Resource[] sounds = { 
             Resource.EAT_WA_SOUND, Resource.EAT_KA_SOUND, Resource.PACMAN_DEATH_SOUND, Resource.GHOST_DEATH_SOUND, 
             Resource.GAME_START_SOUND, Resource.GAME_NORMAL_SOUND, Resource.GAME_POWERUP_SOUND
@@ -213,7 +224,7 @@ public class ResourcesManager implements Exitable {
         return soundMap;
     }
 
-    private static EnumMap<Resource, BufferedImage> createImageMap() {
+    private static EnumMap<Resource, BufferedImage> initImageMap() {
         Resource[] images = { Resource.WINDOW_ICON, Resource.TITLE_IMAGE, Resource.MAP_IMAGE, Resource.SPRITE_SHEET };
         EnumMap<Resource, BufferedImage> imageMap = new EnumMap<>(Resource.class);
 
@@ -228,7 +239,7 @@ public class ResourcesManager implements Exitable {
         return imageMap;
     }
 
-    private static EnumMap<SpriteSheet, BufferedImage[]> createSpriteMap(BufferedImage sheetImage) {
+    private static EnumMap<SpriteSheet, BufferedImage[]> initSpriteMap(BufferedImage sheetImage) {
         EnumMap<SpriteSheet, BufferedImage[]> spriteMap = new EnumMap<>(SpriteSheet.class);
         
         if (sheetImage == null) {
@@ -256,7 +267,7 @@ public class ResourcesManager implements Exitable {
         return spriteMap;
     }
 
-    private static Tile[][] createTilemap() {
+    private static Tile[][] initTilemap() {
         final Vector2 SIZE = Configs.Grid.MAP_SIZE;
         try {
             return loadTilemap(Resource.TILEMAP.getPath(), SIZE);
@@ -271,7 +282,7 @@ public class ResourcesManager implements Exitable {
         }
     }
 
-    private static Font[] createFonts() {
+    private static Font[] initFonts() {
         Font font;
 
         try {
@@ -284,6 +295,33 @@ public class ResourcesManager implements Exitable {
         return new Font[] { font.deriveFont(Configs.PX.FONT_SIZE_SMALL), font, font.deriveFont(Configs.PX.FONT_SIZE_LARGE) };
     }
 
+    private static ScoreDatabase initDatabase() {
+        try {
+            return loadOrCreateDatabase(Resource.DATABASE_FILE.getPath());
+
+        } catch (RuntimeException e) {
+            handleException(e, Resource.DATABASE_FILE.isCritical());
+            _LOGGER.warning("Using Empty Temporary Database");
+            return new ScoreDatabase();
+        }
+    }
+
+    private static void handleException(Exception e, boolean isCritical) {
+        if (!isCritical) {
+            _LOGGER.log(Level.WARNING, e.getMessage(), e);
+            return;
+        }
+
+        _LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        JOptionPane.showMessageDialog(
+            null,
+            e.getMessage(),
+            "ERROR",
+            JOptionPane.ERROR_MESSAGE
+        );
+        System.exit(1);
+    }
+
     private static final Logger _LOGGER = Logger.getLogger(ResourcesManager.class.getName());
 
     private final EnumMap<Resource, Sound> _soundMap;
@@ -291,6 +329,7 @@ public class ResourcesManager implements Exitable {
     private final EnumMap<SpriteSheet, BufferedImage[]> _spriteMap;
     private final Tile[][] _tilemap;
     private final Font[] _fonts;
+    private final ScoreDatabase _database;
 
 }
 

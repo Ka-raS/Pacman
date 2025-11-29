@@ -13,9 +13,9 @@ public class MenuNavigator implements Paintable {
     // we have std::pair at home they said
     public static record MenuOption(String label, Class<? extends Screen> screenClass) {}
 
-    public MenuNavigator(Vector2 uiPosition, Font FontRef, MenuOption... options) {
+    public MenuNavigator(Vector2 position, Font FontRef, MenuOption... options) {
         _hovering = 0;
-        _uiPosition = uiPosition;
+        _position = position;
         _options = options;
         _Font = FontRef;
     }
@@ -39,8 +39,8 @@ public class MenuNavigator implements Paintable {
             G.setColor(i == _hovering ? Configs.Color.HIGHLIGHT : Configs.Color.TEXT);
             G.drawString(
                 _options[i].label(), 
-                _uiPosition.ix(), 
-                _uiPosition.iy() + i * (_Font.getSize() + 10)
+                _position.ix(), 
+                _position.iy() + i * (_Font.getSize() + 10)
             );
         }
     }
@@ -49,7 +49,7 @@ public class MenuNavigator implements Paintable {
     private final Font _Font;
 
     private final MenuOption[] _options;
-    private final Vector2 _uiPosition;
+    private final Vector2 _position;
 
     private int _hovering;
 }

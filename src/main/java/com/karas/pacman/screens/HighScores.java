@@ -3,11 +3,14 @@ package com.karas.pacman.screens;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 
+import com.karas.pacman.data.ScoreDatabase;
 import com.karas.pacman.resources.ResourcesManager;
 
 public class HighScores implements Screen {
 
     public HighScores(ResourcesManager ResourcesMgr) {
+        _ResourcesMgr = ResourcesMgr;
+        _ScoreDatabase = ResourcesMgr.getDatabase();
     }
 
     @Override
@@ -26,5 +29,9 @@ public class HighScores implements Screen {
 
     @Override
     public void input(KeyEvent e) {}
+
+
+    private final ScoreDatabase _ScoreDatabase;
+    private final ResourcesManager _ResourcesMgr;
 
 }

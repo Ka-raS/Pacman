@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import com.karas.pacman.Configs;
 import com.karas.pacman.audio.Sound;
 import com.karas.pacman.commons.Direction;
+import com.karas.pacman.data.ScoreDatabase;
 import com.karas.pacman.entities.Ghost;
 import com.karas.pacman.entities.Pacman;
 import com.karas.pacman.entities.ghosts.Blinky;
@@ -28,6 +29,8 @@ public class Playing implements Screen {
 
     public Playing(ResourcesManager ResourcesMgr) {
         _ResourcesManager = ResourcesMgr;
+        _ScoreDatabase = ResourcesMgr.getDatabase();
+
         _map = createMap(ResourcesMgr);
         _pacman = createPacman(_map, ResourcesMgr);
         _ghosts = createGhosts(_pacman, _map, ResourcesMgr);
@@ -217,9 +220,16 @@ public class Playing implements Screen {
                 }
                 break;
 
-            case LOST, WON:
+            case LOST:
                 if (_stateCooldown < 0.0)
                     _nextScreen = HighScores.class;
+                break;
+
+            case WON:
+                if (_stateCooldown < 0.0) {
+                    _ScoreDatabase.addEntry(_totalScore);
+                    _nextScreen = HighScores.class;
+                }
                 break;
 
             case POWERUP:
@@ -249,7 +259,6 @@ public class Playing implements Screen {
             if (_pacman.collidesWith(ghost))
                 switch (ghost.getState()) {
                     case HUNTER:
-                        currentSound.pause();
                         enterState(State.LOST);
                         return;
                 
@@ -300,6 +309,7 @@ public class Playing implements Screen {
 
     private final Font _FontMedium;
     private final Sound _NewGameSound, _NormalSound, _PowerupSound;
+    private final ScoreDatabase _ScoreDatabase;
     private final ResourcesManager _ResourcesManager;
 
     private final Map _map;

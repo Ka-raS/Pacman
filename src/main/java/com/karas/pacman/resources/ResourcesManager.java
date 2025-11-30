@@ -10,6 +10,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.EnumMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -83,128 +86,6 @@ public class ResourcesManager implements Exitable {
         return _database;
     }
 
-
-    private static Sound loadSound(String path) throws RuntimeException {
-        try (
-            InputStream is = ResourcesManager.class.getResourceAsStream(path);
-            AudioInputStream ais = is == null ? null : AudioSystem.getAudioInputStream(is)
-        ) {
-            if (is == null)
-                throw new FileNotFoundException();
-            
-            Clip clip = AudioSystem.getClip();
-            clip.open(ais);
-            return new Sound(clip);
-
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException("Sound Not Found: " + path, e);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed Reading Sound: " + path, e);
-        } catch (UnsupportedAudioFileException e) {
-            throw new RuntimeException("Unsupported Audio File: " + path, e);
-        } catch (LineUnavailableException e) {
-            throw new RuntimeException("Audio Line Unavailable: " + path, e);
-        }
-    }
-
-    private static BufferedImage loadImage(String path) throws RuntimeException {
-        try (InputStream is = ResourcesManager.class.getResourceAsStream(path)) {
-            if (is == null)
-                throw new FileNotFoundException();
-            
-            BufferedImage bufferedImg = ImageIO.read(is);
-            if (bufferedImg == null)
-                throw new NullPointerException();
-            return bufferedImg;
-
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException("Image Not Found: " + path, e);
-        } catch (NullPointerException e) {
-            throw new RuntimeException("Invalid Image Format: " + path, e);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed Reading Image: " + path, e);
-        }
-    }
-
-    private static Tile[][] loadTilemap(String path, Vector2 size) throws RuntimeException {
-        try (
-            InputStream is = ResourcesManager.class.getResourceAsStream(path);
-            BufferedReader reader = is == null ? null : new BufferedReader(new InputStreamReader(is))
-        ) {
-            if (is == null)
-                throw new FileNotFoundException();
-
-            Tile[][] tiles = new Tile[size.iy()][size.ix()];
-
-            for (int y = 0; y < size.iy(); ++y) {
-                String line = reader.readLine();
-                if (line == null || line.length() != tiles[0].length)
-                    throw new IllegalArgumentException("Tilemap Data Corrupted At Line " + (y+1));
-                    
-                for (int x = 0; x < size.ix(); ++x) {
-                    tiles[y][x] = Tile.fromChar(line.charAt(x));
-                    if (tiles[y][x] == null)
-                        throw new IllegalArgumentException(
-                            String.format("Tilemap Data Corrupted At Line %d Column %d", y+1, x+1)
-                        );
-                }
-            }
-            return tiles;
-
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException("Tilemap Not Found: " + path, e);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException(e.getMessage() + ": " + path, e);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed Reading Tilemap: " + path, e);
-        }
-    }
-
-    private static Font loadFont(String path, float size) throws RuntimeException {
-        try (InputStream is = ResourcesManager.class.getResourceAsStream(path)) {
-            if (is == null)
-                throw new FileNotFoundException();
-            return Font.createFont(Font.TRUETYPE_FONT, is).deriveFont((float) size);
-
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException("Font Not Found: " + path, e);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed Reading Font: " + path, e);
-        } catch (FontFormatException e) {
-            throw new RuntimeException("Invalid Font Format: " + path, e);
-        }
-    }
-
-    private static ScoreDatabase loadOrCreateDatabase(String path) throws RuntimeException {
-        File file = new File(ResourcesManager.class.getResource("/").getPath() + path);
-
-        if (!file.exists()) {
-            _LOGGER.info("Creating New Database File At: " + path);
-            file.getParentFile().mkdirs();
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                throw new RuntimeException("Failed Creating Database File.", e);
-            }
-        }
-
-        try {
-            return new ScoreDatabase(file);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException("[UNEXPECTED] Database File Not Found: " + path, e);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed Reading Database File: " + path, e);
-        }
-    }
-
-    private static BufferedImage createSquare(int size) {
-        BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = image.createGraphics();        
-        g.setColor(Configs.Color.PELLET);
-        g.fillRect(0, 0, size, size);
-        g.dispose();
-        return image;
-    }
 
     private static EnumMap<Resource, Sound> initSoundMap() {
         Resource[] sounds = { 
@@ -304,6 +185,128 @@ public class ResourcesManager implements Exitable {
             _LOGGER.warning("Using Empty Temporary Database");
             return new ScoreDatabase();
         }
+    }
+
+    private static Sound loadSound(String path) throws RuntimeException {
+        URL url = ResourcesManager.class.getResource(path);
+        if (url == null)
+            throw new RuntimeException("Sound Not Found: " + path);
+
+        try (AudioInputStream ais = AudioSystem.getAudioInputStream(url)) {
+            Clip clip = AudioSystem.getClip();
+            clip.open(ais);
+            return new Sound(clip);
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed Reading Sound: " + path, e);
+        } catch (UnsupportedAudioFileException e) {
+            throw new RuntimeException("Unsupported Audio File: " + path, e);
+        } catch (LineUnavailableException e) {
+            throw new RuntimeException("Audio Line Unavailable: " + path, e);
+        }
+    }
+
+    private static BufferedImage loadImage(String path) throws RuntimeException {
+        try (InputStream is = ResourcesManager.class.getResourceAsStream(path)) {
+            if (is == null)
+                throw new FileNotFoundException();
+            
+            BufferedImage bufferedImg = ImageIO.read(is);
+            if (bufferedImg == null)
+                throw new NullPointerException();
+            return bufferedImg;
+
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("Image Not Found: " + path, e);
+        } catch (NullPointerException e) {
+            throw new RuntimeException("Invalid Image Format: " + path, e);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed Reading Image: " + path, e);
+        }
+    }
+
+    private static Tile[][] loadTilemap(String path, Vector2 size) throws RuntimeException {
+        URL url = ResourcesManager.class.getResource(path);
+        if (url == null)
+            throw new RuntimeException("Tilemap Not Found: " + path);
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
+            Tile[][] tiles = new Tile[size.iy()][size.ix()];
+
+            for (int y = 0; y < size.iy(); ++y) {
+                String line = reader.readLine();
+                if (line == null || line.length() != tiles[0].length)
+                    throw new IllegalArgumentException("Tilemap Data Corrupted At Line " + (y+1));
+                    
+                for (int x = 0; x < size.ix(); ++x) {
+                    tiles[y][x] = Tile.fromChar(line.charAt(x));
+                    if (tiles[y][x] == null)
+                        throw new IllegalArgumentException(
+                            String.format("Tilemap Data Corrupted At Line %d Column %d", y+1, x+1)
+                        );
+                }
+            }
+            return tiles;
+
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException(e.getMessage() + ": " + path, e);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed Reading Tilemap: " + path, e);
+        }
+    }
+
+    private static Font loadFont(String path, float size) throws RuntimeException {
+        try (InputStream is = ResourcesManager.class.getResourceAsStream(path)) {
+            if (is == null)
+                throw new FileNotFoundException();
+            return Font.createFont(Font.TRUETYPE_FONT, is).deriveFont((float) size);
+
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("Font Not Found: " + path, e);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed Reading Font: " + path, e);
+        } catch (FontFormatException e) {
+            throw new RuntimeException("Invalid Font Format: " + path, e);
+        }
+    }
+
+    private static ScoreDatabase loadOrCreateDatabase(String path) throws RuntimeException {
+        File databaseFile;
+        try {
+            URI jarPath = ResourcesManager.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+            databaseFile = new File(new File(jarPath).getParent(), path);
+
+        } catch (URISyntaxException e) {
+            _LOGGER.log(Level.WARNING, "Failed Getting JAR Path. Searching Current Directory For Database File", e);
+            databaseFile = new File("." + path);
+        }
+
+        if (!databaseFile.exists()) {
+            _LOGGER.info("Creating New Database File At: " + databaseFile.getPath());
+            databaseFile.getParentFile().mkdirs();
+            try {
+                databaseFile.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException("Failed Creating Database File.", e);
+            }
+        }
+
+        try {
+            return new ScoreDatabase(databaseFile);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("[UNEXPECTED] Database File Not Found: " + path, e);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed Reading Database File: " + path, e);
+        }
+    }
+
+    private static BufferedImage createSquare(int size) {
+        BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = image.createGraphics();        
+        g.setColor(Configs.Color.PELLET);
+        g.fillRect(0, 0, size, size);
+        g.dispose();
+        return image;
     }
 
     private static void handleException(Exception e, boolean isCritical) {

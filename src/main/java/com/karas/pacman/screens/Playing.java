@@ -147,7 +147,7 @@ public class Playing implements Screen {
         return List.of(blinky, pinky, inky, clyde);
     }
 
-    private List<ScoreSprite> createScores(ResourcesManager ResourcesMgr) {
+    private static List<ScoreSprite> createScores(ResourcesManager ResourcesMgr) {
         return Arrays.stream(ResourcesMgr.getSprite(SpriteSheet.SCORES))
                      .map(ScoreSprite::new).toList();
     }

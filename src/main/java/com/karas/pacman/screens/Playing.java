@@ -157,7 +157,8 @@ public class Playing implements Screen {
     }
 
     private void enterState(State nextState) {
-        switch (nextState) {
+        _state = nextState;
+        switch (_state) {
             case START:
                 _LOGGER.info("Started new playing!");
                 _totalScore = 0;
@@ -177,7 +178,7 @@ public class Playing implements Screen {
             case NORMAL:
                 _pacman.enterState(Pacman.State.PREY);
                 for (Ghost ghost : _ghosts)
-                    if (ghost.getState() == Ghost.State.PREY) 
+                    if (ghost.getState() != Ghost.State.DEAD) 
                         ghost.enterState(Ghost.State.HUNTER);
                 _NormalSound.loop();
                 break;
@@ -207,7 +208,6 @@ public class Playing implements Screen {
                 _WonSound.play();
                 break;
         }
-        _state = nextState;
     }
 
     private void updateState(double deltaTime) {
@@ -253,10 +253,10 @@ public class Playing implements Screen {
     }
 
     private void handleCollision(Sound currentSound) {
-        int _deadGhostCount = 0;
+        int deadGhostCount = 0;
         for (Ghost ghost : _ghosts)
             if (ghost.getState() == Ghost.State.DEAD)
-                ++_deadGhostCount;
+                ++deadGhostCount;
 
         for (Ghost ghost : _ghosts)
             if (_pacman.collidesWith(ghost))
@@ -268,9 +268,9 @@ public class Playing implements Screen {
                     case PREY:
                         ghost.enterState(Ghost.State.DEAD);
                         _LOGGER.info(ghost.getClass().getSimpleName() + " eaten!");
-                        _totalScore += Configs.Score.GHOST * (1 << _deadGhostCount);
-                        _scores.get(_deadGhostCount).setDisplay(ghost.getPosition());
-                        ++_deadGhostCount;
+                        _totalScore += Configs.Score.GHOST * (1 << deadGhostCount);
+                        _scores.get(deadGhostCount).setDisplay(ghost.getPosition());
+                        ++deadGhostCount;
                         break;
 
                     default:

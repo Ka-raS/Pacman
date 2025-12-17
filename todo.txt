@@ -1,6 +1,6 @@
+- Switch from KeyListener to KeyBindings
 - Simplify ResourcesManager.java code
 - Paused Screen background music
-- Allow Game.enter() after Game.exit()
 - Ghost scatter mechanism
 - Ghost chases Pacman in MainMenu
 - Pacman eats Pellets in HighScore Screen

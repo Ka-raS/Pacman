@@ -8,6 +8,8 @@ import com.karas.pacman.audio.Sound;
 import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Paintable;
 import com.karas.pacman.commons.Vector2;
+import com.karas.pacman.resources.Resource;
+import com.karas.pacman.resources.ResourcesManager;
 
 public class Map implements ImmutableMap, Paintable {
 
@@ -24,16 +26,29 @@ public class Map implements ImmutableMap, Paintable {
         return centered[0] && centered[1];
     }
 
-    public Map(Tile[][] tileMap, BufferedImage MapImage, BufferedImage[] PelletImages, Sound WaSound, Sound KaSound) {
-        setTilemap(tileMap);
-        _MapImage = MapImage;
-        _PelletImage = PelletImages[0];
-        _PowerupImage = PelletImages[1];
-        _WakaSounds = new Sound[] { WaSound, KaSound };
+    public Map(ResourcesManager ResourcesMgr) {
+        _MapImage = ResourcesMgr.getImage(Resource.MAP_IMAGE);
+        _PelletImage = createSquare(Configs.PX.PELLET_SIZE);
+        _PowerupImage = createSquare(Configs.PX.POWERUP_SIZE);
+        _WakaSounds = new Sound[] { 
+            ResourcesMgr.getSound(Resource.EAT_WA_SOUND), 
+            ResourcesMgr.getSound(Resource.EAT_KA_SOUND) 
+        };
+        _OriginalTilemap = ResourcesMgr.getTilemap();
+        reset();
     }
 
-    public void reset(Tile[][] tileMap) {
-        setTilemap(tileMap);
+    public void reset() {
+        Tile[][] copy = new Tile[_OriginalTilemap.length][];
+        for (int y = 0; y < _OriginalTilemap.length; ++y)
+            copy[y] = _OriginalTilemap[y].clone();
+
+        _tiles = copy;
+        _pelletCounts = 0;
+        for (Tile[] row : _tiles)
+            for (Tile tile : row)
+                if (tile == Tile.PELLET)
+                    ++_pelletCounts;
     }
 
     @Override
@@ -125,13 +140,13 @@ public class Map implements ImmutableMap, Paintable {
             && 0 <= x && x < Configs.Grid.MAP_SIZE.ix();
     }
 
-    private void setTilemap(Tile[][] tileMap) {
-        _tiles = tileMap;
-        _pelletCounts = 0;
-        for (Tile[] row : _tiles)
-            for (Tile tile : row)
-                if (tile == Tile.PELLET)
-                    ++_pelletCounts;
+    private static BufferedImage createSquare(int size) {
+        BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = image.createGraphics();        
+        g.setColor(Configs.Color.PELLET);
+        g.fillRect(0, 0, size, size);
+        g.dispose();
+        return image;
     }
 
     private void paintConsumables(Graphics2D G) {
@@ -153,6 +168,7 @@ public class Map implements ImmutableMap, Paintable {
 
     private final Sound[] _WakaSounds;
     private final BufferedImage _MapImage, _PelletImage, _PowerupImage;
+    private final Tile[][] _OriginalTilemap;
 
     private int _pelletCounts;
     private Tile[][] _tiles;

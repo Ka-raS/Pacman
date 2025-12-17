@@ -68,8 +68,6 @@ public class Game extends JPanel implements Exitable, Runnable, KeyListener {
         _running = true;
 
         _LOGGER.info("Entering game...");
-        _updateTimer = _repaintTimer = _logTimer = _updateCount = _frameCount = 0;
-
         _frame.setVisible(true);
         _frame.requestFocus();
         _thread.start(); // Game Thread calls run()
@@ -100,19 +98,36 @@ public class Game extends JPanel implements Exitable, Runnable, KeyListener {
     @Override
     public void run() {
         long lastTime = System.nanoTime();
+        double updateTimer = 0.0, repaintTimer = 0.0, logTimer = 0.0;
+        int updateCount = 0;
 
         while (_running) {
             long currentTime = System.nanoTime();
             double deltaTime = (currentTime - lastTime) / 1e9;
             if (deltaTime < 0.0)
                 continue;
+            
             lastTime = currentTime;
+            updateTimer += deltaTime;
+            logTimer += deltaTime;
+            repaintTimer += deltaTime;
 
-            updateGame(deltaTime);
-            if (!_running)
-                break;
-            repaintGame(deltaTime);
-            logGame(deltaTime);
+            while (_running && updateTimer >= Configs.Time.UPDATE_INTERVAL) {
+                if (!_screenManager.update(Configs.Time.UPDATE_INTERVAL))
+                    exit();
+                ++updateCount;
+                updateTimer -= Configs.Time.UPDATE_INTERVAL;
+            }
+
+            if (repaintTimer >= Configs.Time.REPAINT_INTERVAL) {
+                repaint(); // EDT calls paintComponent()
+                repaintTimer = 0.0;
+            }
+
+            if (logTimer >= 1.0) {
+                _frame.setTitle(String.format("%s: %d UPS, %d FPS", Configs.TITLE, updateCount, _frameCount));
+                logTimer = updateCount = _frameCount = 0;
+            }
         }
     }
 
@@ -124,6 +139,7 @@ public class Game extends JPanel implements Exitable, Runnable, KeyListener {
 
     @Override public void keyReleased(KeyEvent e) {}
     @Override public void keyTyped(KeyEvent e)    {}
+
 
     /** {@code JPanel} method. Gets called by EDT. */
     @Override
@@ -138,33 +154,6 @@ public class Game extends JPanel implements Exitable, Runnable, KeyListener {
     }
 
 
-    private void updateGame(double deltaTime) {
-        deltaTime = Math.min(deltaTime, 0.25); // lag spike
-        _updateTimer += deltaTime;
-        while (_running && _updateTimer >= Configs.Time.UPDATE_INTERVAL) {
-            ++_updateCount;
-            _updateTimer -= Configs.Time.UPDATE_INTERVAL;
-            if (!_screenManager.update(Configs.Time.UPDATE_INTERVAL))
-                exit();
-        }
-    }
-
-    private void repaintGame(double deltaTime) {
-        _repaintTimer += deltaTime;
-        if (_repaintTimer >= Configs.Time.REPAINT_INTERVAL) {
-            repaint(); // EDT calls paintComponent()
-            _repaintTimer = 0.0;
-        }
-    }
-
-    private void logGame(double deltaTime) {
-        _logTimer += deltaTime;
-        if (_logTimer >= 1.0) {
-            _frame.setTitle(String.format("%s: %d UPS, %d FPS", Configs.TITLE, _updateCount, _frameCount));
-            _logTimer = _updateCount = _frameCount = 0;
-        }
-    }
-
     private static final Logger _LOGGER = Logger.getLogger(Game.class.getName());
 
     private final JFrame _frame;
@@ -172,10 +161,8 @@ public class Game extends JPanel implements Exitable, Runnable, KeyListener {
     private final ScreenManager _screenManager;
     private final ResourcesManager _resourceManager;
 
-    private boolean _running;
-    private int _updateCount;
+    private volatile boolean _running;
     private volatile int _frameCount;
-    private double _updateTimer, _repaintTimer, _logTimer;
     private volatile double _scale;
 
 }

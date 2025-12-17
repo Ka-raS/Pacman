@@ -1,6 +1,5 @@
 package com.karas.pacman.entities;
 
-import java.awt.image.BufferedImage;
 import java.util.EnumSet;
 
 import com.karas.pacman.Configs;
@@ -10,6 +9,9 @@ import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.graphics.EntitySprite;
 import com.karas.pacman.maps.ImmutableMap;
 import com.karas.pacman.maps.Map;
+import com.karas.pacman.resources.Resource;
+import com.karas.pacman.resources.ResourcesManager;
+import com.karas.pacman.resources.SpriteSheet;
 
 public abstract class Ghost extends Entity {
 
@@ -44,12 +46,11 @@ public abstract class Ghost extends Entity {
         enterState(State.HUNTER);
     }
 
-    protected Ghost(Vector2 gridPosition, Direction direction, int speed, 
-                    BufferedImage[] BaseImages, BufferedImage[] PreyImages, BufferedImage[] DeathImages, Sound DeathSound,
-                    ImmutableEntity PacmanRef, ImmutableMap MapRef) {
+    protected Ghost(Vector2 gridPosition, Direction direction, int speed, SpriteSheet baseSprite,
+                    ImmutableEntity PacmanRef, ImmutableMap MapRef, ResourcesManager ResourcesMgr) {
         super(
             gridPosition, direction, speed,
-            new EntitySprite(BaseImages, direction.ordinal() * 2, 2),
+            new EntitySprite(ResourcesMgr.getSprite(baseSprite), direction.ordinal() * 2, 2),
             MapRef
         );
         _prevGridPos = null;
@@ -58,10 +59,10 @@ public abstract class Ghost extends Entity {
         _startDirection = direction;
 
         _baseSprite = getSprite();
-        _preySprite = new EntitySprite(PreyImages, 0, 2);
-        _deathSprite = new EntitySprite(DeathImages, direction.ordinal(), 1);
+        _preySprite = new EntitySprite(ResourcesMgr.getSprite(SpriteSheet.PREY_GHOST), 0, 2);
+        _deathSprite = new EntitySprite(ResourcesMgr.getSprite(SpriteSheet.DEAD_GHOST), direction.ordinal(), 1);
 
-        _DeathSound = DeathSound;
+        _DeathSound = ResourcesMgr.getSound(Resource.GHOST_DEATH_SOUND);
         _Pacman = PacmanRef;
 
         enterState(State.HUNTER);

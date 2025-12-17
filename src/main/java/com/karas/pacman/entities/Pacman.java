@@ -1,27 +1,28 @@
 package com.karas.pacman.entities;
 
-import java.awt.image.BufferedImage;
-
 import com.karas.pacman.Configs;
 import com.karas.pacman.audio.Sound;
 import com.karas.pacman.commons.Direction;
 import com.karas.pacman.graphics.EntitySprite;
 import com.karas.pacman.maps.ImmutableMap;
+import com.karas.pacman.resources.Resource;
+import com.karas.pacman.resources.ResourcesManager;
+import com.karas.pacman.resources.SpriteSheet;
 
 public class Pacman extends Entity {
 
-    public Pacman(ImmutableMap MapRef, BufferedImage[] BaseImages, BufferedImage[] DeathImages, Sound DeathSound) {
+    public Pacman(ImmutableMap MapRef, ResourcesManager ResourcesMgr) {
         super(
             Configs.Grid.PACMAN_POSITION,
             Direction.RIGHT,
             Configs.PX.PACMAN_SPEED,
-            new EntitySprite(BaseImages, Direction.RIGHT.ordinal() * 2, 2),
+            new EntitySprite(ResourcesMgr.getSprite(SpriteSheet.PACMAN), Direction.RIGHT.ordinal() * 2, 2),
             MapRef
         );
         _nextDirection = Direction.RIGHT;
         _baseSprite = getSprite();
-        _deathSprite = new EntitySprite(DeathImages, 0, 8);
-        _DeathSound = DeathSound;
+        _deathSprite = new EntitySprite(ResourcesMgr.getSprite(SpriteSheet.DEAD_PACMAN), 0, 8);
+        _DeathSound = ResourcesMgr.getSound(Resource.PACMAN_DEATH_SOUND);
         enterState(State.PREY);
     }
 

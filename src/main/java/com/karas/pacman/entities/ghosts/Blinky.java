@@ -1,25 +1,23 @@
 package com.karas.pacman.entities.ghosts;
 
-import java.awt.image.BufferedImage;
-
 import com.karas.pacman.Configs;
-import com.karas.pacman.audio.Sound;
 import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.entities.Ghost;
 import com.karas.pacman.entities.ImmutableEntity;
 import com.karas.pacman.maps.ImmutableMap;
+import com.karas.pacman.resources.ResourcesManager;
+import com.karas.pacman.resources.SpriteSheet;
 
 public class Blinky extends Ghost {
     
-    public Blinky(ImmutableEntity PacmanRef, ImmutableMap MapRef, BufferedImage[] BaseImages, 
-                  BufferedImage[] PreyImages, BufferedImage[] DeathImages, Sound DeathSound) {
+    public Blinky(ImmutableEntity PacmanRef, ImmutableMap MapRef, ResourcesManager ResourcesMgr) {
         super(
             Configs.Grid.BLINKY_POSITION,
             Direction.LEFT,
             Configs.PX.BLINKY_SPEED,
-            BaseImages, PreyImages, DeathImages, DeathSound,
-            PacmanRef, MapRef
+            SpriteSheet.BLINKY,
+            PacmanRef, MapRef, ResourcesMgr
         );
     }
 

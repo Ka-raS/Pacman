@@ -4,7 +4,6 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
@@ -28,24 +27,27 @@ import com.karas.pacman.resources.SpriteSheet;
 public class Playing implements Screen {
 
     public Playing(ResourcesManager ResourcesMgr) {
-        _ResourcesManager = ResourcesMgr;
-        _ScoreDatabase = ResourcesMgr.getDatabase();
-
-        _map = createMap(ResourcesMgr);
-        _pacman = createPacman(_map, ResourcesMgr);
-        _ghosts = createGhosts(_pacman, _map, ResourcesMgr);
-        _scores = createScores(ResourcesMgr);
+        _map    = new Map(ResourcesMgr);
+        _pacman = new Pacman(_map, ResourcesMgr);
+        _scores = Arrays.stream(ResourcesMgr.getSprite(SpriteSheet.SCORES)).map(ScoreSprite::new).toList();
+        
+        Blinky blinky = new Blinky(_pacman, _map, ResourcesMgr);
+        Pinky pinky   = new Pinky(_pacman, _map, ResourcesMgr);
+        Inky inky     = new Inky(_pacman, _map, blinky, ResourcesMgr);
+        Clyde clyde   = new Clyde(_pacman, _map, ResourcesMgr);
+        _ghosts = List.of(blinky, pinky, inky, clyde);
 
         _totalScore = 0;
         _state = null;
         _stateCooldown = 0.0;
         _nextScreen = Playing.class;
 
-        _FontMedium   = ResourcesMgr.getFont(Configs.PX.FONT_SIZE_MEDIUM);
-        _NewGameSound = ResourcesMgr.getSound(Resource.GAME_START_SOUND);
-        _NormalSound  = ResourcesMgr.getSound(Resource.GAME_NORMAL_SOUND);
-        _PowerupSound = ResourcesMgr.getSound(Resource.GAME_POWERUP_SOUND);
-        _WonSound     = ResourcesMgr.getSound(Resource.GAME_WON_SOUND);
+        _ScoreDatabase = ResourcesMgr.getDatabase();
+        _FontMedium    = ResourcesMgr.getFont(Configs.PX.FONT_SIZE_MEDIUM);
+        _NewGameSound  = ResourcesMgr.getSound(Resource.GAME_START_SOUND);
+        _NormalSound   = ResourcesMgr.getSound(Resource.GAME_NORMAL_SOUND);
+        _PowerupSound  = ResourcesMgr.getSound(Resource.GAME_POWERUP_SOUND);
+        _WonSound      = ResourcesMgr.getSound(Resource.GAME_WON_SOUND);
     }
 
     @Override
@@ -119,39 +121,6 @@ public class Playing implements Screen {
         }
     }
 
-    
-    private static Map createMap(ResourcesManager ResourcesMgr) {
-        return new Map(
-            ResourcesMgr.getTilemap(), ResourcesMgr.getImage(Resource.MAP_IMAGE), ResourcesMgr.getSprite(SpriteSheet.PELLETS),
-            ResourcesMgr.getSound(Resource.EAT_WA_SOUND), ResourcesMgr.getSound(Resource.EAT_KA_SOUND)
-        );
-    }
-
-    private static Pacman createPacman(Map MapRef, ResourcesManager ResourcesMgr) {
-        return new Pacman(MapRef,
-            ResourcesMgr.getSprite(SpriteSheet.PACMAN), ResourcesMgr.getSprite(SpriteSheet.DEAD_PACMAN),
-            ResourcesMgr.getSound(Resource.PACMAN_DEATH_SOUND)
-        );
-    }
-
-    private static List<Ghost> createGhosts(Pacman PacmanRef, Map MapRef, ResourcesManager ResourcesMgr) {
-        BufferedImage[] PreySprite  = ResourcesMgr.getSprite(SpriteSheet.PREY_GHOST);
-        BufferedImage[] DeathSprite = ResourcesMgr.getSprite(SpriteSheet.DEAD_GHOST);
-        Sound DeathSound = ResourcesMgr.getSound(Resource.GHOST_DEATH_SOUND);
-
-        Ghost blinky = new Blinky(PacmanRef, MapRef,         ResourcesMgr.getSprite(SpriteSheet.BLINKY), PreySprite, DeathSprite, DeathSound);
-        Ghost pinky  = new Pinky (PacmanRef, MapRef,         ResourcesMgr.getSprite(SpriteSheet.PINKY),  PreySprite, DeathSprite, DeathSound);
-        Ghost inky   = new Inky(  PacmanRef, MapRef, blinky, ResourcesMgr.getSprite(SpriteSheet.INKY),   PreySprite, DeathSprite, DeathSound);
-        Ghost clyde  = new Clyde (PacmanRef, MapRef,         ResourcesMgr.getSprite(SpriteSheet.CLYDE),  PreySprite, DeathSprite, DeathSound);
-        
-        return List.of(blinky, pinky, inky, clyde);
-    }
-
-    private static List<ScoreSprite> createScores(ResourcesManager ResourcesMgr) {
-        return Arrays.stream(ResourcesMgr.getSprite(SpriteSheet.SCORES))
-                     .map(ScoreSprite::new).toList();
-    }
-
     private static enum State {
         START, NORMAL, POWERUP, LOST, WON
     }
@@ -166,7 +135,7 @@ public class Playing implements Screen {
                 
                 _pacman.reset();
                 _ghosts.forEach(Ghost::reset);
-                _map.reset(_ResourcesManager.getTilemap());
+                _map.reset();
                 for (Sound sound : List.of(_NewGameSound, _NormalSound, _PowerupSound, _WonSound))
                     sound.reset();
 
@@ -313,7 +282,6 @@ public class Playing implements Screen {
     private final Font _FontMedium;
     private final Sound _NewGameSound, _NormalSound, _PowerupSound, _WonSound;
     private final ScoreDatabase _ScoreDatabase;
-    private final ResourcesManager _ResourcesManager;
 
     private final Map _map;
     private final Pacman _pacman;

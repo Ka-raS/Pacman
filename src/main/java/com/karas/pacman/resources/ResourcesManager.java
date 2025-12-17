@@ -2,7 +2,6 @@ package com.karas.pacman.resources;
 
 import java.awt.Font;
 import java.awt.FontFormatException;
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
@@ -68,10 +67,7 @@ public class ResourcesManager implements Exitable {
     }
 
     public Tile[][] getTilemap() {
-        Tile[][] copy = new Tile[_tilemap.length][];
-        for (int y = 0; y < _tilemap.length; ++y)
-            copy[y] = _tilemap[y].clone();
-        return copy;
+        return _tilemap;
     }
 
     public Font getFont(int size) {
@@ -130,16 +126,8 @@ public class ResourcesManager implements Exitable {
             return spriteMap;
         }
 
-        spriteMap.put(SpriteSheet.PELLETS, new BufferedImage[] {
-            createSquare(Configs.PX.PELLET_SIZE),
-            createSquare(Configs.PX.POWERUP_SIZE)
-        });
-
         final int SIZE = Configs.PX.SPRITE_SIZE;
         for (SpriteSheet sheet : SpriteSheet.values()) {
-            if (sheet == SpriteSheet.PELLETS)
-                continue;
-
             BufferedImage[] sprite = new BufferedImage[sheet.getLen()];
             for (int i = 0; i < sheet.getLen(); ++i)
                 sprite[i] = sheetImage.getSubimage((sheet.getCol() + i) * SIZE, sheet.getRow() * SIZE, SIZE, SIZE);
@@ -298,15 +286,6 @@ public class ResourcesManager implements Exitable {
         } catch (IOException e) {
             throw new RuntimeException("Failed Reading Database File: " + path, e);
         }
-    }
-
-    private static BufferedImage createSquare(int size) {
-        BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = image.createGraphics();        
-        g.setColor(Configs.Color.PELLET);
-        g.fillRect(0, 0, size, size);
-        g.dispose();
-        return image;
     }
 
     private static void handleException(Exception e, boolean isCritical) {

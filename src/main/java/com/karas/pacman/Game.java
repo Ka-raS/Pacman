@@ -26,7 +26,6 @@ public class Game extends JPanel implements Exitable, Runnable, KeyListener {
     public Game() {
         _running = false;
         _scale = Configs.DEFAULT_SCALE;
-        _thread = new Thread(this, "Game Thread");
         _resourceManager = new ResourcesManager();
         _screenManager = new ScreenManager(_resourceManager);
 
@@ -66,8 +65,10 @@ public class Game extends JPanel implements Exitable, Runnable, KeyListener {
         if (_running)
             return;
         _running = true;
+        _thread = new Thread(this, "Game Thread");
 
         _LOGGER.info("Entering game...");
+        _frameCount = 0;
         _frame.setVisible(true);
         _frame.requestFocus();
         _thread.start(); // Game Thread calls run()
@@ -157,10 +158,10 @@ public class Game extends JPanel implements Exitable, Runnable, KeyListener {
     private static final Logger _LOGGER = Logger.getLogger(Game.class.getName());
 
     private final JFrame _frame;
-    private final Thread _thread;
     private final ScreenManager _screenManager;
     private final ResourcesManager _resourceManager;
-
+    
+    private Thread _thread;
     private volatile boolean _running;
     private volatile int _frameCount;
     private volatile double _scale;

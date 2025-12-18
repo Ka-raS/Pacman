@@ -90,8 +90,7 @@ public class Playing implements Screen {
         _ghosts.forEach(ghost -> ghost.update(deltaTime));
         _pacman.update(deltaTime);
         
-        boolean notPaused = _nextScreen == Playing.class;
-        if (notPaused)
+        if (_nextScreen == Playing.class)
             updateState(deltaTime);
         return _nextScreen;
     }
@@ -114,12 +113,12 @@ public class Playing implements Screen {
             case KeyEvent.VK_LEFT,  KeyEvent.VK_A -> _pacman.setNextDirection(Direction.LEFT);
 
             case KeyEvent.VK_ESCAPE -> {
-                boolean hasNewScreen = _nextScreen != Playing.class;
-                if (!hasNewScreen)
+                if (_nextScreen == Playing.class)
                     _nextScreen = Paused.class;
             }
         }
     }
+
 
     private static enum State {
         START, NORMAL, POWERUP, LOST, WON

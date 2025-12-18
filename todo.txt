@@ -1,8 +1,8 @@
-- Switch from KeyListener to KeyBindings
 - Simplify ResourcesManager.java code
 - Paused Screen background music
 - Ghost scatter mechanism
 - Ghost chases Pacman in MainMenu
 - Pacman eats Pellets in HighScore Screen
 - Fix audio in linux
-- review <Class<? extends Screen> Screen::update(double deltaTime)
+- Improve Playing::enter to remove enter() param
+- Review <Class<? extends Screen> Screen::update(double deltaTime)

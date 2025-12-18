@@ -47,7 +47,6 @@ public class Pacman extends Entity {
             case DEAD:
                 if (!getSprite().isAnimationEnded())
                     getSprite().update(deltaTime);
-                break;
         }
     }
 

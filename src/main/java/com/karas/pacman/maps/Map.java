@@ -113,9 +113,9 @@ public class Map implements ImmutableMap, Paintable {
             case POWERUP:
                 _tiles[p.iy()][p.ix()] = Tile.NONE;
                 break;
-                
+
             default:
-                break;
+                tile = Tile.NONE;
         }
         return tile;
     }

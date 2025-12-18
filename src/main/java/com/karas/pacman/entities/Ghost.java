@@ -33,7 +33,6 @@ public abstract class Ghost extends Entity {
 
             case IDLE:
                 getSprite().update(deltaTime);
-                break;
         }
     }
 

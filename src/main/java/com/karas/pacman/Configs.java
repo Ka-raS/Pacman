@@ -42,8 +42,6 @@ public class Configs {
         public static final String GAME_POWERUP_SOUND = "/sounds/game_powerup.wav";
         public static final String GAME_WON_SOUND     = "/sounds/game_won.wav";
 
-        private Path() {}
-
     }
 
     public static class Time {
@@ -62,8 +60,6 @@ public class Configs {
         public static final double GHOST_SCATTER_DURATION = 7.0; 
         public static final double GHOST_SCATTER_INTERVAL = 20.0 + GHOST_SCATTER_DURATION;
 
-        private Time() {}
-
     }
 
     public static class Score {
@@ -71,8 +67,6 @@ public class Configs {
         public static final int PELLET  = 10;
         public static final int POWERUP = 50;
         public static final int GHOST   = 200;
-
-        private Score() {}
 
     }
 
@@ -93,8 +87,6 @@ public class Configs {
         public static final Vector2 PINKY_SCATTER_POSITION  = new Vector2(0, 0);
         public static final Vector2 INKY_SCATTER_POSITION   = new Vector2(MAP_SIZE.ix() - 1, MAP_SIZE.iy() - 1);
         public static final Vector2 CLYDE_SCATTER_POSITION  = new Vector2(0, MAP_SIZE.iy() - 1);
-
-        private Grid() {}
 
     }
 
@@ -121,10 +113,6 @@ public class Configs {
         public static final int FONT_SIZE_MEDIUM = 8;
         public static final int FONT_SIZE_LARGE  = 12;
 
-        private PX() {}
-
     }
-
-    private Configs() {}
 
 }

@@ -39,7 +39,7 @@ public class Playing implements Screen {
 
         _totalScore = 0;
         _state = null;
-        _stateCooldown = 0.0;
+        _stateDuration = 0.0;
         _nextScreen = Playing.class;
 
         _ScoreDatabase = ResourcesMgr.getDatabase();
@@ -130,7 +130,7 @@ public class Playing implements Screen {
             case START:
                 _LOGGER.info("Started new playing!");
                 _totalScore = 0;
-                _stateCooldown = Configs.Time.STARTING_DURATION;
+                _stateDuration = Configs.Time.STARTING_DURATION;
                 
                 _pacman.reset();
                 _ghosts.forEach(Ghost::reset);
@@ -153,7 +153,7 @@ public class Playing implements Screen {
 
             case POWERUP:
                 _LOGGER.info("Powerup eaten!");
-                _stateCooldown = Configs.Time.POWERUP_DURATION;
+                _stateDuration = Configs.Time.POWERUP_DURATION;
                 _pacman.enterState(Pacman.State.HUNTER);
                 for (Ghost ghost : _ghosts)
                     if (ghost.getState() != Ghost.State.DEAD)
@@ -163,14 +163,14 @@ public class Playing implements Screen {
 
             case LOST:
                 _LOGGER.info("Game lost!");
-                _stateCooldown = Configs.Time.GAMELOST_DURATION;
+                _stateDuration = Configs.Time.GAMELOST_DURATION;
                 _pacman.enterState(Pacman.State.DEAD);
                 _ghosts.forEach(ghost -> ghost.enterState(Ghost.State.IDLE));
                 break;
 
             case WON:
                 _LOGGER.info("Game won!");
-                _stateCooldown = Configs.Time.GAMEWON_DURATION;
+                _stateDuration = Configs.Time.GAMEWON_DURATION;
                 _pacman.enterState(Pacman.State.IDLE);
                 _ghosts.forEach(ghost -> ghost.enterState(Ghost.State.IDLE));
                 _WonSound.play();
@@ -179,12 +179,12 @@ public class Playing implements Screen {
     }
 
     private void updateState(double deltaTime) {
-        if (_stateCooldown > 0.0)
-            _stateCooldown -= deltaTime;
+        if (_stateDuration > 0.0)
+            _stateDuration -= deltaTime;
 
         switch (_state) {
             case START:
-                if (_stateCooldown < 0.0) {
+                if (_stateDuration < 0.0) {
                     _pacman.enterState(Pacman.State.PREY);
                     _ghosts.forEach(ghost -> ghost.enterState(Ghost.State.HUNTER));
                     enterState(State.NORMAL);
@@ -192,23 +192,23 @@ public class Playing implements Screen {
                 break;
 
             case LOST:
-                if (_stateCooldown < 0.0)
+                if (_stateDuration < 0.0)
                     _nextScreen = HighScores.class;
                 break;
 
             case WON:
-                if (_stateCooldown < 0.0) {
+                if (_stateDuration < 0.0) {
                     _ScoreDatabase.addEntry(_totalScore);
                     _nextScreen = HighScores.class;
                 }
                 break;
 
             case POWERUP:
-                if (_stateCooldown < 0.0) {
+                if (_stateDuration < 0.0) {
                     _PowerupSound.pause();
                     enterState(State.NORMAL);
                     break;
-                } else if (_stateCooldown < Configs.Time.GHOST_FLASH_DURATION) // TODO: not the best
+                } else if (_stateDuration < Configs.Time.GHOST_FLASH_DURATION) // TODO: not the best
                     _ghosts.forEach(Ghost::enableFlashing);
 
                 handleCollision(_PowerupSound);
@@ -288,7 +288,7 @@ public class Playing implements Screen {
     private final List<ScoreSprite> _scores;
 
     private State _state;
-    private double _stateCooldown;
+    private double _stateDuration;
     private int _totalScore;
     private volatile Class<? extends Screen> _nextScreen;
 

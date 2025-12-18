@@ -116,7 +116,7 @@ public class Game implements Exitable {
 
     private void gameLoop() {
         long lastTime = System.nanoTime();
-        double updateTimer = 0.0, repaintTimer = 0.0, logTimer = 0.0;
+        double updateTimer = 0.0, repaintTimer = 0.0, statsTimer = 0.0;
         int updateCount = 0;
 
         while (_running) {
@@ -127,7 +127,7 @@ public class Game implements Exitable {
             
             lastTime = currentTime;
             updateTimer += deltaTime;
-            logTimer += deltaTime;
+            statsTimer += deltaTime;
             repaintTimer += deltaTime;
 
             while (_running && updateTimer >= Configs.Time.UPDATE_INTERVAL) {
@@ -142,9 +142,9 @@ public class Game implements Exitable {
                 repaintTimer = 0.0;
             }
 
-            if (logTimer >= 1.0) {
+            if (statsTimer >= 1.0) {
                 _frame.setTitle(String.format("%s: %d UPS, %d FPS", Configs.TITLE, updateCount, _frameCount));
-                logTimer = updateCount = _frameCount = 0;
+                statsTimer = updateCount = _frameCount = 0;
             }
         }
     }

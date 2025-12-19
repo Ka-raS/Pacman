@@ -8,5 +8,3 @@
 - Pacman eats Pellets in HighScore Screen
 
 - Fix audio in linux
-- Improve Playing::enter to remove enter() param
-- Review <Class<? extends Screen> Screen::update(double deltaTime)

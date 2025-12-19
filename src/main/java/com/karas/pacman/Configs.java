@@ -9,6 +9,14 @@ public class Configs {
     public static final String TITLE   = "Pacman";
     public static final double DEFAULT_SCALE = 3.0;
 
+    public static class Score {
+
+        public static final int PELLET  = 10;
+        public static final int POWERUP = 50;
+        public static final int GHOST   = 200;
+
+    }
+
     public static class Color {
 
         public static final java.awt.Color BACKGROUND = java.awt.Color.BLACK;
@@ -19,28 +27,6 @@ public class Configs {
         
         public static final java.awt.Color MAIN_MENU  = new java.awt.Color(0, 16, 48);
         public static final java.awt.Color PAUSE_MENU = new java.awt.Color(0, 0, 0, 192);
-
-    }
-
-    public static class Path {
-
-        public static final String WINDOW_ICON     = "/images/icon.png";
-        public static final String TITLE_IMAGE     = "/images/game_title.png";
-        public static final String HIGHSCORE_IMAGE = "/images/highscore.png";
-        public static final String MAP_IMAGE       = "/images/map.png";
-        public static final String SPRITE_SHEET    = "/images/spritesheet.png";
-        public static final String FONT            = "/fonts/Emulogic-zrEw.ttf";
-        public static final String TILEMAP         = "/tilemap.txt";
-        public static final String DATABASE_FILE   = "/highscores.csv";
-
-        public static final String EAT_WA_SOUND       = "/sounds/eat_wa.wav";
-        public static final String EAT_KA_SOUND       = "/sounds/eat_ka.wav";
-        public static final String PACMAN_DEATH_SOUND = "/sounds/pacman_death.wav";
-        public static final String GHOST_DEATH_SOUND  = "/sounds/ghost_death.wav";
-        public static final String GAME_START_SOUND   = "/sounds/game_start.wav";
-        public static final String GAME_NORMAL_SOUND  = "/sounds/game_normal.wav";
-        public static final String GAME_POWERUP_SOUND = "/sounds/game_powerup.wav";
-        public static final String GAME_WON_SOUND     = "/sounds/game_won.wav";
 
     }
 
@@ -62,17 +48,9 @@ public class Configs {
 
     }
 
-    public static class Score {
-
-        public static final int PELLET  = 10;
-        public static final int POWERUP = 50;
-        public static final int GHOST   = 200;
-
-    }
-
     public static class Grid {
 
-        public static final Vector2 MAP_SIZE = new Vector2(28, 31);
+        public static final Vector2 MAP_SIZE        = new Vector2(28,   31);
         public static final Vector2 PACMAN_POSITION = new Vector2(13.5, 23);
         public static final Vector2 BLINKY_POSITION = new Vector2(13.5, 11);
         public static final Vector2 PINKY_POSITION  = new Vector2(11.5, 14); // is squished between a wall and walkable tile
@@ -96,8 +74,6 @@ public class Configs {
         public static final int PELLET_SIZE  = 2;
         public static final int SPRITE_SIZE  = 16;
         public static final int POWERUP_SIZE = 6;
-        public static final Vector2 MAP_SIZE = Grid.MAP_SIZE.mul(TILE_SIZE);
-        public static final Vector2 WINDOW_SIZE = MAP_SIZE;
         
         // per second
         public static final int PACMAN_SPEED = 56; 
@@ -105,6 +81,7 @@ public class Configs {
         public static final int PINKY_SPEED  = 48;
         public static final int INKY_SPEED   = 48;
         public static final int CLYDE_SPEED  = 44;
+
         public static final int PACMAN_HUNTER_SPEED = 64;
         public static final int GHOST_PREY_SPEED    = 36;
         public static final int GHOST_DEAD_SPEED    = 98;
@@ -112,6 +89,7 @@ public class Configs {
         public static final int FONT_SIZE_SMALL  = 6;
         public static final int FONT_SIZE_MEDIUM = 8;
         public static final int FONT_SIZE_LARGE  = 12;
+        public static final Vector2 WINDOW_SIZE  = Grid.MAP_SIZE.mul(TILE_SIZE);
 
     }
 

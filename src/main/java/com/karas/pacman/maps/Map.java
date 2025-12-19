@@ -4,12 +4,12 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import com.karas.pacman.Configs;
-import com.karas.pacman.audio.Sound;
 import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Paintable;
 import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.resources.ResourceID;
 import com.karas.pacman.resources.ResourcesManager;
+import com.karas.pacman.resources.Sound;
 
 public class Map implements ImmutableMap, Paintable {
 

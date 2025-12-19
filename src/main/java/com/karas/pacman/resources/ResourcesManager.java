@@ -25,7 +25,6 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JOptionPane;
 
 import com.karas.pacman.Configs;
-import com.karas.pacman.audio.Sound;
 import com.karas.pacman.commons.Exitable;
 import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.data.ScoreDatabase;
@@ -43,15 +42,19 @@ public class ResourcesManager implements Exitable {
     }
 
     public Sound getSound(ResourceID soundID) {
-        return _soundMap.getOrDefault(soundID, Sound.getDummy());
+        if (soundID.getType() != ResourceID.Type.SOUND)
+            throw new IllegalArgumentException("ResourceID is not of type SOUND: " + soundID);
+        return _soundMap.get(soundID);
     }
 
     public BufferedImage getImage(ResourceID imageID) {
-        return _imageMap.getOrDefault(imageID, null);
+        if (imageID.getType() != ResourceID.Type.IMAGE)
+            throw new IllegalArgumentException("ResourceID is not of type IMAGE: " + imageID);
+        return _imageMap.get(imageID);
     }
 
     public BufferedImage[] getSprite(SpriteID spriteID) {
-        return _spriteMap.getOrDefault(spriteID, null);
+        return _spriteMap.get(spriteID);
     }
 
     public Tile[][] getTilemap() {
@@ -89,35 +92,28 @@ public class ResourcesManager implements Exitable {
 
 
     private static EnumMap<ResourceID, Sound> initSoundMap() {
-        ResourceID[] sounds = { 
-            ResourceID.EAT_WA_SOUND, ResourceID.EAT_KA_SOUND, ResourceID.PACMAN_DEATH_SOUND, ResourceID.GHOST_DEATH_SOUND, 
-            ResourceID.GAME_START_SOUND, ResourceID.GAME_NORMAL_SOUND, ResourceID.GAME_POWERUP_SOUND, ResourceID.GAME_WON_SOUND
-        };
         EnumMap<ResourceID, Sound> soundMap = new EnumMap<>(ResourceID.class);
-        
-        for (ResourceID sound : sounds) {
-            try {
-                soundMap.put(sound, loadSound(sound.getPath()));
-            } catch (RuntimeException e) {
-                handleException(e, sound.isCritical());
-                soundMap.put(sound, Sound.getDummy());
-            }
-        }
+        for (ResourceID sound : ResourceID.values())
+            if (sound.getType() == ResourceID.Type.SOUND)
+                try {
+                    soundMap.put(sound, loadSound(sound.getPath()));
+                } catch (RuntimeException e) {
+                    handleException(e, sound.isCritical());
+                    soundMap.put(sound, new Sound(null));
+                }
         return soundMap;
     }
 
     private static EnumMap<ResourceID, BufferedImage> initImageMap() {
-        ResourceID[] images = { ResourceID.WINDOW_ICON, ResourceID.TITLE_IMAGE, ResourceID.HIGHSCORE_IMAGE, ResourceID.MAP_IMAGE, ResourceID.SPRITE_SHEET };
         EnumMap<ResourceID, BufferedImage> imageMap = new EnumMap<>(ResourceID.class);
-
-        for (ResourceID image : images) {
-            try {
-                imageMap.put(image, loadImage(image.getPath()));
-            } catch (RuntimeException e) {
-                handleException(e, image.isCritical());
-                imageMap.put(image, null);
-            }
-        }
+        for (ResourceID image : ResourceID.values())
+            if (image.getType() == ResourceID.Type.IMAGE)
+                try {
+                    imageMap.put(image, loadImage(image.getPath()));
+                } catch (RuntimeException e) {
+                    handleException(e, image.isCritical());
+                    imageMap.put(image, null);
+                }
         return imageMap;
     }
 
@@ -127,15 +123,15 @@ public class ResourcesManager implements Exitable {
         if (sheetImage == null) {
             _LOGGER.warning("Sprite sheet not initialized.");
             for (SpriteID sheet : SpriteID.values())
-                spriteMap.put(sheet, new BufferedImage[sheet.getLen()]);
+                spriteMap.put(sheet, new BufferedImage[sheet.getLength()]);
             return spriteMap;
         }
 
         final int SIZE = Configs.PX.SPRITE_SIZE;
         for (SpriteID sheet : SpriteID.values()) {
-            BufferedImage[] sprite = new BufferedImage[sheet.getLen()];
-            for (int i = 0; i < sheet.getLen(); ++i)
-                sprite[i] = sheetImage.getSubimage((sheet.getCol() + i) * SIZE, sheet.getRow() * SIZE, SIZE, SIZE);
+            BufferedImage[] sprite = new BufferedImage[sheet.getLength()];
+            for (int i = 0; i < sheet.getLength(); ++i)
+                sprite[i] = sheetImage.getSubimage((sheet.getColumn() + i) * SIZE, sheet.getRow() * SIZE, SIZE, SIZE);
             spriteMap.put(sheet, sprite);
         }
         return spriteMap;
@@ -232,7 +228,7 @@ public class ResourcesManager implements Exitable {
                     throw new IllegalArgumentException("Tilemap Data Corrupted At Line " + (y+1));
                     
                 for (int x = 0; x < size.ix(); ++x) {
-                    tiles[y][x] = Tile.fromChar(line.charAt(x));
+                    tiles[y][x] = Tile.of(line.charAt(x));
                     if (tiles[y][x] == null)
                         throw new IllegalArgumentException(
                             String.format("Tilemap Data Corrupted At Line %d Column %d", y+1, x+1)

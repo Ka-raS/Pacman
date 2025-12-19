@@ -1,41 +1,42 @@
 package com.karas.pacman.resources;
 
-import java.util.EnumSet;
-
-import com.karas.pacman.Configs;
-
 public enum ResourceID {
     
-    WINDOW_ICON(       Configs.Path.WINDOW_ICON),
-    TITLE_IMAGE(       Configs.Path.TITLE_IMAGE),
-    HIGHSCORE_IMAGE(   Configs.Path.HIGHSCORE_IMAGE),
-    MAP_IMAGE(         Configs.Path.MAP_IMAGE),
-    SPRITE_SHEET(      Configs.Path.SPRITE_SHEET),
-    TILEMAP(           Configs.Path.TILEMAP),
-    FONT(              Configs.Path.FONT),
-    DATABASE_FILE(     Configs.Path.DATABASE_FILE),
+    WINDOW_ICON(    Type.IMAGE, false, "/images/icon.png"),
+    TITLE_IMAGE(    Type.IMAGE, false, "/images/game_title.png"),
+    HIGHSCORE_IMAGE(Type.IMAGE, false, "/images/highscore.png"),
+    SPRITE_SHEET(   Type.IMAGE, true,  "/images/spritesheet.png"),
+    MAP_IMAGE(      Type.IMAGE, true,  "/images/map.png"),
 
-    EAT_WA_SOUND(      Configs.Path.EAT_WA_SOUND),
-    EAT_KA_SOUND(      Configs.Path.EAT_KA_SOUND),
-    PACMAN_DEATH_SOUND(Configs.Path.PACMAN_DEATH_SOUND),
-    GHOST_DEATH_SOUND( Configs.Path.GHOST_DEATH_SOUND),
-    GAME_START_SOUND(  Configs.Path.GAME_START_SOUND),
-    GAME_NORMAL_SOUND( Configs.Path.GAME_NORMAL_SOUND),
-    GAME_POWERUP_SOUND(Configs.Path.GAME_POWERUP_SOUND),
-    GAME_WON_SOUND(    Configs.Path.GAME_WON_SOUND);
+    EAT_WA_SOUND(      Type.SOUND, false, "/sounds/eat_wa.wav"),
+    EAT_KA_SOUND(      Type.SOUND, false, "/sounds/eat_ka.wav"),
+    PACMAN_DEATH_SOUND(Type.SOUND, false, "/sounds/pacman_death.wav"),
+    GHOST_DEATH_SOUND( Type.SOUND, false, "/sounds/ghost_death.wav"),
+    GAME_START_SOUND(  Type.SOUND, false, "/sounds/game_start.wav"),
+    GAME_NORMAL_SOUND( Type.SOUND, false, "/sounds/game_normal.wav"),
+    GAME_POWERUP_SOUND(Type.SOUND, false, "/sounds/game_powerup.wav"),
+    GAME_WON_SOUND(    Type.SOUND, false, "/sounds/game_won.wav"),
 
-    public String getPath()     { return _path; }
-    public boolean isCritical() { return _criticalResources.contains(this); }
+    FONT(         Type.FONT, false, "/fonts/Emulogic-zrEw.ttf"),
+    TILEMAP(      Type.TEXT, true,  "/tilemap.txt"),
+    DATABASE_FILE(Type.TEXT, false, "/highscores.csv");
 
 
-    private static EnumSet<ResourceID> _criticalResources = EnumSet.of(
-        MAP_IMAGE, SPRITE_SHEET, TILEMAP
-    );
+    public static enum Type {
+        IMAGE, SOUND, FONT, TEXT
+    }
 
-    private ResourceID(String path) {
-        _path = path;
+    public String  getPath()    { return _path; }
+    public Type    getType()    { return _type; }
+    public boolean isCritical() { return _critical; }
+
+
+    private ResourceID(Type type, boolean critical, String path) {
+        _type = type; _critical = critical; _path = path; 
     }
 
     private final String _path;
+    private final Type _type;
+    private final boolean _critical;
 
 }

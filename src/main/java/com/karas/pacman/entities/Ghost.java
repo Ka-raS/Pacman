@@ -3,7 +3,6 @@ package com.karas.pacman.entities;
 import java.util.EnumSet;
 
 import com.karas.pacman.Configs;
-import com.karas.pacman.audio.Sound;
 import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.graphics.EntitySprite;
@@ -11,6 +10,7 @@ import com.karas.pacman.maps.ImmutableMap;
 import com.karas.pacman.maps.Map;
 import com.karas.pacman.resources.ResourceID;
 import com.karas.pacman.resources.ResourcesManager;
+import com.karas.pacman.resources.Sound;
 import com.karas.pacman.resources.SpriteID;
 
 public abstract class Ghost extends Entity {

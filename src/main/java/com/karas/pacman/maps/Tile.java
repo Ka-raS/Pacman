@@ -4,7 +4,7 @@ public enum Tile {
 
     NONE, WALL, PELLET, POWERUP, TUNNEL;
     
-    public static Tile fromChar(char value) {
+    public static Tile of(char value) {
         return switch (value) {
             case ' ' -> NONE;
             case '#' -> WALL;

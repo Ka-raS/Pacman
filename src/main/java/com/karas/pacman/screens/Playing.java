@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import com.karas.pacman.Configs;
-import com.karas.pacman.audio.Sound;
 import com.karas.pacman.commons.Direction;
 import com.karas.pacman.data.ScoreDatabase;
 import com.karas.pacman.entities.Ghost;
@@ -22,6 +21,7 @@ import com.karas.pacman.graphics.ScoreSprite;
 import com.karas.pacman.maps.Map;
 import com.karas.pacman.resources.ResourceID;
 import com.karas.pacman.resources.ResourcesManager;
+import com.karas.pacman.resources.Sound;
 import com.karas.pacman.resources.SpriteID;
 
 public class Playing implements Screen {

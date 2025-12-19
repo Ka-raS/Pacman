@@ -8,15 +8,15 @@ public enum SpriteID {
     INKY(  4, 0, 8), SCORES(     7, 0, 4),
     CLYDE( 5, 0, 8);
 
-    public int getRow() { return _row; }
-    public int getCol() { return _col; }
-    public int getLen() { return _len; }
+    public int getRow()    { return _row; }
+    public int getColumn() { return _column; }
+    public int getLength() { return _length; }
 
 
-    private SpriteID(int row, int col, int len) {
-        _row = row; _col = col; _len = len;
+    private SpriteID(int row, int column, int length) {
+        _row = row; _column = column; _length = length;
     }
 
-    private final int _row, _col, _len;
+    private final int _row, _column, _length;
 
 }

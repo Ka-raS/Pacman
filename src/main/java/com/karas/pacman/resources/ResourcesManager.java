@@ -42,6 +42,10 @@ public class ResourcesManager implements Exitable {
         _database  = initDatabase();
     }
 
+    public void enter() {
+        // TODO: load sounds here
+    }
+
     @Override
     public void exit() {
         for (Sound sound : _soundMap.values())
@@ -302,7 +306,6 @@ public class ResourcesManager implements Exitable {
             "ERROR",
             JOptionPane.ERROR_MESSAGE
         );
-        System.exit(1);
     }
 
     private static final Logger _LOGGER = Logger.getLogger(ResourcesManager.class.getName());

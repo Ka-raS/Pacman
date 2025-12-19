@@ -1,8 +1,11 @@
+- ScreenManager owns JPanel and implement KeyBindings Map 
 - Simplify ResourcesManager.java code
+
 - Paused Screen background music
 - Ghost scatter mechanism
 - Ghost chases Pacman in MainMenu
 - Pacman eats Pellets in HighScore Screen
+
 - Fix audio in linux
 - Improve Playing::enter to remove enter() param
 - Review <Class<? extends Screen> Screen::update(double deltaTime)

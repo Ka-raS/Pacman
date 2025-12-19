@@ -16,13 +16,17 @@ public class ScreenManager implements Exitable, Paintable {
         Screen paused     = new Paused(playing, ResourcesMgr);
         Screen highScores = new HighScores(ResourcesMgr);
 
+        _current = mainMenu;
         _screens = Map.of(
             MainMenu.class,   mainMenu,
             Playing.class,    playing,
             Paused.class,     paused,
             HighScores.class, highScores
         );
-        _current = mainMenu;
+    }
+
+    public void enter() {
+        _current = _screens.get(MainMenu.class);
         _current.enter(null);
     }
 

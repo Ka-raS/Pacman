@@ -10,11 +10,13 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import com.karas.pacman.commons.Exitable;
 import com.karas.pacman.resources.Resource;
@@ -29,8 +31,8 @@ public class Game implements Exitable {
         _scale = Configs.DEFAULT_SCALE;
         _resourceManager = new ResourcesManager();
         _screenManager = new ScreenManager(_resourceManager);
-
-        _panel = new JPanel(true) {
+        _frame = new JFrame(Configs.TITLE);
+        _panel = new JPanel() {
             @Override
             protected void paintComponent(Graphics G) {
                 super.paintComponent(G);
@@ -41,17 +43,6 @@ public class Game implements Exitable {
                 Toolkit.getDefaultToolkit().sync();
             }
         };
-        _panel.setFocusable(true);
-        _panel.setBackground(Configs.Color.BACKGROUND);
-        _panel.setPreferredSize(new Dimension(
-            (int) (Configs.PX.WINDOW_SIZE.ix() * _scale),
-            (int) (Configs.PX.WINDOW_SIZE.iy() * _scale)
-        ));
-
-        _frame = new JFrame(Configs.TITLE);
-        _frame.setVisible(false);
-        _frame.setResizable(true);
-        _frame.setIconImage(_resourceManager.getImage(Resource.WINDOW_ICON));
     }
 
     public synchronized void enter() {
@@ -60,7 +51,53 @@ public class Game implements Exitable {
         _running = true;
 
         _LOGGER.info("Entering game...");
+        try {
+            SwingUtilities.invokeAndWait(this::initializeUI);
+        } catch (InterruptedException | InvocationTargetException e) {
+            _LOGGER.log(Level.SEVERE, "Failed to initialize game UI", e);
+            exit();
+            return;
+        }
+        _resourceManager.enter();
+        _screenManager.enter();
+        _thread = new Thread(this::gameLoop);
+        _thread.start(); // GameThread calls this.gameLoop()
+    }
+
+    @Override
+    public synchronized void exit() {
+        if (!_running)
+            return;
+        _running = false;
+
+        _LOGGER.info("Exiting game...");
+        SwingUtilities.invokeLater(() -> {
+            _frame.setVisible(false);
+            _frame.dispose();
+        });
+        _screenManager.exit();
+        _resourceManager.exit();
+
+        if (Thread.currentThread() != _thread) {
+            try {
+                _thread.join();
+            } catch (InterruptedException e) {
+                _LOGGER.log(Level.WARNING, "Join Game Thread Failed", e);
+            }
+        }
+    }
+
+
+    private void initializeUI() {
+        _panel.setDoubleBuffered(true);
+        _panel.setFocusable(true);
+        _panel.setBackground(Configs.Color.BACKGROUND);
+        _panel.setPreferredSize(new Dimension(
+            (int) (Configs.PX.WINDOW_SIZE.ix() * _scale),
+            (int) (Configs.PX.WINDOW_SIZE.iy() * _scale)
+        ));
         _frame.add(_panel);
+
         _frame.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -84,35 +121,12 @@ public class Game implements Exitable {
         });
 
         _frame.pack();
+        _frame.setResizable(true);
+        _frame.setIconImage(_resourceManager.getImage(Resource.WINDOW_ICON));
         _frame.setLocationRelativeTo(null);
         _frame.setVisible(true);
         _frame.requestFocus();
-
-        _thread = new Thread(this::gameLoop);
-        _thread.start(); // GameThread calls this.gameLoop()
     }
-
-    @Override
-    public synchronized void exit() {
-        if (!_running)
-            return;
-        _running = false;
-
-        _LOGGER.info("Exiting game...");
-        _frame.setVisible(false);
-        _screenManager.exit();
-        _resourceManager.exit();
-        _frame.dispose();
-
-        if (Thread.currentThread() != _thread) {
-            try {
-                _thread.join();
-            } catch (InterruptedException e) {
-                _LOGGER.log(Level.WARNING, "Join Game Thread Failed", e);
-            }
-        }
-    }
-
 
     private void gameLoop() {
         long lastTime = System.nanoTime();
@@ -136,6 +150,8 @@ public class Game implements Exitable {
                 ++updateCount;
                 updateTimer -= Configs.Time.UPDATE_INTERVAL;
             }
+            if (!_running)
+                break;
 
             if (repaintTimer >= Configs.Time.REPAINT_INTERVAL) {
                 _panel.repaint(); // EDT calls _panel.paintComponent()
@@ -143,7 +159,10 @@ public class Game implements Exitable {
             }
 
             if (statsTimer >= 1.0) {
-                _frame.setTitle(String.format("%s: %d UPS, %d FPS", Configs.TITLE, updateCount, _frameCount));
+                final int ups = updateCount, fps = _frameCount;
+                SwingUtilities.invokeLater(() ->
+                    _frame.setTitle(String.format("%s: %d UPS, %d FPS", Configs.TITLE, ups, fps))
+                );
                 statsTimer = updateCount = _frameCount = 0;
             }
         }

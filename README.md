@@ -19,15 +19,18 @@
 - Pause: Esc
 - Select: Enter
 
-## Download Prebuilt
+## How to Run
 
-### Latest Release: 
+### From Latest Release: 
 
-https://github.com/Ka-raS/Pacman/releases/download/v1.0.0/pacman-1.0.0.jar
+```bash
+curl -LO https://github.com/Ka-raS/Pacman/releases/download/v1.0.0/pacman-1.0.0.jar
+java -jar pacman-1.0.0.jar
+```
 
-## Build And Run From Source
+### Build And Run From Source
 
-### Requirements
+#### Requirements
 
 - [Java 21](https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html)
 - [Maven 3.9](https://maven.apache.org/install.html) - Build Manager

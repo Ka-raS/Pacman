@@ -126,7 +126,7 @@ public class Playing implements Screen {
 
     private void enterState(State nextState) {
         _state = nextState;
-        switch (_state) {
+        switch (nextState) {
             case START:
                 _LOGGER.info("Started new playing!");
                 _totalScore = 0;
@@ -152,7 +152,6 @@ public class Playing implements Screen {
                 break;
 
             case POWERUP:
-                _LOGGER.info("Powerup eaten!");
                 _stateDuration = Configs.Time.POWERUP_DURATION;
                 _pacman.enterState(Pacman.State.HUNTER);
                 for (Ghost ghost : _ghosts)
@@ -174,6 +173,7 @@ public class Playing implements Screen {
                 _pacman.enterState(Pacman.State.IDLE);
                 _ghosts.forEach(ghost -> ghost.enterState(Ghost.State.IDLE));
                 _WonSound.play();
+                _ScoreDatabase.addEntry(_totalScore);
                 break;
         }
     }
@@ -191,16 +191,9 @@ public class Playing implements Screen {
                 }
                 break;
 
-            case LOST:
+            case LOST, WON:
                 if (_stateDuration < 0.0)
                     _nextScreen = HighScores.class;
-                break;
-
-            case WON:
-                if (_stateDuration < 0.0) {
-                    _ScoreDatabase.addEntry(_totalScore);
-                    _nextScreen = HighScores.class;
-                }
                 break;
 
             case POWERUP:
@@ -255,6 +248,7 @@ public class Playing implements Screen {
                 break;
         
             case POWERUP:
+                _LOGGER.info("Powerup eaten!");
                 _totalScore += Configs.Score.POWERUP;
                 currentSound.pause();
                 enterState(State.POWERUP);

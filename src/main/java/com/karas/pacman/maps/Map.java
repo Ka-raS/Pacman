@@ -8,7 +8,7 @@ import com.karas.pacman.audio.Sound;
 import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Paintable;
 import com.karas.pacman.commons.Vector2;
-import com.karas.pacman.resources.Resource;
+import com.karas.pacman.resources.ResourceID;
 import com.karas.pacman.resources.ResourcesManager;
 
 public class Map implements ImmutableMap, Paintable {
@@ -27,12 +27,12 @@ public class Map implements ImmutableMap, Paintable {
     }
 
     public Map(ResourcesManager ResourcesMgr) {
-        _MapImage = ResourcesMgr.getImage(Resource.MAP_IMAGE);
+        _MapImage = ResourcesMgr.getImage(ResourceID.MAP_IMAGE);
         _PelletImage = createSquare(Configs.PX.PELLET_SIZE);
         _PowerupImage = createSquare(Configs.PX.POWERUP_SIZE);
         _WakaSounds = new Sound[] { 
-            ResourcesMgr.getSound(Resource.EAT_WA_SOUND), 
-            ResourcesMgr.getSound(Resource.EAT_KA_SOUND) 
+            ResourcesMgr.getSound(ResourceID.EAT_WA_SOUND), 
+            ResourcesMgr.getSound(ResourceID.EAT_KA_SOUND) 
         };
         _OriginalTilemap = ResourcesMgr.getTilemap();
         reset();

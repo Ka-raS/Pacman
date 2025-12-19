@@ -9,9 +9,9 @@ import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.graphics.EntitySprite;
 import com.karas.pacman.maps.ImmutableMap;
 import com.karas.pacman.maps.Map;
-import com.karas.pacman.resources.Resource;
+import com.karas.pacman.resources.ResourceID;
 import com.karas.pacman.resources.ResourcesManager;
-import com.karas.pacman.resources.SpriteSheet;
+import com.karas.pacman.resources.SpriteID;
 
 public abstract class Ghost extends Entity {
 
@@ -45,7 +45,7 @@ public abstract class Ghost extends Entity {
         enterState(State.HUNTER);
     }
 
-    protected Ghost(Vector2 gridPosition, Direction direction, int speed, SpriteSheet baseSprite,
+    protected Ghost(Vector2 gridPosition, Direction direction, int speed, SpriteID baseSprite,
                     ImmutableEntity PacmanRef, ImmutableMap MapRef, ResourcesManager ResourcesMgr) {
         super(
             gridPosition, direction, speed,
@@ -58,10 +58,10 @@ public abstract class Ghost extends Entity {
         _startDirection = direction;
 
         _baseSprite = getSprite();
-        _preySprite = new EntitySprite(ResourcesMgr.getSprite(SpriteSheet.PREY_GHOST), 0, 2);
-        _deathSprite = new EntitySprite(ResourcesMgr.getSprite(SpriteSheet.DEAD_GHOST), direction.ordinal(), 1);
+        _preySprite = new EntitySprite(ResourcesMgr.getSprite(SpriteID.PREY_GHOST), 0, 2);
+        _deathSprite = new EntitySprite(ResourcesMgr.getSprite(SpriteID.DEAD_GHOST), direction.ordinal(), 1);
 
-        _DeathSound = ResourcesMgr.getSound(Resource.GHOST_DEATH_SOUND);
+        _DeathSound = ResourcesMgr.getSound(ResourceID.GHOST_DEATH_SOUND);
         _Pacman = PacmanRef;
 
         enterState(State.HUNTER);

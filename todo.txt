@@ -1,4 +1,4 @@
-- ScreenManager owns JPanel and implement KeyBindings Map 
+- Screen implement KeyBindings Map 
 - Simplify ResourcesManager.java code
 
 - Paused Screen background music

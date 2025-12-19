@@ -20,16 +20,16 @@ import com.karas.pacman.entities.ghosts.Inky;
 import com.karas.pacman.entities.ghosts.Pinky;
 import com.karas.pacman.graphics.ScoreSprite;
 import com.karas.pacman.maps.Map;
-import com.karas.pacman.resources.Resource;
+import com.karas.pacman.resources.ResourceID;
 import com.karas.pacman.resources.ResourcesManager;
-import com.karas.pacman.resources.SpriteSheet;
+import com.karas.pacman.resources.SpriteID;
 
 public class Playing implements Screen {
 
     public Playing(ResourcesManager ResourcesMgr) {
         _map    = new Map(ResourcesMgr);
         _pacman = new Pacman(_map, ResourcesMgr);
-        _scores = Arrays.stream(ResourcesMgr.getSprite(SpriteSheet.SCORES)).map(ScoreSprite::new).toList();
+        _scores = Arrays.stream(ResourcesMgr.getSprite(SpriteID.SCORES)).map(ScoreSprite::new).toList();
         
         Blinky blinky = new Blinky(_pacman, _map, ResourcesMgr);
         Pinky pinky   = new Pinky(_pacman, _map, ResourcesMgr);
@@ -44,10 +44,10 @@ public class Playing implements Screen {
 
         _ScoreDatabase = ResourcesMgr.getDatabase();
         _FontMedium    = ResourcesMgr.getFont(Configs.PX.FONT_SIZE_MEDIUM);
-        _NewGameSound  = ResourcesMgr.getSound(Resource.GAME_START_SOUND);
-        _NormalSound   = ResourcesMgr.getSound(Resource.GAME_NORMAL_SOUND);
-        _PowerupSound  = ResourcesMgr.getSound(Resource.GAME_POWERUP_SOUND);
-        _WonSound      = ResourcesMgr.getSound(Resource.GAME_WON_SOUND);
+        _NewGameSound  = ResourcesMgr.getSound(ResourceID.GAME_START_SOUND);
+        _NormalSound   = ResourcesMgr.getSound(ResourceID.GAME_NORMAL_SOUND);
+        _PowerupSound  = ResourcesMgr.getSound(ResourceID.GAME_POWERUP_SOUND);
+        _WonSound      = ResourcesMgr.getSound(ResourceID.GAME_WON_SOUND);
     }
 
     @Override

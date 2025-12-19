@@ -36,7 +36,7 @@ public class ResourcesManager implements Exitable {
     public ResourcesManager() {
         _soundMap  = initSoundMap();
         _imageMap  = initImageMap();
-        _spriteMap = initSpriteMap(_imageMap.get(Resource.SPRITE_SHEET));
+        _spriteMap = initSpriteMap(_imageMap.get(ResourceID.SPRITE_SHEET));
         _tilemap   = initTilemap();
         _fonts     = initFonts();
         _database  = initDatabase();
@@ -58,16 +58,16 @@ public class ResourcesManager implements Exitable {
         }
     }
 
-    public Sound getSound(Resource sound) {
-        return _soundMap.getOrDefault(sound, Sound.getDummy());
+    public Sound getSound(ResourceID soundID) {
+        return _soundMap.getOrDefault(soundID, Sound.getDummy());
     }
 
-    public BufferedImage getImage(Resource image) {
-        return _imageMap.getOrDefault(image, null);
+    public BufferedImage getImage(ResourceID imageID) {
+        return _imageMap.getOrDefault(imageID, null);
     }
 
-    public BufferedImage[] getSprite(SpriteSheet sheet) {
-        return _spriteMap.getOrDefault(sheet, null);
+    public BufferedImage[] getSprite(SpriteID spriteID) {
+        return _spriteMap.getOrDefault(spriteID, null);
     }
 
     public Tile[][] getTilemap() {
@@ -88,14 +88,14 @@ public class ResourcesManager implements Exitable {
     }
 
 
-    private static EnumMap<Resource, Sound> initSoundMap() {
-        Resource[] sounds = { 
-            Resource.EAT_WA_SOUND, Resource.EAT_KA_SOUND, Resource.PACMAN_DEATH_SOUND, Resource.GHOST_DEATH_SOUND, 
-            Resource.GAME_START_SOUND, Resource.GAME_NORMAL_SOUND, Resource.GAME_POWERUP_SOUND, Resource.GAME_WON_SOUND
+    private static EnumMap<ResourceID, Sound> initSoundMap() {
+        ResourceID[] sounds = { 
+            ResourceID.EAT_WA_SOUND, ResourceID.EAT_KA_SOUND, ResourceID.PACMAN_DEATH_SOUND, ResourceID.GHOST_DEATH_SOUND, 
+            ResourceID.GAME_START_SOUND, ResourceID.GAME_NORMAL_SOUND, ResourceID.GAME_POWERUP_SOUND, ResourceID.GAME_WON_SOUND
         };
-        EnumMap<Resource, Sound> soundMap = new EnumMap<>(Resource.class);
+        EnumMap<ResourceID, Sound> soundMap = new EnumMap<>(ResourceID.class);
         
-        for (Resource sound : sounds) {
+        for (ResourceID sound : sounds) {
             try {
                 soundMap.put(sound, loadSound(sound.getPath()));
             } catch (RuntimeException e) {
@@ -106,11 +106,11 @@ public class ResourcesManager implements Exitable {
         return soundMap;
     }
 
-    private static EnumMap<Resource, BufferedImage> initImageMap() {
-        Resource[] images = { Resource.WINDOW_ICON, Resource.TITLE_IMAGE, Resource.HIGHSCORE_IMAGE, Resource.MAP_IMAGE, Resource.SPRITE_SHEET };
-        EnumMap<Resource, BufferedImage> imageMap = new EnumMap<>(Resource.class);
+    private static EnumMap<ResourceID, BufferedImage> initImageMap() {
+        ResourceID[] images = { ResourceID.WINDOW_ICON, ResourceID.TITLE_IMAGE, ResourceID.HIGHSCORE_IMAGE, ResourceID.MAP_IMAGE, ResourceID.SPRITE_SHEET };
+        EnumMap<ResourceID, BufferedImage> imageMap = new EnumMap<>(ResourceID.class);
 
-        for (Resource image : images) {
+        for (ResourceID image : images) {
             try {
                 imageMap.put(image, loadImage(image.getPath()));
             } catch (RuntimeException e) {
@@ -121,18 +121,18 @@ public class ResourcesManager implements Exitable {
         return imageMap;
     }
 
-    private static EnumMap<SpriteSheet, BufferedImage[]> initSpriteMap(BufferedImage sheetImage) {
-        EnumMap<SpriteSheet, BufferedImage[]> spriteMap = new EnumMap<>(SpriteSheet.class);
+    private static EnumMap<SpriteID, BufferedImage[]> initSpriteMap(BufferedImage sheetImage) {
+        EnumMap<SpriteID, BufferedImage[]> spriteMap = new EnumMap<>(SpriteID.class);
         
         if (sheetImage == null) {
             _LOGGER.warning("Sprite sheet not initialized.");
-            for (SpriteSheet sheet : SpriteSheet.values())
+            for (SpriteID sheet : SpriteID.values())
                 spriteMap.put(sheet, new BufferedImage[sheet.getLen()]);
             return spriteMap;
         }
 
         final int SIZE = Configs.PX.SPRITE_SIZE;
-        for (SpriteSheet sheet : SpriteSheet.values()) {
+        for (SpriteID sheet : SpriteID.values()) {
             BufferedImage[] sprite = new BufferedImage[sheet.getLen()];
             for (int i = 0; i < sheet.getLen(); ++i)
                 sprite[i] = sheetImage.getSubimage((sheet.getCol() + i) * SIZE, sheet.getRow() * SIZE, SIZE, SIZE);
@@ -144,9 +144,9 @@ public class ResourcesManager implements Exitable {
     private static Tile[][] initTilemap() {
         final Vector2 SIZE = Configs.Grid.MAP_SIZE;
         try {
-            return loadTilemap(Resource.TILEMAP.getPath(), SIZE);
+            return loadTilemap(ResourceID.TILEMAP.getPath(), SIZE);
         } catch (RuntimeException e) {
-            handleException(e, Resource.TILEMAP.isCritical());
+            handleException(e, ResourceID.TILEMAP.isCritical());
 
             Tile[][] tilemap = new Tile[SIZE.iy()][SIZE.ix()];
             for (Tile[] row : tilemap)
@@ -160,9 +160,9 @@ public class ResourcesManager implements Exitable {
         Font font;
 
         try {
-            font = loadFont(Resource.FONT.getPath(), Configs.PX.FONT_SIZE_MEDIUM);
+            font = loadFont(ResourceID.FONT.getPath(), Configs.PX.FONT_SIZE_MEDIUM);
         } catch (RuntimeException e) {
-            handleException(e, Resource.FONT.isCritical());
+            handleException(e, ResourceID.FONT.isCritical());
             font = new Font("Arial", Font.PLAIN, (int) Configs.PX.FONT_SIZE_MEDIUM);
         }
 
@@ -171,10 +171,10 @@ public class ResourcesManager implements Exitable {
 
     private static ScoreDatabase initDatabase() {
         try {
-            return loadOrCreateDatabase(Resource.DATABASE_FILE.getPath());
+            return loadOrCreateDatabase(ResourceID.DATABASE_FILE.getPath());
 
         } catch (RuntimeException e) {
-            handleException(e, Resource.DATABASE_FILE.isCritical());
+            handleException(e, ResourceID.DATABASE_FILE.isCritical());
             _LOGGER.warning("Using Empty Temporary Database");
             return new ScoreDatabase();
         }
@@ -310,9 +310,9 @@ public class ResourcesManager implements Exitable {
 
     private static final Logger _LOGGER = Logger.getLogger(ResourcesManager.class.getName());
 
-    private final EnumMap<Resource, Sound> _soundMap;
-    private final EnumMap<Resource, BufferedImage> _imageMap;
-    private final EnumMap<SpriteSheet, BufferedImage[]> _spriteMap;
+    private final EnumMap<ResourceID, Sound> _soundMap;
+    private final EnumMap<ResourceID, BufferedImage> _imageMap;
+    private final EnumMap<SpriteID, BufferedImage[]> _spriteMap;
     private final Tile[][] _tilemap;
     private final Font[] _fonts;
     private final ScoreDatabase _database;

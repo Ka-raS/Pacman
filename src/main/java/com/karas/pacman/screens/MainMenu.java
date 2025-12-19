@@ -7,13 +7,13 @@ import java.awt.image.BufferedImage;
 import com.karas.pacman.Configs;
 import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.graphics.MenuNavigator;
-import com.karas.pacman.resources.Resource;
+import com.karas.pacman.resources.ResourceID;
 import com.karas.pacman.resources.ResourcesManager;
 
 public class MainMenu implements Screen {
     
     public MainMenu(ResourcesManager ResourcesMgr) {
-        _TitleImage = ResourcesMgr.getImage(Resource.TITLE_IMAGE);
+        _TitleImage = ResourcesMgr.getImage(ResourceID.TITLE_IMAGE);
         _navigator = new MenuNavigator(
             new Vector2(Configs.PX.WINDOW_SIZE.ix() * 0.375, Configs.PX.WINDOW_SIZE.iy() * 0.75),
             ResourcesMgr.getFont(Configs.PX.FONT_SIZE_SMALL),

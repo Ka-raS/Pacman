@@ -1,6 +1,6 @@
 package com.karas.pacman.resources;
 
-public enum SpriteSheet {
+public enum SpriteID {
         
     PACMAN(0, 0, 8), DEAD_PACMAN(1, 0, 8), 
     BLINKY(2, 0, 8), PREY_GHOST( 6, 0, 4),
@@ -13,7 +13,7 @@ public enum SpriteSheet {
     public int getLen() { return _len; }
 
 
-    private SpriteSheet(int row, int col, int len) {
+    private SpriteID(int row, int col, int len) {
         _row = row; _col = col; _len = len;
     }
 

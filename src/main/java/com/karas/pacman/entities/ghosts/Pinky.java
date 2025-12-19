@@ -7,7 +7,7 @@ import com.karas.pacman.entities.Ghost;
 import com.karas.pacman.entities.ImmutableEntity;
 import com.karas.pacman.maps.ImmutableMap;
 import com.karas.pacman.resources.ResourcesManager;
-import com.karas.pacman.resources.SpriteSheet;
+import com.karas.pacman.resources.SpriteID;
 
 public class Pinky extends Ghost {
     
@@ -16,7 +16,7 @@ public class Pinky extends Ghost {
             Configs.Grid.PINKY_POSITION,
             Direction.UP,
             Configs.PX.PINKY_SPEED,
-            SpriteSheet.PINKY,
+            SpriteID.PINKY,
             PacmanRef, MapRef, ResourcesMgr
         );
     }

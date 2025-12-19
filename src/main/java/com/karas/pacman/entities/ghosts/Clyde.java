@@ -7,7 +7,7 @@ import com.karas.pacman.entities.Ghost;
 import com.karas.pacman.entities.ImmutableEntity;
 import com.karas.pacman.maps.ImmutableMap;
 import com.karas.pacman.resources.ResourcesManager;
-import com.karas.pacman.resources.SpriteSheet;
+import com.karas.pacman.resources.SpriteID;
 
 public class Clyde extends Ghost {
     
@@ -16,7 +16,7 @@ public class Clyde extends Ghost {
             Configs.Grid.CLYDE_POSITION,
             Direction.UP,
             Configs.PX.CLYDE_SPEED,
-            SpriteSheet.CLYDE,
+            SpriteID.CLYDE,
             PacmanRef, MapRef, ResourcesMgr
         );
     }

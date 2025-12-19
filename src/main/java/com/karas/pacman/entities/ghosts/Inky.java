@@ -7,7 +7,7 @@ import com.karas.pacman.entities.Ghost;
 import com.karas.pacman.entities.ImmutableEntity;
 import com.karas.pacman.maps.ImmutableMap;
 import com.karas.pacman.resources.ResourcesManager;
-import com.karas.pacman.resources.SpriteSheet;
+import com.karas.pacman.resources.SpriteID;
 
 public class Inky extends Ghost {
     
@@ -16,7 +16,7 @@ public class Inky extends Ghost {
             Configs.Grid.INKY_POSITION,
             Direction.DOWN,
             Configs.PX.INKY_SPEED,
-            SpriteSheet.INKY,
+            SpriteID.INKY,
             PacmanRef, MapRef, ResourcesMgr
         );
         _Blinky = BlinkyRef;

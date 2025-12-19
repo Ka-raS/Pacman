@@ -24,9 +24,6 @@ public abstract class Entity implements ImmutableEntity, Paintable {
     }
 
     public void enterState(State nextState) {
-        if (nextState == null)
-            return;
-
         handleStateTransition(nextState);
         if (_state != State.IDLE)
             _preIdleState = _state;
@@ -63,11 +60,10 @@ public abstract class Entity implements ImmutableEntity, Paintable {
     }
 
 
-    protected Entity(Vector2 gridPosition, Direction direction, int speed, Sprite SpriteRef, ImmutableMap MapRef) {
+    protected Entity(Vector2 gridPosition, Direction direction, int speed, ImmutableMap MapRef) {
         _position = Map.toPixelVector2(gridPosition);
         _direction = direction;
         _speed = speed;
-        _Sprite = SpriteRef;
         _Map = MapRef;
     }
 
@@ -77,18 +73,17 @@ public abstract class Entity implements ImmutableEntity, Paintable {
         return Map.isCenteredInTile(_position);
     }
 
-    protected boolean canMoveInDirection(Direction d) {
-        return _Map.canMoveInDirection(_position, d);
+    protected boolean canMoveInDirection(Direction direction) {
+        return _Map.canMoveInDirection(_position, direction);
     }
 
-    protected void setDirection(Direction d) {
-        if (_direction != null)
-            _direction = d;
+    protected void setDirection(Direction direction) {
+        _direction = direction;
+        _Sprite.setDirection(_direction);
     }
 
     protected void setGridPosition(Vector2 gridPosition) {
-        if (_Map.isMovableAt(gridPosition))
-            _position = Map.toPixelVector2(gridPosition);
+        _position = Map.toPixelVector2(gridPosition);
     }
 
     protected void move(double deltaTime) {
@@ -101,22 +96,20 @@ public abstract class Entity implements ImmutableEntity, Paintable {
     }
 
     protected void setSpeed(int speed) {
-        if (speed >= 0)
-            _speed = speed;
+        _speed = speed;
     }
 
-    protected Sprite getSprite() {
-        return _Sprite;
+    protected void updateSprite(double deltaTime) {
+        _Sprite.update(deltaTime);
     }
 
     protected void setSprite(Sprite SpriteRef) {
-        if (SpriteRef != null)
-            _Sprite = SpriteRef;
+        _Sprite = SpriteRef;
+        _Sprite.setDirection(_direction);
     }
 
 
     private final ImmutableMap _Map;
-    
     private Sprite _Sprite;
 
     private int _speed;

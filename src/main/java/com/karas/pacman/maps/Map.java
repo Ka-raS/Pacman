@@ -51,7 +51,6 @@ public class Map implements ImmutableMap, Paintable {
                     ++_pelletCounts;
     }
 
-    @Override
     public int getPelletCounts() {
         return _pelletCounts;
     }
@@ -74,14 +73,6 @@ public class Map implements ImmutableMap, Paintable {
     }
 
     @Override
-    public boolean isMovableAt(Vector2 gridPosition) {
-        int x = gridPosition.ix(), y = gridPosition.iy();
-        if ((double) x != gridPosition.x() || (double) y != gridPosition.y())
-            return checkBound(gridPosition);
-        return checkBound(gridPosition) && _tiles[y][x] != Tile.WALL;
-    }
-
-    @Override
     public boolean canMoveInDirection(Vector2 position, Direction nextDirection) {
         boolean[] centered = isXYCenteredInTile(position);
         boolean isXCentered = centered[0];
@@ -89,7 +80,7 @@ public class Map implements ImmutableMap, Paintable {
         
         if (isXCentered && isYCentered) {
             Vector2 p = toGridVector2(position).add(nextDirection.toVector2());
-            return isMovableAt(p);
+            return _tiles[p.iy()][p.ix()] != Tile.WALL;
         }
         
         boolean currentDirectionIsVertical = isXCentered;

@@ -4,10 +4,6 @@ import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Vector2;
 
 public interface ImmutableMap {
-    
-    int getPelletCounts();
-
-    boolean isMovableAt(Vector2 gridPosition);
 
     boolean canMoveInDirection(Vector2 position, Direction nextDirection);
 

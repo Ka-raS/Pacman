@@ -20,18 +20,12 @@ public record Vector2(double x, double y) {
     public Vector2 add(Vector2 other) { return new Vector2(x + other.x, y + other.y); }
     public Vector2 sub(Vector2 other) { return new Vector2(x - other.x, y - other.y); }
 
-    // public double distance(Vector2 other) {   // Manhattan
-    //     return Math.abs(x - other.x) + Math.abs(y - other.y);
-    // }
-    
-    public double distance(Vector2 other) {   // Euclidean
+    public double distance(Vector2 other) {
         double dx = x - other.x;
         double dy = y - other.y;
         return Math.sqrt(dx * dx + dy * dy);
     }
     
-    // Not the best placement bth, maybe DirectionUtils.java?
-
     public Direction furthestFrom(Vector2 other, EnumSet<Direction> directions) {
         Direction result = null;
         double maxDistance = -1.0;
@@ -60,4 +54,8 @@ public record Vector2(double x, double y) {
         return result;
     }
 
+    // Not the best placement bth, maybe DirectionUtils.java?
+
 }
+
+// Project Valhalla's value class please save my ass

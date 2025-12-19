@@ -202,7 +202,7 @@ public class Playing implements Screen {
                     enterState(State.NORMAL);
                     break;
                 } else if (_stateDuration < Configs.Time.GHOST_FLASH_DURATION) // TODO: not the best
-                    _ghosts.forEach(Ghost::enableFlashing);
+                    _ghosts.forEach(Ghost::startFlashing);
 
                 handleCollision(_PowerupSound);
                 break;
@@ -280,7 +280,6 @@ public class Playing implements Screen {
     private final Pacman _pacman;
     private final List<Ghost> _ghosts;
     private final List<ScorePopup> _scores;
-
     private State _state;
     private double _stateDuration;
     private int _totalScore;

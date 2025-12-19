@@ -1,6 +1,6 @@
-- Rewrite entities/Sprite
-- Screen implement KeyBindings Map 
+- Simplify Map.java code
 - Simplify ResourcesManager.java code
+- Screen implement KeyBindings Map 
 
 - Paused Screen background music
 - Ghost scatter mechanism
@@ -8,3 +8,4 @@
 - Pacman eats Pellets in HighScore Screen
 
 - Fix audio in linux
+- Review Vector2

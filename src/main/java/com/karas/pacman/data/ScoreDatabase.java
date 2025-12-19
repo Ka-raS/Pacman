@@ -35,9 +35,9 @@ public class ScoreDatabase {
                     Integer.parseInt(split[0]),
                     LocalDate.parse(split[1])
                 ));
-                ++_fileLength;
             }
         }
+        _fileLength = _entries.size();
     }
 
     public void addEntry(int score) {
@@ -59,11 +59,10 @@ public class ScoreDatabase {
             return;
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(_databaseFile, true))) {
-            for (int i = _fileLength; i < _entries.size(); ++i) {
-                Entry entry = _entries.get(i);
+            while (_fileLength < _entries.size()) {
+                Entry entry = _entries.get(_fileLength++);
                 writer.write(String.format("%05d,%s", entry.score(), entry.date()));
                 writer.newLine();
-                ++_fileLength;
             }
         }
     }

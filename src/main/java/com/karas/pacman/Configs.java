@@ -31,7 +31,7 @@ public class Configs {
         public static final String SPRITE_SHEET    = "/images/spritesheet.png";
         public static final String FONT            = "/fonts/Emulogic-zrEw.ttf";
         public static final String TILEMAP         = "/tilemap.txt";
-        public static final String DATABASE_FILE   = "/highscores.txt";
+        public static final String DATABASE_FILE   = "/highscores.csv";
 
         public static final String EAT_WA_SOUND       = "/sounds/eat_wa.wav";
         public static final String EAT_KA_SOUND       = "/sounds/eat_ka.wav";

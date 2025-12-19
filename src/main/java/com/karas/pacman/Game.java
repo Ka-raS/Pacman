@@ -45,6 +45,7 @@ public class Game implements Exitable {
         };
     }
 
+    /** must not be called after Game.exit() */
     public synchronized void enter() {
         if (_running)
             return;
@@ -58,8 +59,6 @@ public class Game implements Exitable {
             exit();
             return;
         }
-        _resourceManager.enter();
-        _screenManager.enter();
         _thread = new Thread(this::gameLoop);
         _thread.start(); // GameThread calls this.gameLoop()
     }

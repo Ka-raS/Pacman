@@ -1,3 +1,4 @@
+- Rewrite EntitySprite
 - Screen implement KeyBindings Map 
 - Simplify ResourcesManager.java code
 

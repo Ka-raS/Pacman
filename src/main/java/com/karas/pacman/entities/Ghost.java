@@ -24,7 +24,8 @@ public abstract class Ghost extends Entity {
     public void update(double deltaTime) {
         switch (getState()) {
             case DEAD:
-                if (isAtHomePosition())
+                Vector2 delta = getPosition().sub(HOME_POSITION).abs();
+                if (delta.ix() <= 1.0 && delta.iy() <= 1.0)
                     enterState(State.HUNTER);
             
             default:
@@ -104,8 +105,14 @@ public abstract class Ghost extends Entity {
             return;
         _prevGridPos = currGridPos;
 
-        EnumSet<Direction> validDirections = getValidDirections();
-        if (validDirections.isEmpty())
+        EnumSet<Direction> validDirections = EnumSet.noneOf(Direction.class);
+        for (Direction d : Direction.values())
+            if (canMoveInDirection(d))
+                validDirections.add(d);
+
+        if (validDirections.size() > 1)
+            validDirections.remove(getDirection().opposite());
+        else if (validDirections.isEmpty())
             return;
 
         switch (getState()) {
@@ -130,22 +137,6 @@ public abstract class Ghost extends Entity {
             
             case IDLE -> {}
         }
-    }
-
-    private EnumSet<Direction> getValidDirections() {
-        EnumSet<Direction> result = EnumSet.noneOf(Direction.class);
-        for (Direction d : Direction.values())
-            if (canMoveInDirection(d))
-                result.add(d);
-
-        if (result.size() > 1)
-            result.remove(getDirection().opposite());
-        return result;
-    }
-
-    private boolean isAtHomePosition() {
-        Vector2 p = getPosition().sub(HOME_POSITION).abs();
-        return p.ix() <= 1.0 && p.iy() <= 1.0;
     }
 
     private static final Vector2 HOME_POSITION = Map.toPixelVector2(Configs.Grid.GHOST_HOME);

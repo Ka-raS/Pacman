@@ -42,22 +42,6 @@ public class ResourcesManager implements Exitable {
         _database  = initDatabase();
     }
 
-    public void enter() {
-        // TODO: load sounds here
-    }
-
-    @Override
-    public void exit() {
-        for (Sound sound : _soundMap.values())
-            sound.exit();
-
-        try {
-            _database.save();
-        } catch (IOException e) {
-            _LOGGER.log(Level.SEVERE, "Failed Saving Database On Exit", e);
-        }
-    }
-
     public Sound getSound(ResourceID soundID) {
         return _soundMap.getOrDefault(soundID, Sound.getDummy());
     }
@@ -85,6 +69,22 @@ public class ResourcesManager implements Exitable {
 
     public ScoreDatabase getDatabase() {
         return _database;
+    }
+
+    @Override
+    public void exit() {
+        for (Sound sound : _soundMap.values())
+            sound.exit();
+
+        _soundMap.clear();
+        _imageMap.clear();
+        _spriteMap.clear();
+
+        try {
+            _database.save();
+        } catch (IOException e) {
+            _LOGGER.log(Level.SEVERE, "Failed Saving Database On Exit", e);
+        }
     }
 
 

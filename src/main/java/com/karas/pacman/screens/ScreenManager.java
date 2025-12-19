@@ -61,8 +61,7 @@ public class ScreenManager implements Exitable, Paintable {
     }
 
 
-    private final Map<Class<? extends Screen>, Screen> _screens;
-
     private Screen _current;
+    private final Map<Class<? extends Screen>, Screen> _screens;
 
 }

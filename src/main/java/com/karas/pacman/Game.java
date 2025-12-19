@@ -19,7 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import com.karas.pacman.commons.Exitable;
-import com.karas.pacman.resources.Resource;
+import com.karas.pacman.resources.ResourceID;
 import com.karas.pacman.resources.ResourcesManager;
 import com.karas.pacman.screens.ScreenManager;
 
@@ -96,21 +96,13 @@ public class Game implements Exitable {
             (int) (Configs.PX.WINDOW_SIZE.ix() * _scale),
             (int) (Configs.PX.WINDOW_SIZE.iy() * _scale)
         ));
-        _frame.add(_panel);
-
-        _frame.addKeyListener(new KeyAdapter() {
+        _panel.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 _screenManager.input(e);
             }
         });
-        _frame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                exit();
-            }
-        });
-        _frame.addComponentListener(new ComponentAdapter() {
+        _panel.addComponentListener(new ComponentAdapter() {
             @Override 
             public void componentResized(ComponentEvent e) {
                 _scale = Math.min(
@@ -120,12 +112,22 @@ public class Game implements Exitable {
             }
         });
 
+        _frame.add(_panel);
+        _frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowActivated(WindowEvent e) {
+                _panel.requestFocusInWindow();
+            }
+            @Override
+            public void windowClosing(WindowEvent e) {
+                exit();
+            }
+        });
         _frame.pack();
         _frame.setResizable(true);
-        _frame.setIconImage(_resourceManager.getImage(Resource.WINDOW_ICON));
+        _frame.setIconImage(_resourceManager.getImage(ResourceID.WINDOW_ICON));
         _frame.setLocationRelativeTo(null);
         _frame.setVisible(true);
-        _frame.requestFocus();
     }
 
     private void gameLoop() {
@@ -145,25 +147,25 @@ public class Game implements Exitable {
             repaintTimer += deltaTime;
 
             while (_running && updateTimer >= Configs.Time.UPDATE_INTERVAL) {
-                if (!_screenManager.update(Configs.Time.UPDATE_INTERVAL))
-                    exit();
                 ++updateCount;
                 updateTimer -= Configs.Time.UPDATE_INTERVAL;
+                if (!_screenManager.update(Configs.Time.UPDATE_INTERVAL))
+                    exit();
             }
             if (!_running)
                 break;
 
             if (repaintTimer >= Configs.Time.REPAINT_INTERVAL) {
-                _panel.repaint(); // EDT calls _panel.paintComponent()
                 repaintTimer = 0.0;
+                _panel.repaint(); // EDT calls _panel.paintComponent()
             }
 
             if (statsTimer >= 1.0) {
                 final int ups = updateCount, fps = _frameCount;
+                statsTimer = updateCount = _frameCount = 0;
                 SwingUtilities.invokeLater(() ->
                     _frame.setTitle(String.format("%s: %d UPS, %d FPS", Configs.TITLE, ups, fps))
                 );
-                statsTimer = updateCount = _frameCount = 0;
             }
         }
     }

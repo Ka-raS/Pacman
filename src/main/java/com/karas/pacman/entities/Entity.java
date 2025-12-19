@@ -50,8 +50,7 @@ public abstract class Entity implements ImmutableEntity, Paintable {
     }
 
     public boolean collidesWith(Entity other) {
-        double delta = _position.distance(other._position);
-        return delta < Configs.PX.SPRITE_SIZE * 0.7;
+        return _position.distance(other._position) < Configs.PX.SPRITE_SIZE * 0.7;
     }
 
     public void enterPreIdleState() {
@@ -94,7 +93,7 @@ public abstract class Entity implements ImmutableEntity, Paintable {
     }
 
     protected void move(double deltaTime) {
-        if (canMoveInDirection(_direction))
+        if (_Map.canMoveInDirection(_position, _direction))
             _position = _position.add(_direction.toVector2().mul(deltaTime * _speed));
         
         Vector2 tunneled = _Map.tryTunneling(_position, _direction);

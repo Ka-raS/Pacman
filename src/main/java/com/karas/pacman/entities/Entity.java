@@ -6,7 +6,6 @@ import com.karas.pacman.Configs;
 import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Paintable;
 import com.karas.pacman.commons.Vector2;
-import com.karas.pacman.graphics.EntitySprite;
 import com.karas.pacman.maps.ImmutableMap;
 import com.karas.pacman.maps.Map;
 
@@ -64,7 +63,7 @@ public abstract class Entity implements ImmutableEntity, Paintable {
     }
 
 
-    protected Entity(Vector2 gridPosition, Direction direction, int speed, EntitySprite SpriteRef, ImmutableMap MapRef) {
+    protected Entity(Vector2 gridPosition, Direction direction, int speed, Sprite SpriteRef, ImmutableMap MapRef) {
         _position = Map.toPixelVector2(gridPosition);
         _direction = direction;
         _speed = speed;
@@ -106,11 +105,11 @@ public abstract class Entity implements ImmutableEntity, Paintable {
             _speed = speed;
     }
 
-    protected EntitySprite getSprite() {
+    protected Sprite getSprite() {
         return _Sprite;
     }
 
-    protected void setSprite(EntitySprite SpriteRef) {
+    protected void setSprite(Sprite SpriteRef) {
         if (SpriteRef != null)
             _Sprite = SpriteRef;
     }
@@ -118,7 +117,7 @@ public abstract class Entity implements ImmutableEntity, Paintable {
 
     private final ImmutableMap _Map;
     
-    private EntitySprite _Sprite;
+    private Sprite _Sprite;
 
     private int _speed;
     private Vector2 _position;

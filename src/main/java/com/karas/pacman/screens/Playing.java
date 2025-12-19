@@ -10,17 +10,17 @@ import java.util.logging.Logger;
 
 import com.karas.pacman.Configs;
 import com.karas.pacman.commons.Direction;
-import com.karas.pacman.data.ScoreDatabase;
 import com.karas.pacman.entities.Ghost;
 import com.karas.pacman.entities.Pacman;
 import com.karas.pacman.entities.ghosts.Blinky;
 import com.karas.pacman.entities.ghosts.Clyde;
 import com.karas.pacman.entities.ghosts.Inky;
 import com.karas.pacman.entities.ghosts.Pinky;
-import com.karas.pacman.graphics.ScoreSprite;
 import com.karas.pacman.maps.Map;
+import com.karas.pacman.maps.ScorePopup;
 import com.karas.pacman.resources.ResourceID;
 import com.karas.pacman.resources.ResourcesManager;
+import com.karas.pacman.resources.ScoreDatabase;
 import com.karas.pacman.resources.Sound;
 import com.karas.pacman.resources.SpriteID;
 
@@ -29,7 +29,7 @@ public class Playing implements Screen {
     public Playing(ResourcesManager ResourcesMgr) {
         _map    = new Map(ResourcesMgr);
         _pacman = new Pacman(_map, ResourcesMgr);
-        _scores = Arrays.stream(ResourcesMgr.getSprite(SpriteID.SCORES)).map(ScoreSprite::new).toList();
+        _scores = Arrays.stream(ResourcesMgr.getSprite(SpriteID.SCORES)).map(ScorePopup::new).toList();
         
         Blinky blinky = new Blinky(_pacman, _map, ResourcesMgr);
         Pinky pinky   = new Pinky(_pacman, _map, ResourcesMgr);
@@ -230,7 +230,7 @@ public class Playing implements Screen {
                         ghost.enterState(Ghost.State.DEAD);
                         _LOGGER.info(ghost.getClass().getSimpleName() + " eaten!");
                         _totalScore += Configs.Score.GHOST * (1 << deadGhostCount);
-                        _scores.get(deadGhostCount).setDisplay(ghost.getPosition());
+                        _scores.get(deadGhostCount).displayAt(ghost.getPosition());
                         ++deadGhostCount;
                         break;
 
@@ -279,7 +279,7 @@ public class Playing implements Screen {
     private final Map _map;
     private final Pacman _pacman;
     private final List<Ghost> _ghosts;
-    private final List<ScoreSprite> _scores;
+    private final List<ScorePopup> _scores;
 
     private State _state;
     private double _stateDuration;

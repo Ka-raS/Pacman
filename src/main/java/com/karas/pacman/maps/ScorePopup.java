@@ -1,4 +1,4 @@
-package com.karas.pacman.graphics;
+package com.karas.pacman.maps;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -7,15 +7,15 @@ import com.karas.pacman.Configs;
 import com.karas.pacman.commons.Paintable;
 import com.karas.pacman.commons.Vector2;
 
-public class ScoreSprite implements Paintable {
+public class ScorePopup implements Paintable {
     
-    public ScoreSprite(BufferedImage image) {
+    public ScorePopup(BufferedImage image) {
         _Image = image;
         _duration = 0.0;
         _position = null;
     }
 
-    public void setDisplay(Vector2 position) {
+    public void displayAt(Vector2 position) {
         if (position == null)
             return;
         _position = position;

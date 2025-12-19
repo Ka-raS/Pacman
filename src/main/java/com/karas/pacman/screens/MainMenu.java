@@ -6,7 +6,6 @@ import java.awt.image.BufferedImage;
 
 import com.karas.pacman.Configs;
 import com.karas.pacman.commons.Vector2;
-import com.karas.pacman.graphics.MenuNavigator;
 import com.karas.pacman.resources.ResourceID;
 import com.karas.pacman.resources.ResourcesManager;
 

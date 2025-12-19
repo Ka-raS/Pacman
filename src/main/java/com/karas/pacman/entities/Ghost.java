@@ -5,7 +5,6 @@ import java.util.EnumSet;
 import com.karas.pacman.Configs;
 import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Vector2;
-import com.karas.pacman.graphics.EntitySprite;
 import com.karas.pacman.maps.ImmutableMap;
 import com.karas.pacman.maps.Map;
 import com.karas.pacman.resources.ResourceID;
@@ -50,7 +49,7 @@ public abstract class Ghost extends Entity {
                     ImmutableEntity PacmanRef, ImmutableMap MapRef, ResourcesManager ResourcesMgr) {
         super(
             gridPosition, direction, speed,
-            new EntitySprite(ResourcesMgr.getSprite(baseSprite), direction.ordinal() * 2, 2),
+            new Sprite(ResourcesMgr.getSprite(baseSprite), direction.ordinal() * 2, 2),
             MapRef
         );
         _prevGridPos = null;
@@ -59,8 +58,8 @@ public abstract class Ghost extends Entity {
         _startDirection = direction;
 
         _baseSprite = getSprite();
-        _preySprite = new EntitySprite(ResourcesMgr.getSprite(SpriteID.PREY_GHOST), 0, 2);
-        _deathSprite = new EntitySprite(ResourcesMgr.getSprite(SpriteID.DEAD_GHOST), direction.ordinal(), 1);
+        _preySprite = new Sprite(ResourcesMgr.getSprite(SpriteID.PREY_GHOST), 0, 2);
+        _deathSprite = new Sprite(ResourcesMgr.getSprite(SpriteID.DEAD_GHOST), direction.ordinal(), 1);
 
         _DeathSound = ResourcesMgr.getSound(ResourceID.GHOST_DEATH_SOUND);
         _Pacman = PacmanRef;
@@ -147,7 +146,7 @@ public abstract class Ghost extends Entity {
     private final int _baseSpeed;
     private final Vector2 _startGridPosition;
     private final Direction _startDirection;
-    private final EntitySprite _baseSprite, _preySprite, _deathSprite;
+    private final Sprite _baseSprite, _preySprite, _deathSprite;
 
     private Vector2 _prevGridPos;
 

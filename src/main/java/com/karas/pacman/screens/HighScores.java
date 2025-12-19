@@ -7,9 +7,9 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
 import com.karas.pacman.Configs;
-import com.karas.pacman.data.ScoreDatabase;
 import com.karas.pacman.resources.ResourceID;
 import com.karas.pacman.resources.ResourcesManager;
+import com.karas.pacman.resources.ScoreDatabase;
 
 public class HighScores implements Screen {
 

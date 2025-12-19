@@ -27,7 +27,6 @@ import javax.swing.JOptionPane;
 import com.karas.pacman.Configs;
 import com.karas.pacman.commons.Exitable;
 import com.karas.pacman.commons.Vector2;
-import com.karas.pacman.data.ScoreDatabase;
 import com.karas.pacman.maps.Tile;
 
 public class ResourcesManager implements Exitable {

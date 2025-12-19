@@ -1,4 +1,4 @@
-package com.karas.pacman.data;
+package com.karas.pacman.resources;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

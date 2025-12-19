@@ -1,4 +1,4 @@
-package com.karas.pacman.graphics;
+package com.karas.pacman.entities;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -7,9 +7,9 @@ import com.karas.pacman.Configs;
 import com.karas.pacman.commons.Paintable;
 import com.karas.pacman.commons.Vector2;
 
-public class EntitySprite implements Paintable {
+public class Sprite implements Paintable {
     
-    public EntitySprite(BufferedImage[] Images, int offset, int frameCount) {
+    public Sprite(BufferedImage[] Images, int offset, int frameCount) {
         _Images = Images;
         _timer = _index = 0;
         setOffset(offset);

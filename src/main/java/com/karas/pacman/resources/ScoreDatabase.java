@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
-public class ScoreDatabase {
+public final class ScoreDatabase {
 
     public static record Entry(int score, LocalDate date) {}
 

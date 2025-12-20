@@ -1,6 +1,6 @@
 package com.karas.pacman.entities;
 
-import com.karas.pacman.Configs;
+import com.karas.pacman.Constants;
 import com.karas.pacman.commons.Direction;
 import com.karas.pacman.maps.ImmutableMap;
 import com.karas.pacman.resources.ResourceID;
@@ -8,13 +8,13 @@ import com.karas.pacman.resources.ResourcesManager;
 import com.karas.pacman.resources.Sound;
 import com.karas.pacman.resources.SpriteID;
 
-public class Pacman extends Entity {
+public final class Pacman extends Entity {
 
     public Pacman(ImmutableMap MapRef, ResourcesManager ResourcesMgr) {
         super(
-            Configs.Grid.PACMAN_POSITION,
+            Constants.Grid.PACMAN_POSITION,
             Direction.RIGHT,
-            Configs.PX.PACMAN_SPEED,
+            Constants.Pixel.PACMAN_SPEED,
             MapRef
         );
         _nextDirection = Direction.RIGHT;
@@ -49,7 +49,7 @@ public class Pacman extends Entity {
 
     @Override
     public void reset() {
-        setGridPosition(Configs.Grid.PACMAN_POSITION);
+        setGridPosition(Constants.Grid.PACMAN_POSITION);
         setDirection(Direction.RIGHT);
         setSprite(_baseSprite);
         _nextDirection = Direction.RIGHT;
@@ -63,8 +63,8 @@ public class Pacman extends Entity {
     protected void handleStateTransition(State nextState) {
         switch (nextState) {
             case IDLE   -> _DeathSound.pause();
-            case PREY   -> setSpeed(Configs.PX.PACMAN_SPEED);
-            case HUNTER -> setSpeed(Configs.PX.PACMAN_HUNTER_SPEED);
+            case PREY   -> setSpeed(Constants.Pixel.PACMAN_SPEED);
+            case HUNTER -> setSpeed(Constants.Pixel.PACMAN_HUNTER_SPEED);
             case DEAD   -> {
                 setSprite(_deathSprite);
                 _DeathSound.play();

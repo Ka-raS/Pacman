@@ -23,15 +23,15 @@ import com.karas.pacman.resources.ResourceID;
 import com.karas.pacman.resources.ResourcesManager;
 import com.karas.pacman.screens.ScreenManager;
 
-public class Game implements Exitable {
+public final class Game implements Exitable {
 
     public Game() {
         _running = false;
         _frameCount = 0;
-        _scale = Configs.DEFAULT_SCALE;
+        _scale = Constants.DEFAULT_SCALE;
         _resourceManager = new ResourcesManager();
         _screenManager = new ScreenManager(_resourceManager);
-        _frame = new JFrame(Configs.TITLE);
+        _frame = new JFrame(Constants.TITLE);
         _panel = new JPanel() {
             @Override
             protected void paintComponent(Graphics G) {
@@ -90,10 +90,10 @@ public class Game implements Exitable {
     private void initializeUI() {
         _panel.setDoubleBuffered(true);
         _panel.setFocusable(true);
-        _panel.setBackground(Configs.Color.BACKGROUND);
+        _panel.setBackground(Constants.Color.BACKGROUND);
         _panel.setPreferredSize(new Dimension(
-            (int) (Configs.PX.WINDOW_SIZE.ix() * _scale),
-            (int) (Configs.PX.WINDOW_SIZE.iy() * _scale)
+            (int) (Constants.Pixel.WINDOW_SIZE.ix() * _scale),
+            (int) (Constants.Pixel.WINDOW_SIZE.iy() * _scale)
         ));
         _panel.addKeyListener(new KeyAdapter() {
             @Override
@@ -105,8 +105,8 @@ public class Game implements Exitable {
             @Override 
             public void componentResized(ComponentEvent e) {
                 _scale = Math.min(
-                    _panel.getWidth()  / Configs.PX.WINDOW_SIZE.x(),
-                    _panel.getHeight() / Configs.PX.WINDOW_SIZE.y()
+                    _panel.getWidth()  / Constants.Pixel.WINDOW_SIZE.x(),
+                    _panel.getHeight() / Constants.Pixel.WINDOW_SIZE.y()
                 );
             }
         });
@@ -145,16 +145,16 @@ public class Game implements Exitable {
             statsTimer += deltaTime;
             repaintTimer += deltaTime;
 
-            while (_running && updateTimer >= Configs.Time.UPDATE_INTERVAL) {
+            while (_running && updateTimer >= Constants.Time.UPDATE_INTERVAL) {
                 ++updateCount;
-                updateTimer -= Configs.Time.UPDATE_INTERVAL;
-                if (!_screenManager.update(Configs.Time.UPDATE_INTERVAL))
+                updateTimer -= Constants.Time.UPDATE_INTERVAL;
+                if (!_screenManager.update(Constants.Time.UPDATE_INTERVAL))
                     exit();
             }
             if (!_running)
                 break;
 
-            if (repaintTimer >= Configs.Time.REPAINT_INTERVAL) {
+            if (repaintTimer >= Constants.Time.REPAINT_INTERVAL) {
                 repaintTimer = 0.0;
                 _panel.repaint(); // EDT calls _panel.paintComponent()
             }
@@ -163,7 +163,7 @@ public class Game implements Exitable {
                 final int ups = updateCount, fps = _frameCount;
                 statsTimer = updateCount = _frameCount = 0;
                 SwingUtilities.invokeLater(() ->
-                    _frame.setTitle(String.format("%s: %d UPS, %d FPS", Configs.TITLE, ups, fps))
+                    _frame.setTitle(String.format("%s: %d UPS, %d FPS", Constants.TITLE, ups, fps))
                 );
             }
         }

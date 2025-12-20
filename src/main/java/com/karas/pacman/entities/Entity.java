@@ -2,7 +2,7 @@ package com.karas.pacman.entities;
 
 import java.awt.Graphics2D;
 
-import com.karas.pacman.Configs;
+import com.karas.pacman.Constants;
 import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Paintable;
 import com.karas.pacman.commons.Vector2;
@@ -19,11 +19,11 @@ public abstract class Entity implements ImmutableEntity, Paintable {
 
     public abstract void reset();
 
-    public State getState() {
+    public final State getState() {
         return _state;
     }
 
-    public void enterState(State nextState) {
+    public final void enterState(State nextState) {
         handleStateTransition(nextState);
         if (_state != State.IDLE)
             _preIdleState = _state;
@@ -31,30 +31,30 @@ public abstract class Entity implements ImmutableEntity, Paintable {
     }
 
     @Override
-    public Vector2 getPosition() {
+    public final Vector2 getPosition() {
         return _position;
     } 
 
     @Override
-    public Direction getDirection() {
+    public final Direction getDirection() {
         return _direction;
     }
 
     @Override
-    public Vector2 getGridPosition() {
+    public final Vector2 getGridPosition() {
         return Map.toGridVector2(_position);
     }
 
-    public boolean collidesWith(Entity other) {
-        return _position.distance(other._position) < Configs.PX.SPRITE_SIZE * 0.7;
+    public final boolean collidesWith(Entity other) {
+        return _position.distance(other._position) < Constants.Pixel.SPRITE_SIZE * 0.7;
     }
 
-    public void enterPreIdleState() {
+    public final void enterPreIdleState() {
         enterState(_preIdleState);
     }
 
     @Override
-    public void repaint(Graphics2D G) {
+    public final void repaint(Graphics2D G) {
         _Sprite.setPosition(_position);
         _Sprite.repaint(G);
     }
@@ -69,24 +69,24 @@ public abstract class Entity implements ImmutableEntity, Paintable {
 
     protected abstract void handleStateTransition(State nextState);
 
-    protected boolean isCenteredInTile() {
+    protected final boolean isCenteredInTile() {
         return Map.isCenteredInTile(_position);
     }
 
-    protected boolean canMoveInDirection(Direction direction) {
+    protected final boolean canMoveInDirection(Direction direction) {
         return _Map.canMoveInDirection(_position, direction);
     }
 
-    protected void setDirection(Direction direction) {
+    protected final void setDirection(Direction direction) {
         _direction = direction;
         _Sprite.setDirection(_direction);
     }
 
-    protected void setGridPosition(Vector2 gridPosition) {
+    protected final void setGridPosition(Vector2 gridPosition) {
         _position = Map.toPixelVector2(gridPosition);
     }
 
-    protected void move(double deltaTime) {
+    protected final void move(double deltaTime) {
         if (_Map.canMoveInDirection(_position, _direction))
             _position = _position.add(_direction.toVector2().mul(deltaTime * _speed));
         
@@ -95,15 +95,15 @@ public abstract class Entity implements ImmutableEntity, Paintable {
             _position = tunneled;
     }
 
-    protected void setSpeed(int speed) {
+    protected final void setSpeed(int speed) {
         _speed = speed;
     }
 
-    protected void updateSprite(double deltaTime) {
+    protected final void updateSprite(double deltaTime) {
         _Sprite.update(deltaTime);
     }
 
-    protected void setSprite(Sprite SpriteRef) {
+    protected final void setSprite(Sprite SpriteRef) {
         _Sprite = SpriteRef;
         _Sprite.setDirection(_direction);
     }

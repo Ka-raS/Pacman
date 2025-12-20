@@ -5,21 +5,21 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.util.logging.Logger;
 
-import com.karas.pacman.Configs;
+import com.karas.pacman.Constants;
 import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.resources.ResourcesManager;
 
-public class Paused implements Screen {
+public final class Paused implements Screen {
     
     public Paused(Screen PlayingScreen, ResourcesManager ResourcesMgr) {
         _PlayingScreen = PlayingScreen;
-        _FontLarge = ResourcesMgr.getFont(Configs.PX.FONT_SIZE_LARGE);
+        _FontLarge = ResourcesMgr.getFont(Constants.Pixel.FONT_SIZE_LARGE);
         
         _navigator = new MenuNavigator(
-            new Vector2(Configs.PX.WINDOW_SIZE.ix() * 0.375, Configs.PX.WINDOW_SIZE.iy() / 2),
-            ResourcesMgr.getFont(Configs.PX.FONT_SIZE_SMALL),
-            new MenuNavigator.MenuOption("Resume",    Playing.class),
-            new MenuNavigator.MenuOption("Main Menu", MainMenu.class)
+            new Vector2(Constants.Pixel.WINDOW_SIZE.ix() * 0.375, Constants.Pixel.WINDOW_SIZE.iy() / 2),
+            ResourcesMgr.getFont(Constants.Pixel.FONT_SIZE_SMALL),
+            new MenuNavigator.Option("Resume",    Playing.class),
+            new MenuNavigator.Option("Main Menu", MainMenu.class)
         );
     }
 
@@ -62,14 +62,14 @@ public class Paused implements Screen {
 
 
     private void paintOverlay(Graphics2D G) {
-        G.setColor(Configs.Color.PAUSE_MENU);
-        G.fillRect(0, 0, Configs.PX.WINDOW_SIZE.ix(), Configs.PX.WINDOW_SIZE.iy());
+        G.setColor(Constants.Color.PAUSE_MENU);
+        G.fillRect(0, 0, Constants.Pixel.WINDOW_SIZE.ix(), Constants.Pixel.WINDOW_SIZE.iy());
     }
 
     private void paintPausedText(Graphics2D G) {
-        G.setColor(Configs.Color.TEXT);
+        G.setColor(Constants.Color.TEXT);
         G.setFont(_FontLarge);
-        G.drawString("PAUSED", Configs.PX.WINDOW_SIZE.ix() / 3, Configs.PX.WINDOW_SIZE.iy() / 3);
+        G.drawString("PAUSED", Constants.Pixel.WINDOW_SIZE.ix() / 3, Constants.Pixel.WINDOW_SIZE.iy() / 3);
     }
 
     private static final Logger _LOGGER = Logger.getLogger(Paused.class.getName());

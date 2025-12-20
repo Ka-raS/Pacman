@@ -6,13 +6,11 @@ public enum Tile {
     
     public static Tile of(char value) {
         return switch (value) {
-            case ' ' -> NONE;
             case '#' -> WALL;
             case '.' -> PELLET;
             case 'o' -> POWERUP;
             case 't' -> TUNNEL;
-
-            default  -> null;
+            default  -> NONE;
         };
     }
 

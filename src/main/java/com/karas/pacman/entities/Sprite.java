@@ -3,12 +3,12 @@ package com.karas.pacman.entities;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
-import com.karas.pacman.Configs;
+import com.karas.pacman.Constants;
 import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Paintable;
 import com.karas.pacman.commons.Vector2;
 
-public class Sprite implements Paintable {
+public final class Sprite implements Paintable {
     
     public Sprite(BufferedImage[] Images) {
         _Images = Images;
@@ -44,7 +44,7 @@ public class Sprite implements Paintable {
 
     public void update(double deltaTime) {
         _timer += deltaTime;
-        if (_timer >= Configs.Time.SPRITE_INTERVAL) {
+        if (_timer >= Constants.Time.SPRITE_INTERVAL) {
             _timer = 0.0;
             _index = (_index + 1) % _length;
         }

@@ -8,7 +8,7 @@ import com.karas.pacman.commons.Paintable;
 import com.karas.pacman.commons.Exitable;
 import com.karas.pacman.resources.ResourcesManager;
 
-public class ScreenManager implements Exitable, Paintable {
+public final class ScreenManager implements Exitable, Paintable {
     
     public ScreenManager(ResourcesManager ResourcesMgr) {
         Screen mainMenu   = new MainMenu(ResourcesMgr);

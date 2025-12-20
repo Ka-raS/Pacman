@@ -24,12 +24,12 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JOptionPane;
 
-import com.karas.pacman.Configs;
+import com.karas.pacman.Constants;
 import com.karas.pacman.commons.Exitable;
 import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.maps.Tile;
 
-public class ResourcesManager implements Exitable {
+public final class ResourcesManager implements Exitable {
 
     public ResourcesManager() {
         _soundMap  = initSoundMap();
@@ -62,9 +62,9 @@ public class ResourcesManager implements Exitable {
 
     public Font getFont(int size) {
         return switch (size) {
-            case Configs.PX.FONT_SIZE_SMALL  -> _fonts[0];
-            case Configs.PX.FONT_SIZE_MEDIUM -> _fonts[1];
-            case Configs.PX.FONT_SIZE_LARGE  -> _fonts[2];
+            case Constants.Pixel.FONT_SIZE_SMALL  -> _fonts[0];
+            case Constants.Pixel.FONT_SIZE_MEDIUM -> _fonts[1];
+            case Constants.Pixel.FONT_SIZE_LARGE  -> _fonts[2];
             default                          -> _fonts[1].deriveFont((float) size);
         };
     }
@@ -126,7 +126,7 @@ public class ResourcesManager implements Exitable {
             return spriteMap;
         }
 
-        final int SIZE = Configs.PX.SPRITE_SIZE;
+        final int SIZE = Constants.Pixel.SPRITE_SIZE;
         for (SpriteID sheet : SpriteID.values()) {
             BufferedImage[] sprite = new BufferedImage[sheet.getLength()];
             for (int i = 0; i < sheet.getLength(); ++i)
@@ -137,7 +137,7 @@ public class ResourcesManager implements Exitable {
     }
 
     private static Tile[][] initTilemap() {
-        final Vector2 SIZE = Configs.Grid.MAP_SIZE;
+        final Vector2 SIZE = Constants.Grid.MAP_SIZE;
         try {
             return loadTilemap(ResourceID.TILEMAP.getPath(), SIZE);
         } catch (RuntimeException e) {
@@ -155,13 +155,13 @@ public class ResourcesManager implements Exitable {
         Font font;
 
         try {
-            font = loadFont(ResourceID.FONT.getPath(), Configs.PX.FONT_SIZE_MEDIUM);
+            font = loadFont(ResourceID.FONT.getPath(), Constants.Pixel.FONT_SIZE_MEDIUM);
         } catch (RuntimeException e) {
             handleException(e, ResourceID.FONT.isCritical());
-            font = new Font("Arial", Font.PLAIN, (int) Configs.PX.FONT_SIZE_MEDIUM);
+            font = new Font("Arial", Font.PLAIN, (int) Constants.Pixel.FONT_SIZE_MEDIUM);
         }
 
-        return new Font[] { font.deriveFont((float)Configs.PX.FONT_SIZE_SMALL), font, font.deriveFont((float)Configs.PX.FONT_SIZE_LARGE) };
+        return new Font[] { font.deriveFont((float)Constants.Pixel.FONT_SIZE_SMALL), font, font.deriveFont((float)Constants.Pixel.FONT_SIZE_LARGE) };
     }
 
     private static ScoreDatabase initDatabase() {

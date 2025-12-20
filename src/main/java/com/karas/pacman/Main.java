@@ -1,6 +1,6 @@
 package com.karas.pacman;
 
-public class Main {
+public final class Main {
     public static void main(String[] args) {
         Game game = new Game();
         game.enter();

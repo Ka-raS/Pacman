@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.karas.pacman.Configs;
+import com.karas.pacman.Constants;
 import com.karas.pacman.commons.Direction;
 import com.karas.pacman.entities.Ghost;
 import com.karas.pacman.entities.Pacman;
@@ -24,7 +24,7 @@ import com.karas.pacman.resources.ScoreDatabase;
 import com.karas.pacman.resources.Sound;
 import com.karas.pacman.resources.SpriteID;
 
-public class Playing implements Screen {
+public final class Playing implements Screen {
 
     public Playing(ResourcesManager ResourcesMgr) {
         _map    = new Map(ResourcesMgr);
@@ -43,7 +43,7 @@ public class Playing implements Screen {
         _nextScreen = Playing.class;
 
         _ScoreDatabase = ResourcesMgr.getDatabase();
-        _FontMedium    = ResourcesMgr.getFont(Configs.PX.FONT_SIZE_MEDIUM);
+        _FontMedium    = ResourcesMgr.getFont(Constants.Pixel.FONT_SIZE_MEDIUM);
         _NewGameSound  = ResourcesMgr.getSound(ResourceID.GAME_START_SOUND);
         _NormalSound   = ResourcesMgr.getSound(ResourceID.GAME_NORMAL_SOUND);
         _PowerupSound  = ResourcesMgr.getSound(ResourceID.GAME_POWERUP_SOUND);
@@ -130,7 +130,7 @@ public class Playing implements Screen {
             case START:
                 _LOGGER.info("Started new playing!");
                 _totalScore = 0;
-                _stateDuration = Configs.Time.STARTING_DURATION;
+                _stateDuration = Constants.Time.STARTING_DURATION;
                 
                 _pacman.reset();
                 _ghosts.forEach(Ghost::reset);
@@ -152,7 +152,7 @@ public class Playing implements Screen {
                 break;
 
             case POWERUP:
-                _stateDuration = Configs.Time.POWERUP_DURATION;
+                _stateDuration = Constants.Time.POWERUP_DURATION;
                 _pacman.enterState(Pacman.State.HUNTER);
                 for (Ghost ghost : _ghosts)
                     if (ghost.getState() != Ghost.State.DEAD)
@@ -162,14 +162,14 @@ public class Playing implements Screen {
 
             case LOST:
                 _LOGGER.info("Game lost!");
-                _stateDuration = Configs.Time.GAMELOST_DURATION;
+                _stateDuration = Constants.Time.GAMELOST_DURATION;
                 _pacman.enterState(Pacman.State.DEAD);
                 _ghosts.forEach(ghost -> ghost.enterState(Ghost.State.IDLE));
                 break;
 
             case WON:
                 _LOGGER.info("Game won!");
-                _stateDuration = Configs.Time.GAMEWON_DURATION;
+                _stateDuration = Constants.Time.GAMEWON_DURATION;
                 _pacman.enterState(Pacman.State.IDLE);
                 _ghosts.forEach(ghost -> ghost.enterState(Ghost.State.IDLE));
                 _WonSound.play();
@@ -201,7 +201,7 @@ public class Playing implements Screen {
                     _PowerupSound.pause();
                     enterState(State.NORMAL);
                     break;
-                } else if (_stateDuration < Configs.Time.GHOST_FLASH_DURATION) // TODO: not the best
+                } else if (_stateDuration < Constants.Time.GHOST_FLASH_DURATION) // TODO: not the best
                     _ghosts.forEach(Ghost::startFlashing);
 
                 handleCollision(_PowerupSound);
@@ -229,7 +229,7 @@ public class Playing implements Screen {
                     case PREY:
                         ghost.enterState(Ghost.State.DEAD);
                         _LOGGER.info(ghost.getClass().getSimpleName() + " eaten!");
-                        _totalScore += Configs.Score.GHOST * (1 << deadGhostCount);
+                        _totalScore += Constants.Score.GHOST * (1 << deadGhostCount);
                         _scores.get(deadGhostCount).displayAt(ghost.getPosition());
                         ++deadGhostCount;
                         break;
@@ -240,7 +240,7 @@ public class Playing implements Screen {
 
         switch (_map.tryEatAt(_pacman.getPosition())) {
             case PELLET:
-                _totalScore += Configs.Score.PELLET;
+                _totalScore += Constants.Score.PELLET;
                 if (_map.getPelletCounts() == 0) {
                     currentSound.pause();
                     enterState(State.WON);
@@ -249,7 +249,7 @@ public class Playing implements Screen {
         
             case POWERUP:
                 _LOGGER.info("Powerup eaten!");
-                _totalScore += Configs.Score.POWERUP;
+                _totalScore += Constants.Score.POWERUP;
                 currentSound.pause();
                 enterState(State.POWERUP);
                 break;
@@ -262,11 +262,11 @@ public class Playing implements Screen {
     private void paintTotalScore(Graphics2D G) {
         String text = String.format("%05d", _totalScore);
         FontMetrics fm = G.getFontMetrics(_FontMedium);
-        int x = (Configs.PX.WINDOW_SIZE.ix() - fm.stringWidth(text)) / 2;
-        int y = (Configs.PX.WINDOW_SIZE.iy() - fm.getHeight()) / 2;
+        int x = (Constants.Pixel.WINDOW_SIZE.ix() - fm.stringWidth(text)) / 2;
+        int y = (Constants.Pixel.WINDOW_SIZE.iy() - fm.getHeight()) / 2;
         
         G.setFont(_FontMedium);
-        G.setColor(Configs.Color.SCORE);
+        G.setColor(Constants.Color.SCORE);
         G.drawString(text, x, y);
     }
 

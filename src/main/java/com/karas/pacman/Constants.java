@@ -2,22 +2,24 @@ package com.karas.pacman;
 
 import com.karas.pacman.commons.Vector2;
 
-public class Configs {
+public final class Constants {
 
     public static final int UPS_TARGET = 144;
     public static final int FPS_TARGET = Integer.MAX_VALUE;
     public static final String TITLE   = "Pacman";
     public static final double DEFAULT_SCALE = 3.0;
 
-    public static class Score {
+    public static final class Score {
 
         public static final int PELLET  = 10;
         public static final int POWERUP = 50;
         public static final int GHOST   = 200;
 
+        private Score() {}
+
     }
 
-    public static class Color {
+    public static final class Color {
 
         public static final java.awt.Color BACKGROUND = java.awt.Color.BLACK;
         public static final java.awt.Color PELLET     = java.awt.Color.WHITE;
@@ -28,9 +30,11 @@ public class Configs {
         public static final java.awt.Color MAIN_MENU  = new java.awt.Color(0, 16, 48);
         public static final java.awt.Color PAUSE_MENU = new java.awt.Color(0, 0, 0, 192);
 
+        private Color() {}
+
     }
 
-    public static class Time {
+    public static final class Time {
 
         public static final double UPDATE_INTERVAL      = 1.0 / UPS_TARGET;
         public static final double REPAINT_INTERVAL     = 1.0 / FPS_TARGET;
@@ -48,7 +52,7 @@ public class Configs {
 
     }
 
-    public static class Grid {
+    public static final class Grid {
 
         public static final Vector2 MAP_SIZE        = new Vector2(28,   31);
         public static final Vector2 PACMAN_POSITION = new Vector2(13.5, 23);
@@ -66,9 +70,11 @@ public class Configs {
         public static final Vector2 INKY_SCATTER_POSITION   = new Vector2(MAP_SIZE.ix() - 1, MAP_SIZE.iy() - 1);
         public static final Vector2 CLYDE_SCATTER_POSITION  = new Vector2(0, MAP_SIZE.iy() - 1);
 
+        private Grid() {}
+
     }
 
-    public static class PX {
+    public static final class Pixel {
 
         public static final int TILE_SIZE    = 8;
         public static final int PELLET_SIZE  = 2;
@@ -91,6 +97,10 @@ public class Configs {
         public static final int FONT_SIZE_LARGE  = 12;
         public static final Vector2 WINDOW_SIZE  = Grid.MAP_SIZE.mul(TILE_SIZE);
 
+        private Pixel() {}
+
     }
+
+    private Constants() {}
 
 }

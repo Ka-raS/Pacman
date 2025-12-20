@@ -3,16 +3,16 @@ package com.karas.pacman.screens;
 import java.awt.Font;
 import java.awt.Graphics2D;
 
-import com.karas.pacman.Configs;
+import com.karas.pacman.Constants;
 import com.karas.pacman.commons.Paintable;
 import com.karas.pacman.commons.Vector2;
 
-public class MenuNavigator implements Paintable {
+public final class MenuNavigator implements Paintable {
 
     // we have std::pair at home they said
-    public static record MenuOption(String label, Class<? extends Screen> screenClass) {}
+    public static record Option(String label, Class<? extends Screen> screenClass) {}
 
-    public MenuNavigator(Vector2 position, Font FontRef, MenuOption... options) {
+    public MenuNavigator(Vector2 position, Font FontRef, Option... options) {
         _hovering = 0;
         _position = position;
         _options = options;
@@ -35,7 +35,7 @@ public class MenuNavigator implements Paintable {
     public void repaint(Graphics2D G) {
         G.setFont(_Font);
         for (int i = 0; i < _options.length; i++) {
-            G.setColor(i == _hovering ? Configs.Color.HIGHLIGHT : Configs.Color.TEXT);
+            G.setColor(i == _hovering ? Constants.Color.HIGHLIGHT : Constants.Color.TEXT);
             G.drawString(
                 _options[i].label(), 
                 _position.ix(), 
@@ -47,7 +47,7 @@ public class MenuNavigator implements Paintable {
 
     private final Font _Font;
 
-    private final MenuOption[] _options;
+    private final Option[] _options;
     private final Vector2 _position;
 
     private int _hovering;

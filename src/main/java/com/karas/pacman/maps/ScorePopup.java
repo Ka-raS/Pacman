@@ -3,11 +3,11 @@ package com.karas.pacman.maps;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
-import com.karas.pacman.Configs;
+import com.karas.pacman.Constants;
 import com.karas.pacman.commons.Paintable;
 import com.karas.pacman.commons.Vector2;
 
-public class ScorePopup implements Paintable {
+public final class ScorePopup implements Paintable {
     
     public ScorePopup(BufferedImage image) {
         _Image = image;
@@ -19,7 +19,7 @@ public class ScorePopup implements Paintable {
         if (position == null)
             return;
         _position = position;
-        _duration = Configs.Time.SCORE_DURATION;
+        _duration = Constants.Time.SCORE_DURATION;
     }
 
     public void update(double deltaTime) {

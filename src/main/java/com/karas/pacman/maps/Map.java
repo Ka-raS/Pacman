@@ -3,7 +3,7 @@ package com.karas.pacman.maps;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
-import com.karas.pacman.Configs;
+import com.karas.pacman.Constants;
 import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Paintable;
 import com.karas.pacman.commons.Vector2;
@@ -11,14 +11,14 @@ import com.karas.pacman.resources.ResourceID;
 import com.karas.pacman.resources.ResourcesManager;
 import com.karas.pacman.resources.Sound;
 
-public class Map implements ImmutableMap, Paintable {
+public final class Map implements ImmutableMap, Paintable {
 
     public static Vector2 toGridVector2(Vector2 position) {
-        return position.div(Configs.PX.TILE_SIZE).ceil();
+        return position.div(Constants.Pixel.TILE_SIZE).ceil();
     }
 
     public static Vector2 toPixelVector2(Vector2 gridPosition) {
-        return gridPosition.sub(0.5).mul(Configs.PX.TILE_SIZE);
+        return gridPosition.sub(0.5).mul(Constants.Pixel.TILE_SIZE);
     }
 
     public static boolean isCenteredInTile(Vector2 position) {
@@ -28,8 +28,8 @@ public class Map implements ImmutableMap, Paintable {
 
     public Map(ResourcesManager ResourcesMgr) {
         _MapImage = ResourcesMgr.getImage(ResourceID.MAP_IMAGE);
-        _PelletImage = createSquare(Configs.PX.PELLET_SIZE);
-        _PowerupImage = createSquare(Configs.PX.POWERUP_SIZE);
+        _PelletImage = createSquare(Constants.Pixel.PELLET_SIZE);
+        _PowerupImage = createSquare(Constants.Pixel.POWERUP_SIZE);
         _WakaSounds = new Sound[] { 
             ResourcesMgr.getSound(ResourceID.EAT_WA_SOUND), 
             ResourcesMgr.getSound(ResourceID.EAT_KA_SOUND) 
@@ -65,7 +65,7 @@ public class Map implements ImmutableMap, Paintable {
             return null;
 
         Vector2 dir = direction.opposite().toVector2();
-        p = dir.mul(Configs.Grid.MAP_SIZE.ix() - 1).add(p);
+        p = dir.mul(Constants.Grid.MAP_SIZE.ix() - 1).add(p);
         if (!checkBound(p) || _tiles[p.iy()][p.ix()] != Tile.TUNNEL)
             return null;
 
@@ -120,21 +120,21 @@ public class Map implements ImmutableMap, Paintable {
 
     /** @return { isXCentered, isYCentered } */
     private static boolean[] isXYCenteredInTile(Vector2 position) {
-        Vector2 p = position.mod(Configs.PX.TILE_SIZE).abs()
-                            .sub(Configs.PX.TILE_SIZE / 2);
+        Vector2 p = position.mod(Constants.Pixel.TILE_SIZE).abs()
+                            .sub(Constants.Pixel.TILE_SIZE / 2);
         return new boolean[] { p.ix() == 0, p.iy() == 0 };
     }
 
     private static boolean checkBound(Vector2 gridPosition) {
         int x = gridPosition.ix(), y = gridPosition.iy();
-        return 0 <= y && y < Configs.Grid.MAP_SIZE.iy()
-            && 0 <= x && x < Configs.Grid.MAP_SIZE.ix();
+        return 0 <= y && y < Constants.Grid.MAP_SIZE.iy()
+            && 0 <= x && x < Constants.Grid.MAP_SIZE.ix();
     }
 
     private static BufferedImage createSquare(int size) {
         BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = image.createGraphics();        
-        g.setColor(Configs.Color.PELLET);
+        g.setColor(Constants.Color.PELLET);
         g.fillRect(0, 0, size, size);
         g.dispose();
         return image;
@@ -150,7 +150,7 @@ public class Map implements ImmutableMap, Paintable {
                 };
                 if (image == null)
                     continue;
-                int offset = (Configs.PX.TILE_SIZE - image.getWidth() / 2);
+                int offset = (Constants.Pixel.TILE_SIZE - image.getWidth() / 2);
                 Vector2 p = toPixelVector2(new Vector2(x, y)).add(offset);
                 G.drawImage(image, p.ix(), p.iy(), null);
                 

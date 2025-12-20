@@ -1,6 +1,6 @@
 package com.karas.pacman.entities.ghosts;
 
-import com.karas.pacman.Configs;
+import com.karas.pacman.Constants;
 import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.entities.Ghost;
@@ -9,13 +9,13 @@ import com.karas.pacman.maps.ImmutableMap;
 import com.karas.pacman.resources.ResourcesManager;
 import com.karas.pacman.resources.SpriteID;
 
-public class Inky extends Ghost {
+public final class Inky extends Ghost {
     
     public Inky(ImmutableEntity PacmanRef, ImmutableMap MapRef, ImmutableEntity BlinkyRef, ResourcesManager ResourcesMgr) {
         super(
-            Configs.Grid.INKY_POSITION,
+            Constants.Grid.INKY_POSITION,
             Direction.DOWN,
-            Configs.PX.INKY_SPEED,
+            Constants.Pixel.INKY_SPEED,
             SpriteID.INKY,
             PacmanRef, MapRef, ResourcesMgr
         );

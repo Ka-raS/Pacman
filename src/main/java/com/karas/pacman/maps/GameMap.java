@@ -11,7 +11,7 @@ import com.karas.pacman.resources.ResourceID;
 import com.karas.pacman.resources.ResourcesManager;
 import com.karas.pacman.resources.Sound;
 
-public final class Map implements ImmutableMap, Paintable {
+public final class GameMap implements ImmutableMap, Paintable {
 
     public static Vector2 toGridVector2(Vector2 position) {
         return position.div(Constants.Pixel.TILE_SIZE).ceil();
@@ -22,11 +22,11 @@ public final class Map implements ImmutableMap, Paintable {
     }
 
     public static boolean isCenteredInTile(Vector2 position) {
-        boolean[] centered = isXYCenteredInTile(position);
-        return centered[0] && centered[1];
+        Vector2 p = position.mod(Constants.Pixel.TILE_SIZE).abs();
+        return p.ix() == HALF_TILE && p.iy() == HALF_TILE;
     }
 
-    public Map(ResourcesManager ResourcesMgr) {
+    public GameMap(ResourcesManager ResourcesMgr) {
         _MapImage = ResourcesMgr.getImage(ResourceID.MAP_IMAGE);
         _PelletImage = createSquare(Constants.Pixel.PELLET_SIZE);
         _PowerupImage = createSquare(Constants.Pixel.POWERUP_SIZE);
@@ -39,16 +39,11 @@ public final class Map implements ImmutableMap, Paintable {
     }
 
     public void reset() {
-        Tile[][] copy = new Tile[_OriginalTilemap.length][];
-        for (int y = 0; y < _OriginalTilemap.length; ++y)
-            copy[y] = _OriginalTilemap[y].clone();
-
-        _tiles = copy;
+        _tiles = _OriginalTilemap.clone();
         _pelletCounts = 0;
-        for (Tile[] row : _tiles)
-            for (Tile tile : row)
-                if (tile == Tile.PELLET)
-                    ++_pelletCounts;
+        for (Tile tile : _OriginalTilemap)
+            if (tile == Tile.PELLET)
+                ++_pelletCounts;
     }
 
     public int getPelletCounts() {
@@ -57,30 +52,24 @@ public final class Map implements ImmutableMap, Paintable {
 
     @Override
     public Vector2 tryTunneling(Vector2 position, Direction direction) {
-        if (!isCenteredInTile(position))
-            return null;
-
         Vector2 p = toGridVector2(position);
-        if (!checkBound(p) || _tiles[p.iy()][p.ix()] != Tile.TUNNEL)
+        if (_tiles[p.iy() * WIDTH + p.ix()] != Tile.TUNNEL)
             return null;
 
         Vector2 dir = direction.opposite().toVector2();
-        p = dir.mul(Constants.Grid.MAP_SIZE.ix() - 1).add(p);
-        if (!checkBound(p) || _tiles[p.iy()][p.ix()] != Tile.TUNNEL)
-            return null;
-
-        return Map.toPixelVector2(p);
+        p = dir.mul(WIDTH - 1).add(p);
+        return checkBound(p) ? GameMap.toPixelVector2(p) : null;
     }
 
     @Override
     public boolean canMoveInDirection(Vector2 position, Direction nextDirection) {
-        boolean[] centered = isXYCenteredInTile(position);
-        boolean isXCentered = centered[0];
-        boolean isYCentered = centered[1];
+        Vector2 p = position.mod(Constants.Pixel.TILE_SIZE).abs();
+        boolean isXCentered = p.ix() == HALF_TILE;
+        boolean isYCentered = p.iy() == HALF_TILE;
         
         if (isXCentered && isYCentered) {
-            Vector2 p = toGridVector2(position).add(nextDirection.toVector2());
-            return _tiles[p.iy()][p.ix()] != Tile.WALL;
+            p = toGridVector2(position).add(nextDirection.toVector2());
+            return checkBound(p) && _tiles[p.iy() * WIDTH + p.ix()] != Tile.WALL;
         }
         
         boolean currentDirectionIsVertical = isXCentered;
@@ -89,26 +78,20 @@ public final class Map implements ImmutableMap, Paintable {
 
     /** @return Tile value eaten at {@code position} */
     public Tile tryEatAt(Vector2 position) {
-        if (isCenteredInTile(position))
-            return Tile.NONE;
         Vector2 p = toGridVector2(position);
-        if (!checkBound(p))
-            return Tile.NONE;
-
-        Tile tile = _tiles[p.iy()][p.ix()];
+        Tile tile = _tiles[p.iy() * WIDTH + p.ix()];
         switch (tile) {
             case PELLET:
                 _WakaSounds[_pelletCounts % 2].play();
                 --_pelletCounts;
 
             case POWERUP:
-                _tiles[p.iy()][p.ix()] = Tile.NONE;
-                break;
+                _tiles[p.iy() * WIDTH + p.ix()] = Tile.NONE;
+                return tile;
 
             default:
-                tile = Tile.NONE;
+                return Tile.NONE;
         }
-        return tile;
     }
 
     @Override
@@ -117,13 +100,6 @@ public final class Map implements ImmutableMap, Paintable {
         paintConsumables(G);
     }
 
-
-    /** @return { isXCentered, isYCentered } */
-    private static boolean[] isXYCenteredInTile(Vector2 position) {
-        Vector2 p = position.mod(Constants.Pixel.TILE_SIZE).abs()
-                            .sub(Constants.Pixel.TILE_SIZE / 2);
-        return new boolean[] { p.ix() == 0, p.iy() == 0 };
-    }
 
     private static boolean checkBound(Vector2 gridPosition) {
         int x = gridPosition.ix(), y = gridPosition.iy();
@@ -141,27 +117,28 @@ public final class Map implements ImmutableMap, Paintable {
     }
 
     private void paintConsumables(Graphics2D G) {
-        for (int y = 0; y < _tiles.length; ++y)
-            for (int x = 0; x < _tiles[y].length; ++x) {
-                BufferedImage image = switch (_tiles[y][x]) {
-                    case PELLET  -> _PelletImage;
-                    case POWERUP -> _PowerupImage;
-                    default      -> null;
-                };
-                if (image == null)
-                    continue;
-                int offset = (Constants.Pixel.TILE_SIZE - image.getWidth() / 2);
-                Vector2 p = toPixelVector2(new Vector2(x, y)).add(offset);
-                G.drawImage(image, p.ix(), p.iy(), null);
-                
-            }
+        for (int i = 0; i < _tiles.length; ++i) {
+            BufferedImage image = switch (_tiles[i]) {
+                case PELLET  -> _PelletImage;
+                case POWERUP -> _PowerupImage;
+                default      -> null;
+            };
+            if (image == null)
+                continue;
+            int offset = (Constants.Pixel.TILE_SIZE - image.getWidth() / 2);
+            Vector2 p = toPixelVector2(new Vector2(i % WIDTH, i / WIDTH)).add(offset);
+            G.drawImage(image, p.ix(), p.iy(), null);
+        }
     }
+
+    private static final int HALF_TILE = Constants.Pixel.TILE_SIZE / 2;
+    private static final int WIDTH     = Constants.Grid.MAP_SIZE.ix();
 
     private final Sound[] _WakaSounds;
     private final BufferedImage _MapImage, _PelletImage, _PowerupImage;
-    private final Tile[][] _OriginalTilemap;
+    private final Tile[] _OriginalTilemap;
 
     private int _pelletCounts;
-    private Tile[][] _tiles;
+    private Tile[] _tiles;
 
 }

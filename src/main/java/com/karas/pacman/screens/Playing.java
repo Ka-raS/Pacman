@@ -16,7 +16,7 @@ import com.karas.pacman.entities.ghosts.Blinky;
 import com.karas.pacman.entities.ghosts.Clyde;
 import com.karas.pacman.entities.ghosts.Inky;
 import com.karas.pacman.entities.ghosts.Pinky;
-import com.karas.pacman.maps.Map;
+import com.karas.pacman.maps.GameMap;
 import com.karas.pacman.maps.ScorePopup;
 import com.karas.pacman.resources.ResourceID;
 import com.karas.pacman.resources.ResourcesManager;
@@ -27,7 +27,7 @@ import com.karas.pacman.resources.SpriteID;
 public final class Playing implements Screen {
 
     public Playing(ResourcesManager ResourcesMgr) {
-        _map    = new Map(ResourcesMgr);
+        _map    = new GameMap(ResourcesMgr);
         _pacman = new Pacman(_map, ResourcesMgr);
         _scores = Arrays.stream(ResourcesMgr.getSprite(SpriteID.SCORES)).map(ScorePopup::new).toList();
         
@@ -276,7 +276,7 @@ public final class Playing implements Screen {
     private final Sound _NewGameSound, _NormalSound, _PowerupSound, _WonSound;
     private final ScoreDatabase _ScoreDatabase;
 
-    private final Map _map;
+    private final GameMap _map;
     private final Pacman _pacman;
     private final List<Ghost> _ghosts;
     private final List<ScorePopup> _scores;

@@ -7,7 +7,7 @@ import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Paintable;
 import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.maps.ImmutableMap;
-import com.karas.pacman.maps.Map;
+import com.karas.pacman.maps.GameMap;
 
 public abstract class Entity implements ImmutableEntity, Paintable {
     
@@ -42,7 +42,7 @@ public abstract class Entity implements ImmutableEntity, Paintable {
 
     @Override
     public final Vector2 getGridPosition() {
-        return Map.toGridVector2(_position);
+        return GameMap.toGridVector2(_position);
     }
 
     public final boolean collidesWith(Entity other) {
@@ -61,7 +61,7 @@ public abstract class Entity implements ImmutableEntity, Paintable {
 
 
     protected Entity(Vector2 gridPosition, Direction direction, int speed, ImmutableMap MapRef) {
-        _position = Map.toPixelVector2(gridPosition);
+        _position = GameMap.toPixelVector2(gridPosition);
         _direction = direction;
         _speed = speed;
         _Map = MapRef;
@@ -70,7 +70,7 @@ public abstract class Entity implements ImmutableEntity, Paintable {
     protected abstract void handleStateTransition(State nextState);
 
     protected final boolean isCenteredInTile() {
-        return Map.isCenteredInTile(_position);
+        return GameMap.isCenteredInTile(_position);
     }
 
     protected final boolean canMoveInDirection(Direction direction) {
@@ -83,7 +83,7 @@ public abstract class Entity implements ImmutableEntity, Paintable {
     }
 
     protected final void setGridPosition(Vector2 gridPosition) {
-        _position = Map.toPixelVector2(gridPosition);
+        _position = GameMap.toPixelVector2(gridPosition);
     }
 
     protected final void move(double deltaTime) {

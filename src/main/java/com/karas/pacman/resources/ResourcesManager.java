@@ -56,7 +56,7 @@ public final class ResourcesManager implements Exitable {
         return _spriteMap.get(spriteID);
     }
 
-    public Tile[][] getTilemap() {
+    public Tile[] getTilemap() {
         return _tilemap;
     }
 
@@ -136,17 +136,16 @@ public final class ResourcesManager implements Exitable {
         return spriteMap;
     }
 
-    private static Tile[][] initTilemap() {
+    private static Tile[] initTilemap() {
         final Vector2 SIZE = Constants.Grid.MAP_SIZE;
         try {
             return loadTilemap(ResourceID.TILEMAP.getPath(), SIZE);
         } catch (RuntimeException e) {
             handleException(e, ResourceID.TILEMAP.isCritical());
 
-            Tile[][] tilemap = new Tile[SIZE.iy()][SIZE.ix()];
-            for (Tile[] row : tilemap)
-                for (int i = 0; i < SIZE.ix(); ++i)
-                    row[i] = Tile.NONE;
+            Tile[] tilemap = new Tile[SIZE.iy() * SIZE.ix()];
+            for (int i = 0; i < tilemap.length; ++i)
+                tilemap[i] = Tile.NONE;
             return tilemap;
         }
     }
@@ -213,26 +212,21 @@ public final class ResourcesManager implements Exitable {
         }
     }
 
-    private static Tile[][] loadTilemap(String path, Vector2 size) throws RuntimeException {
+    private static Tile[] loadTilemap(String path, Vector2 size) throws RuntimeException {
         URL url = ResourcesManager.class.getResource(path);
         if (url == null)
             throw new RuntimeException("Tilemap Not Found: " + path);
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
-            Tile[][] tiles = new Tile[size.iy()][size.ix()];
+            Tile[] tiles = new Tile[size.iy() * size.ix()];
 
             for (int y = 0; y < size.iy(); ++y) {
                 String line = reader.readLine();
-                if (line == null || line.length() != tiles[0].length)
+                if (line == null || line.length() != size.ix())
                     throw new IllegalArgumentException("Tilemap Data Corrupted At Line " + (y+1));
                     
-                for (int x = 0; x < size.ix(); ++x) {
-                    tiles[y][x] = Tile.of(line.charAt(x));
-                    if (tiles[y][x] == null)
-                        throw new IllegalArgumentException(
-                            String.format("Tilemap Data Corrupted At Line %d Column %d", y+1, x+1)
-                        );
-                }
+                for (int x = 0; x < size.ix(); ++x)
+                    tiles[y * size.ix() + x] = Tile.of(line.charAt(x));
             }
             return tiles;
 
@@ -308,7 +302,7 @@ public final class ResourcesManager implements Exitable {
     private final EnumMap<ResourceID, Sound> _soundMap;
     private final EnumMap<ResourceID, BufferedImage> _imageMap;
     private final EnumMap<SpriteID, BufferedImage[]> _spriteMap;
-    private final Tile[][] _tilemap;
+    private final Tile[] _tilemap;
     private final Font[] _fonts;
     private final ScoreDatabase _database;
 

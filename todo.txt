@@ -1,4 +1,3 @@
-- Simplify Map.java code
 - Simplify ResourcesManager.java code
 - Screen implement KeyBindings Map 
 

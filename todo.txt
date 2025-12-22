@@ -1,5 +1,4 @@
 - Simplify ResourcesManager.java code
-- Screen implement KeyBindings Map 
 
 - Paused Screen background music
 - Ghost scatter mechanism

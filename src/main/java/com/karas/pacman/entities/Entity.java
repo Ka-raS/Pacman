@@ -55,8 +55,7 @@ public abstract class Entity implements ImmutableEntity, Paintable {
 
     @Override
     public final void repaint(Graphics2D G) {
-        _Sprite.setPosition(_position);
-        _Sprite.repaint(G);
+        G.drawImage(_Sprite.getFrame(), _position.ix(), _position.iy(), null);
     }
 
 

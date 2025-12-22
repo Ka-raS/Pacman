@@ -1,20 +1,16 @@
 package com.karas.pacman.entities;
 
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import com.karas.pacman.Constants;
 import com.karas.pacman.commons.Direction;
-import com.karas.pacman.commons.Paintable;
-import com.karas.pacman.commons.Vector2;
 
-public final class Sprite implements Paintable {
+public final class Sprite {
     
     public Sprite(BufferedImage[] Images) {
         _Images = Images;
         _length = Images.length;
         _timer  = _index = _offset = 0;
-        _position = new Vector2(0, 0);
     }
 
     public Sprite(BufferedImage[] Images, Direction direction) {
@@ -22,7 +18,6 @@ public final class Sprite implements Paintable {
         _length = Images.length / Direction.values().length;
         _timer  = _index = 0;
         _offset = direction.ordinal() * _length;
-        _position = new Vector2(0, 0);
     }
 
     public boolean isAnimationEnded() {
@@ -38,8 +33,8 @@ public final class Sprite implements Paintable {
             _offset = direction.ordinal() * _length;
     }
 
-    public void setPosition(Vector2 position) {
-        _position = position;
+    public BufferedImage getFrame() {
+        return _Images[_index + _offset];
     }
 
     public void update(double deltaTime) {
@@ -50,17 +45,11 @@ public final class Sprite implements Paintable {
         }
     }
 
-    @Override
-    public void repaint(Graphics2D G) {
-        G.drawImage(_Images[_index + _offset], _position.ix(), _position.iy(), null);
-    }
-
 
     private final BufferedImage[] _Images;
 
-    private double _timer;
-    private Vector2 _position;
-    private int _index, _offset;
     private final int _length;
+    private double _timer;
+    private int _index, _offset;
 
 }

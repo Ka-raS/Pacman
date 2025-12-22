@@ -182,10 +182,13 @@ public final class ResourcesManager implements Exitable {
         try (AudioInputStream ais = AudioSystem.getAudioInputStream(url)) {
             Clip clip = AudioSystem.getClip();
             clip.open(ais);
-            return new Sound(clip);
+            throw new IOException("Failed Reading Sound: " + path);
+            // return new Sound(clip);
 
         } catch (IOException e) {
-            throw new RuntimeException("Failed Reading Sound: " + path, e);
+            _LOGGER.log(Level.WARNING, path, new RuntimeException(e));
+            return new Sound(null);
+            // throw new RuntimeException("Failed Reading Sound: " + path, e);
         } catch (UnsupportedAudioFileException e) {
             throw new RuntimeException("Unsupported Audio File: " + path, e);
         } catch (LineUnavailableException e) {

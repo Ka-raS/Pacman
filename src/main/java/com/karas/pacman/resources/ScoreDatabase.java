@@ -68,8 +68,8 @@ public final class ScoreDatabase {
     }
 
 
-    private int _fileLength;
     private final ArrayList<Entry> _entries;
     private final File _databaseFile;
+    private int _fileLength;
 
 }

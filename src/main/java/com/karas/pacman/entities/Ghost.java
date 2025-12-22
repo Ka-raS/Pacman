@@ -6,7 +6,6 @@ import com.karas.pacman.Constants;
 import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.maps.ImmutableMap;
-import com.karas.pacman.maps.GameMap;
 import com.karas.pacman.resources.ResourceID;
 import com.karas.pacman.resources.ResourcesManager;
 import com.karas.pacman.resources.Sound;
@@ -23,8 +22,8 @@ public abstract class Ghost extends Entity {
     public final void update(double deltaTime) {
         switch (getState()) {
             case DEAD:
-                Vector2 delta = getPosition().sub(HOME_POSITION).abs();
-                if (delta.ix() <= 1.0 && delta.iy() <= 1.0)
+                Vector2 delta = getGridPosition().sub(Constants.Grid.GHOST_HOME);
+                if (delta.ix() == 0 && delta.iy() == 0)
                     enterState(State.HUNTER);
             
             default:
@@ -114,8 +113,6 @@ public abstract class Ghost extends Entity {
         };
         setDirection(nextDirection);
     }
-
-    private static final Vector2 HOME_POSITION = GameMap.toPixelVector2(Constants.Grid.GHOST_HOME);
 
     private final Sound _DeathSound;
     private final ImmutableEntity _Pacman;

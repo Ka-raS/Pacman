@@ -68,7 +68,6 @@ public final class MainMenu implements Screen {
     private final BufferedImage _TitleImage;
 
     private final MenuNavigator _navigator;
-
     private volatile Class<? extends Screen> _nextScreen;
 
 }

@@ -280,9 +280,9 @@ public final class Playing implements Screen {
     private final Pacman _pacman;
     private final List<Ghost> _ghosts;
     private final List<ScorePopup> _scores;
+    private volatile Class<? extends Screen> _nextScreen;
     private State _state;
     private double _stateDuration;
     private int _totalScore;
-    private volatile Class<? extends Screen> _nextScreen;
 
 }

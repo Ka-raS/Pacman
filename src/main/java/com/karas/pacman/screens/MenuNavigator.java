@@ -49,7 +49,6 @@ public final class MenuNavigator implements Paintable {
 
     private final Option[] _options;
     private final Vector2 _position;
-
     private int _hovering;
 }
 

@@ -78,7 +78,6 @@ public final class Paused implements Screen {
     private final Screen _PlayingScreen;
 
     private final MenuNavigator _navigator;
-
     private volatile Class<? extends Screen> _nextScreen;
 
 }

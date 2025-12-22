@@ -54,12 +54,17 @@ public final class Game implements Exitable {
         _LOGGER.info("Entering game...");
         try {
             SwingUtilities.invokeAndWait(this::initializeUI);
-        } catch (InterruptedException | InvocationTargetException e) {
-            _LOGGER.log(Level.SEVERE, "Failed to initialize game UI", e);
+        } catch (InterruptedException e) {
+            String message = Thread.currentThread() + " interrupted while waiting for EDT to initialize UI";
+            _LOGGER.log(Level.WARNING, message, e);
+            exit();
+            return;
+        } catch (InvocationTargetException e) {
+            _LOGGER.log(Level.SEVERE, "Failed to initialize UI", e.getCause());
             exit();
             return;
         }
-        _thread = new Thread(this::gameLoop);
+        _thread = new Thread(this::gameLoop, "Game Thread");
         _thread.start(); // GameThread calls this.gameLoop()
     }
 
@@ -176,9 +181,9 @@ public final class Game implements Exitable {
     private final ScreenManager _screenManager;
     private final ResourcesManager _resourceManager;
     
-    private Thread _thread;
     private volatile boolean _running;
     private volatile int _frameCount;
     private volatile double _scale;
+    private Thread _thread;
 
 }

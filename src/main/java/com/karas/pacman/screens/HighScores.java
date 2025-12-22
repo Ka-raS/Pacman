@@ -96,7 +96,7 @@ public final class HighScores implements Screen {
     private final BufferedImage _HeaderImage;
     private final Font _FontSmall, _FontMedium;
     
-    private Iterable<ScoreDatabase.Entry> _highscores;
     private volatile Class<? extends Screen> _nextScreen;
+    private Iterable<ScoreDatabase.Entry> _highscores;
 
 }

@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 
 import com.karas.pacman.screens.ScreenManager;
 
-public class GamePanel extends JPanel {
+public final class GamePanel extends JPanel {
     
     public GamePanel(ScreenManager screenManager) {
         _scale   = Constants.DEFAULT_SCALE;

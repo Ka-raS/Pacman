@@ -86,8 +86,7 @@ public final class Pacman extends Entity {
             return true;
         if (!isCenteredInTile())
             return false;
-        Tile tile = tileAt(getGridPosition().add(_nextDirection.toVector2()));
-        return tile != Tile.WALL && tile != Tile.GATE;
+        return validMovement(null, getGridPosition().add(_nextDirection.toVector2()));
     }
 
     private final Sound _DeathSound;

@@ -1,7 +1,6 @@
 - Simplify ResourcesManager.java code
 
 - Paused Screen background music
-- Ghost scatter mechanism
 - Ghost chases Pacman in MainMenu
 - Pacman eats Pellets in HighScore Screen
 

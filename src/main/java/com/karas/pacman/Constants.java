@@ -46,10 +46,6 @@ public final class Constants {
         public static final double GAMELOST_DURATION    = 2.0;
         public static final double GAMEWON_DURATION     = 5.2;
 
-        // TODO
-        public static final double GHOST_SCATTER_DURATION = 7.0; 
-        public static final double GHOST_SCATTER_INTERVAL = 20.0 + GHOST_SCATTER_DURATION;
-
     }
 
     public static final class Grid {
@@ -63,11 +59,6 @@ public final class Constants {
         public static final Vector2 GHOST_HOME      = new Vector2(14  , 14);
 
         public static final int CLYDE_TARGET_DISTANCE = 8;
-
-        // TODO
-        public static final Vector2 BLINKY_SCATTER_POSITION = new Vector2(MAP_SIZE.ix() - 1, 0);
-        public static final Vector2 PINKY_SCATTER_POSITION  = new Vector2(0, 0);
-        public static final Vector2 INKY_SCATTER_POSITION   = new Vector2(MAP_SIZE.ix() - 1, MAP_SIZE.iy() - 1);
         public static final Vector2 CLYDE_SCATTER_POSITION  = new Vector2(0, MAP_SIZE.iy() - 1);
 
         private Grid() {}

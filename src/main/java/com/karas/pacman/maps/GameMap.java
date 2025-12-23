@@ -63,7 +63,7 @@ public final class GameMap implements ImmutableMap, Paintable {
         return dir.mul(WIDTH - 1).add(gridPosition);
     }
 
-    public Tile tryEatAt(Vector2 gridPosition) {
+    public Tile eatConsumable(Vector2 gridPosition) {
         Tile tile = tileAt(gridPosition);
         switch (tile) {
             case PELLET:

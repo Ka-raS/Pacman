@@ -238,7 +238,7 @@ public final class Playing implements Screen {
                         break;
                 }
 
-        switch (_map.tryEatAt(_pacman.getGridPosition())) {
+        switch (_map.eatConsumable(_pacman.getGridPosition())) {
             case PELLET:
                 _totalScore += Constants.Score.PELLET;
                 if (_map.getPelletCounts() == 0) {

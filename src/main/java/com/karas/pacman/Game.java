@@ -40,8 +40,10 @@ public final class Game implements Exitable {
                 G2D.scale(_scale, _scale);
                 _screenManager.repaint(G2D);
                 ++_frameCount;
-                Toolkit.getDefaultToolkit().sync();
+                toolkit.sync();
             }
+
+            private final Toolkit toolkit = Toolkit.getDefaultToolkit();
         };
     }
 

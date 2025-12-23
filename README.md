@@ -15,7 +15,7 @@
 
 ## Controls
 
-- Movement: W  A  S  D or ← ↑ → ↓  
+- Movement: W A S D or ← ↑ → ↓  
 - Pause: Esc
 - Select: Enter
 

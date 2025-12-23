@@ -57,10 +57,10 @@ public final class Constants {
         public static final Vector2 MAP_SIZE        = new Vector2(28,   31);
         public static final Vector2 PACMAN_POSITION = new Vector2(13.5, 23);
         public static final Vector2 BLINKY_POSITION = new Vector2(13.5, 11);
-        public static final Vector2 PINKY_POSITION  = new Vector2(11.5, 14); // is squished between a wall and walkable tile
+        public static final Vector2 PINKY_POSITION  = new Vector2(11.5, 14); // is squished between a wall and a walkable tile
         public static final Vector2 INKY_POSITION   = new Vector2(13.5, 14);
         public static final Vector2 CLYDE_POSITION  = new Vector2(15.5, 14); // same goes for this one
-        public static final Vector2 GHOST_HOME      = new Vector2(13.5, 14);
+        public static final Vector2 GHOST_HOME      = new Vector2(14  , 14);
 
         public static final int CLYDE_TARGET_DISTANCE = 8;
 

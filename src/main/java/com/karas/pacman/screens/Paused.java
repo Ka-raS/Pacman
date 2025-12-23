@@ -3,7 +3,6 @@ package com.karas.pacman.screens;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
-import java.util.logging.Logger;
 
 import com.karas.pacman.Constants;
 import com.karas.pacman.commons.Vector2;
@@ -25,7 +24,6 @@ public final class Paused implements Screen {
 
     @Override
     public void enter(Class<? extends Screen> previous) {
-        _LOGGER.info("Game paused.");
         _nextScreen = Paused.class;
     }
     
@@ -71,8 +69,6 @@ public final class Paused implements Screen {
         G.setFont(_FontLarge);
         G.drawString("PAUSED", Constants.Pixel.WINDOW_SIZE.ix() / 3, Constants.Pixel.WINDOW_SIZE.iy() / 3);
     }
-
-    private static final Logger _LOGGER = Logger.getLogger(Paused.class.getName());
 
     private final Font _FontLarge;
     private final Screen _PlayingScreen;

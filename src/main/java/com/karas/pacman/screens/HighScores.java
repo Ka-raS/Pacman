@@ -15,9 +15,9 @@ public final class HighScores implements Screen {
 
     public HighScores(ResourcesManager ResourcesMgr) {
         _ScoreDatabase = ResourcesMgr.getDatabase();
-        _HeaderImage = ResourcesMgr.getImage(ResourceID.HIGHSCORE_IMAGE);
-        _FontMedium = ResourcesMgr.getFont(Constants.Pixel.FONT_SIZE_MEDIUM);
-        _FontSmall = ResourcesMgr.getFont(Constants.Pixel.FONT_SIZE_SMALL);
+        _HeaderImage   = ResourcesMgr.getImage(ResourceID.HIGHSCORE_IMAGE);
+        _FontMedium    = ResourcesMgr.getFont(Constants.Pixel.FONT_SIZE_MEDIUM);
+        _FontSmall     = ResourcesMgr.getFont(Constants.Pixel.FONT_SIZE_SMALL);
     }
 
     @Override

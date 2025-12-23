@@ -25,8 +25,7 @@ public final class Clyde extends Ghost {
     @Override
     protected Vector2 findHunterTarget(ImmutableEntity PacmanRef) {
         Vector2 pacmanPos = PacmanRef.getGridPosition();
-        Vector2 currPos = getGridPosition();
-        double distance = currPos.distance(pacmanPos);
+        double distance = getGridPosition().distance(pacmanPos);
         return distance > Constants.Grid.CLYDE_TARGET_DISTANCE ? pacmanPos : Constants.Grid.CLYDE_SCATTER_POSITION;
     }
     

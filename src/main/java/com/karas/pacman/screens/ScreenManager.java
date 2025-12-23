@@ -3,6 +3,7 @@ package com.karas.pacman.screens;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import com.karas.pacman.commons.Paintable;
 import com.karas.pacman.commons.Exitable;
@@ -18,6 +19,7 @@ public final class ScreenManager implements Exitable, Paintable {
 
         _current = mainMenu;
         _current.enter(null);
+        _enteringScreen = false;
         _screens = Map.of(
             MainMenu.class,   mainMenu,
             Playing.class,    playing,
@@ -33,15 +35,17 @@ public final class ScreenManager implements Exitable, Paintable {
     }
 
     public void input(KeyEvent e) {
-        _current.input(e);
+        if (!_enteringScreen)
+            _current.input(e);
     }
 
     @Override
     public void repaint(Graphics2D G) {
-        _current.repaint(G);
+        if (!_enteringScreen)
+            _current.repaint(G);
     }
 
-    /** @return shouldExit */
+    /** @return {@code false} if shouldExit */
     public boolean update(double deltaTime) {
         Class<? extends Screen> nextScreen = _current.update(deltaTime);
         if (nextScreen == null)
@@ -49,15 +53,20 @@ public final class ScreenManager implements Exitable, Paintable {
         if (nextScreen == _current.getClass())
             return true;
 
+        _enteringScreen = true;
+        _LOGGER.info("Switching to screen " + nextScreen.getSimpleName());
         Class<? extends Screen> currentScreen = _current.getClass();
         _current.exit();
         _current = _screens.get(nextScreen);
         _current.enter(currentScreen);
+        _enteringScreen = false;
         return true;
     }
 
+    private static final Logger _LOGGER = Logger.getLogger(ScreenManager.class.getName());
 
     private final Map<Class<? extends Screen>, Screen> _screens;
     private Screen _current;
+    private volatile boolean _enteringScreen;
 
 }

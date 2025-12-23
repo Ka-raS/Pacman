@@ -51,7 +51,7 @@ public final class Game implements Exitable {
             return;
         _running = true;
 
-        _LOGGER.info("Entering game...");
+        _LOGGER.info("Entering game");
         try {
             SwingUtilities.invokeAndWait(this::initializeUI);
         } catch (InterruptedException e) {
@@ -74,7 +74,7 @@ public final class Game implements Exitable {
             return;
         _running = false;
 
-        _LOGGER.info("Exiting game...");
+        _LOGGER.info("Exiting game");
         SwingUtilities.invokeLater(() -> {
             _frame.setVisible(false);
             _frame.dispose();

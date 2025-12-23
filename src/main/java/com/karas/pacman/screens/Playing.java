@@ -59,7 +59,7 @@ public final class Playing implements Screen {
             return;
         }
 
-        _LOGGER.info("Resumed game!");
+        _LOGGER.info("Resumed game");
         if (_state != State.START) {
             _pacman.enterPreIdleState();
             _ghosts.forEach(Ghost::enterPreIdleState);
@@ -128,7 +128,7 @@ public final class Playing implements Screen {
         _state = nextState;
         switch (nextState) {
             case START:
-                _LOGGER.info("Started new playing!");
+                _LOGGER.info("Started new playing");
                 _totalScore = 0;
                 _stateDuration = Constants.Time.STARTING_DURATION;
                 
@@ -161,14 +161,14 @@ public final class Playing implements Screen {
                 break;
 
             case LOST:
-                _LOGGER.info("Game lost!");
+                _LOGGER.info("Game lost");
                 _stateDuration = Constants.Time.GAMELOST_DURATION;
                 _pacman.enterState(Pacman.State.DEAD);
                 _ghosts.forEach(ghost -> ghost.enterState(Ghost.State.IDLE));
                 break;
 
             case WON:
-                _LOGGER.info("Game won!");
+                _LOGGER.info("Game won");
                 _stateDuration = Constants.Time.GAMEWON_DURATION;
                 _pacman.enterState(Pacman.State.IDLE);
                 _ghosts.forEach(ghost -> ghost.enterState(Ghost.State.IDLE));
@@ -228,7 +228,7 @@ public final class Playing implements Screen {
                 
                     case PREY:
                         ghost.enterState(Ghost.State.DEAD);
-                        _LOGGER.info(ghost.getClass().getSimpleName() + " eaten!");
+                        _LOGGER.info(ghost.getClass().getSimpleName() + " eaten");
                         _totalScore += Constants.Score.GHOST * (1 << deadGhostCount);
                         _scores.get(deadGhostCount).displayAt(ghost.getPosition());
                         ++deadGhostCount;
@@ -238,7 +238,7 @@ public final class Playing implements Screen {
                         break;
                 }
 
-        switch (_map.tryEatAt(_pacman.getPosition())) {
+        switch (_map.tryEatAt(_pacman.getGridPosition())) {
             case PELLET:
                 _totalScore += Constants.Score.PELLET;
                 if (_map.getPelletCounts() == 0) {
@@ -248,7 +248,7 @@ public final class Playing implements Screen {
                 break;
         
             case POWERUP:
-                _LOGGER.info("Powerup eaten!");
+                _LOGGER.info("Powerup eaten");
                 _totalScore += Constants.Score.POWERUP;
                 currentSound.pause();
                 enterState(State.POWERUP);

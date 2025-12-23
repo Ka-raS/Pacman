@@ -1,27 +1,19 @@
 package com.karas.pacman.commons;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 public enum Direction {
 
     UP, RIGHT, DOWN, LEFT;
 
-    public static Direction random() {
-        Direction[] v = values();
-        int pos = ThreadLocalRandom.current().nextInt(v.length);
-        return v[pos];
+    public boolean isVertical() {
+        return (ordinal() & 1) == 0;
+    }
+
+    public Direction opposite() {
+        return values()[(ordinal() + 2) & 3];
     }
 
     public Vector2 toVector2() { 
         return _VECTORS[ordinal()]; 
-    }
-
-    public boolean isVertical() {
-        return this == UP || this == DOWN;
-    }
-
-    public Direction opposite() {
-        return values()[(ordinal() + 2) % 4];   // trippy
     }
 
 

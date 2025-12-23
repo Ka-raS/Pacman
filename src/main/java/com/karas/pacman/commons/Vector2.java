@@ -21,17 +21,14 @@ public record Vector2(double x, double y) {
     public Vector2 sub(Vector2 other) { return new Vector2(x - other.x, y - other.y); }
 
     public double distance(Vector2 other) {
-        double dx = x - other.x;
-        double dy = y - other.y;
-        return Math.sqrt(dx * dx + dy * dy);
+        return Math.abs(x - other.x) + Math.abs(y - other.y);
     }
     
     public Direction furthestFrom(Vector2 other, EnumSet<Direction> directions) {
         Direction result = null;
         double maxDistance = -1.0;
         for (Direction dir : directions) {
-            Vector2 next = this.add(dir.toVector2());
-            double distance = other.distance(next);
+            double distance = this.add(dir.toVector2()).distance(other);
             if (maxDistance < distance) {
                 maxDistance = distance;
                 result = dir;
@@ -44,8 +41,7 @@ public record Vector2(double x, double y) {
         Direction result = null;
         double minDistance = Double.MAX_VALUE;
         for (Direction dir : directions) {
-            Vector2 next = this.add(dir.toVector2());
-            double distance = other.distance(next);
+            double distance = this.add(dir.toVector2()).distance(other);
             if (minDistance > distance) {
                 minDistance = distance;
                 result = dir;

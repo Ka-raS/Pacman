@@ -24,8 +24,8 @@ public final class Pinky extends Ghost {
 
     @Override
     protected Vector2 findHunterTarget(ImmutableEntity PacmanRef) {
-        Direction pacmanDir = PacmanRef.getDirection();
-        Vector2 pacmanPredict = PacmanRef.getGridPosition().add(pacmanDir.toVector2().mul(4));
+        Vector2 pacmanDir = PacmanRef.getDirection().toVector2();
+        Vector2 pacmanPredict = PacmanRef.getGridPosition().add(pacmanDir.mul(4));
         return pacmanPredict;
     }
 

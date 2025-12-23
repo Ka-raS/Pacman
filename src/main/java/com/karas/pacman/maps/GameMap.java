@@ -51,42 +51,27 @@ public final class GameMap implements ImmutableMap, Paintable {
     }
 
     @Override
-    public Vector2 tryTunneling(Vector2 position, Direction direction) {
-        Vector2 p = toGridVector2(position);
-        if (_tiles[p.iy() * WIDTH + p.ix()] != Tile.TUNNEL)
-            return null;
-
-        Vector2 dir = direction.opposite().toVector2();
-        p = dir.mul(WIDTH - 1).add(p);
-        return checkBound(p) ? GameMap.toPixelVector2(p) : null;
+    public Tile tileAt(Vector2 gridPosition) {
+        return _tiles[gridPosition.iy() * WIDTH + gridPosition.ix()];
     }
 
     @Override
-    public boolean canMoveInDirection(Vector2 position, Direction nextDirection) {
-        Vector2 p = position.mod(Constants.Pixel.TILE_SIZE).abs();
-        boolean isXCentered = p.ix() == HALF_TILE;
-        boolean isYCentered = p.iy() == HALF_TILE;
-        
-        if (isXCentered && isYCentered) {
-            p = toGridVector2(position).add(nextDirection.toVector2());
-            return checkBound(p) && _tiles[p.iy() * WIDTH + p.ix()] != Tile.WALL;
-        }
-        
-        boolean currentDirectionIsVertical = isXCentered;
-        return nextDirection.isVertical() == currentDirectionIsVertical;
+    public Vector2 useTunnel(Vector2 gridPosition, Direction direction) {
+        if (tileAt(gridPosition) != Tile.TUNNEL)
+            return null;
+        Vector2 dir = direction.opposite().toVector2();
+        return dir.mul(WIDTH - 1).add(gridPosition);
     }
 
-    /** @return Tile value eaten at {@code position} */
-    public Tile tryEatAt(Vector2 position) {
-        Vector2 p = toGridVector2(position);
-        Tile tile = _tiles[p.iy() * WIDTH + p.ix()];
+    public Tile tryEatAt(Vector2 gridPosition) {
+        Tile tile = tileAt(gridPosition);
         switch (tile) {
             case PELLET:
                 _WakaSounds[_pelletCounts % 2].play();
                 --_pelletCounts;
 
             case POWERUP:
-                _tiles[p.iy() * WIDTH + p.ix()] = Tile.NONE;
+                _tiles[gridPosition.iy() * WIDTH + gridPosition.ix()] = Tile.NONE;
                 return tile;
 
             default:
@@ -100,12 +85,6 @@ public final class GameMap implements ImmutableMap, Paintable {
         paintConsumables(G);
     }
 
-
-    private static boolean checkBound(Vector2 gridPosition) {
-        int x = gridPosition.ix(), y = gridPosition.iy();
-        return 0 <= y && y < Constants.Grid.MAP_SIZE.iy()
-            && 0 <= x && x < Constants.Grid.MAP_SIZE.ix();
-    }
 
     private static BufferedImage createSquare(int size) {
         BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);

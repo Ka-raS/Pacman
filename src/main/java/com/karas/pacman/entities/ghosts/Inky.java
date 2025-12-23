@@ -25,10 +25,9 @@ public final class Inky extends Ghost {
 
     @Override
     protected Vector2 findHunterTarget(ImmutableEntity PacmanRef) {
-        Direction pacmanDir = PacmanRef.getDirection();
-        Vector2 predict = PacmanRef.getGridPosition().add(pacmanDir.toVector2().mul(2));
-        Vector2 target = predict.mul(2).sub(_Blinky.getGridPosition());
-        return target;
+        Vector2 pacmanDir = PacmanRef.getDirection().toVector2();
+        Vector2 pacmanPredict = PacmanRef.getGridPosition().add(pacmanDir.mul(2));
+        return pacmanPredict.mul(2).sub(_Blinky.getGridPosition());
     }
 
 

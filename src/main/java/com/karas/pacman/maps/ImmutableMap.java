@@ -5,8 +5,9 @@ import com.karas.pacman.commons.Vector2;
 
 public interface ImmutableMap {
 
-    boolean canMoveInDirection(Vector2 position, Direction nextDirection);
+    Tile tileAt(Vector2 gridPosition);
 
-    Vector2 tryTunneling(Vector2 position, Direction direction);
+    /** @return grid position, or {@code null} if no tunnel */
+    Vector2 useTunnel(Vector2 gridPosition, Direction direction);
 
 }

@@ -2,7 +2,9 @@ package com.karas.pacman.entities;
 
 import com.karas.pacman.Constants;
 import com.karas.pacman.commons.Direction;
+import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.maps.ImmutableMap;
+import com.karas.pacman.maps.Tile;
 import com.karas.pacman.resources.ResourceID;
 import com.karas.pacman.resources.ResourcesManager;
 import com.karas.pacman.resources.Sound;
@@ -33,9 +35,9 @@ public final class Pacman extends Entity {
     public void update(double deltaTime) {
         switch (getState()) {
             case PREY, HUNTER:
-                if (canMoveInDirection(_nextDirection))
+                if (validNextDirection())
                     setDirection(_nextDirection);
-                move(deltaTime);
+                updatePosition(deltaTime);
 
             case IDLE:
                 updateSprite(deltaTime);
@@ -72,6 +74,21 @@ public final class Pacman extends Entity {
         }
     }
 
+    @Override
+    protected boolean validMovement(Vector2 fromGrid, Vector2 toGrid) {
+        Tile tile = tileAt(toGrid);
+        return tile != Tile.WALL && tile != Tile.GATE;
+    }
+
+
+    private boolean validNextDirection() {
+        if (getDirection().isVertical() == _nextDirection.isVertical())
+            return true;
+        if (!isCenteredInTile())
+            return false;
+        Tile tile = tileAt(getGridPosition().add(_nextDirection.toVector2()));
+        return tile != Tile.WALL && tile != Tile.GATE;
+    }
 
     private final Sound _DeathSound;
     

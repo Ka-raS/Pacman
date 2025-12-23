@@ -45,20 +45,22 @@ public final class ScreenManager implements Exitable, Paintable {
             _current.repaint(G);
     }
 
-    /** @return {@code false} if shouldExit */
+    /** @return {@code false} if exiting, {@code true} if running */
     public boolean update(double deltaTime) {
         Class<? extends Screen> nextScreen = _current.update(deltaTime);
         if (nextScreen == null)
-            return false; // exit
+            return false;
         if (nextScreen == _current.getClass())
             return true;
 
         _enteringScreen = true;
         _LOGGER.info("Switching to screen " + nextScreen.getSimpleName());
+
         Class<? extends Screen> currentScreen = _current.getClass();
         _current.exit();
         _current = _screens.get(nextScreen);
         _current.enter(currentScreen);
+
         _enteringScreen = false;
         return true;
     }

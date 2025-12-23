@@ -1,7 +1,7 @@
 # Pacman
 
 | ![Main Menu](/screenshots/MainMenu.png) | ![Playing](    /screenshots/Playing.png)    |
-|:-------------------------------------------------------------:|:---------------------:|
+|:---------------------------------------:|:-------------------------------------------:|
 | ![Paused](   /screenshots/Paused.png)   | ![High Scores](/screenshots/HighScores.png) |
 
 ## Gameplay
@@ -25,7 +25,7 @@
 
 ```bash
 curl -LO https://github.com/Ka-raS/Pacman/releases/download/v1.0.0/pacman-1.0.0.jar
-java -jar pacman-1.0.0.jar
+java -Dsun.java2d.opengl=true -jar pacman-1.0.0.jar
 ```
 
 ### Build And Run From Source
@@ -33,11 +33,15 @@ java -jar pacman-1.0.0.jar
 #### Requirements
 
 - [Java 21](https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html)
-- [Maven 3.9](https://maven.apache.org/install.html) - Build Manager
+- [Maven 3.9](https://maven.apache.org/install.html) - Build Automation Tool
 
 ```bash
 git clone https://github.com/Ka-raS/Pacman.git
-cd pacman
+cd Pacman
 mvn package
-java -jar target/pacman-1.0.0.jar
+java -Dsun.java2d.opengl=true -jar target/pacman-1.1.0-SNAPSHOT.jar
 ```
+
+> Note: `-Dsun.java2d.opengl=true` flag enables GPU acceleration.  
+See more here https://docs.oracle.com/en/java/javase/22/troubleshoot/java-2d-pipeline-rendering-and-properties.html
+

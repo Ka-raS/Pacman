@@ -18,7 +18,6 @@ public final class GamePanel extends JPanel {
     public GamePanel(ScreenManager screenManager) {
         _scale   = Constants.DEFAULT_SCALE;
         _offsetX = _offsetY = _frameCount = 0;
-        _toolkit  = Toolkit.getDefaultToolkit();
         _ScreenManager = screenManager;
     }
 
@@ -72,10 +71,8 @@ public final class GamePanel extends JPanel {
         Graphics2D G2D = (Graphics2D) G;
         G2D.translate(_offsetX, _offsetY);
         G2D.scale(_scale, _scale);
-
         _ScreenManager.repaint(G2D);
         ++_frameCount;
-        _toolkit.sync();
     }
 
 
@@ -83,6 +80,5 @@ public final class GamePanel extends JPanel {
 
     private double _scale, _offsetX, _offsetY;
     private volatile int _frameCount;
-    private final Toolkit _toolkit;
 
 }

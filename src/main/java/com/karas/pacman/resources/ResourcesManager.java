@@ -41,14 +41,10 @@ public final class ResourcesManager implements Exitable {
     }
 
     public Sound getSound(ResourceID soundID) {
-        if (soundID.getType() != ResourceID.Type.SOUND)
-            throw new IllegalArgumentException("ResourceID is not of type SOUND: " + soundID);
         return _soundMap.get(soundID);
     }
 
     public BufferedImage getImage(ResourceID imageID) {
-        if (imageID.getType() != ResourceID.Type.IMAGE)
-            throw new IllegalArgumentException("ResourceID is not of type IMAGE: " + imageID);
         return _imageMap.get(imageID);
     }
 
@@ -60,17 +56,17 @@ public final class ResourcesManager implements Exitable {
         return _tilemap;
     }
 
+    public ScoreDatabase getDatabase() {
+        return _database;
+    }
+
     public Font getFont(int size) {
         return switch (size) {
             case Constants.Pixel.FONT_SIZE_SMALL  -> _fonts[0];
             case Constants.Pixel.FONT_SIZE_MEDIUM -> _fonts[1];
             case Constants.Pixel.FONT_SIZE_LARGE  -> _fonts[2];
-            default                          -> _fonts[1].deriveFont((float) size);
+            default -> _fonts[1].deriveFont((float) size);
         };
-    }
-
-    public ScoreDatabase getDatabase() {
-        return _database;
     }
 
     @Override

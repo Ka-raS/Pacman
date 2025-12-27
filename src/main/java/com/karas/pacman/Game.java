@@ -2,8 +2,6 @@ package com.karas.pacman;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JFrame;
@@ -18,10 +16,13 @@ public final class Game implements Exitable {
 
     public Game() {
         _running = false;
+        _updateTimer = _repaintTimer = _statsTimer = _updateCount = 0;
         _resourceManager = new ResourcesManager();
         _screenManager = new ScreenManager(_resourceManager);
+        _thread = new Thread(this::gameLoop, "Game Thread");
         _frame = new JFrame(Constants.TITLE);
         _panel = new GamePanel(_screenManager);
+        SwingUtilities.invokeLater(this::initializeUI);
     }
 
     /** must not be called after {@link Game#exit()} */
@@ -29,45 +30,14 @@ public final class Game implements Exitable {
         if (_running)
             return;
         _running = true;
-
         _LOGGER.info("Entering game");
-        try {
-            SwingUtilities.invokeAndWait(this::initializeUI);
-        } catch (InterruptedException e) {
-            String message = Thread.currentThread() + " interrupted while waiting for EDT to initialize UI";
-            _LOGGER.log(Level.WARNING, message, e);
-            exit();
-            return;
-        } catch (InvocationTargetException e) {
-            _LOGGER.log(Level.SEVERE, "Failed to initialize UI", e.getCause());
-            exit();
-            return;
-        }
-        _thread = new Thread(this::gameLoop, "Game Thread");
+        SwingUtilities.invokeLater(() -> _frame.setVisible(true));
         _thread.start();
     }
 
     @Override
-    public synchronized void exit() {
-        if (!_running)
-            return;
+    public void exit() {
         _running = false;
-
-        _LOGGER.info("Exiting game");
-        SwingUtilities.invokeLater(() -> {
-            _frame.setVisible(false);
-            _frame.dispose();
-        });
-        _screenManager.exit();
-        _resourceManager.exit();
-
-        if (Thread.currentThread() != _thread) {
-            try {
-                _thread.join();
-            } catch (InterruptedException e) {
-                _LOGGER.log(Level.WARNING, "Join Game Thread Failed", e);
-            }
-        }
     }
 
 
@@ -82,7 +52,7 @@ public final class Game implements Exitable {
             }
             @Override
             public void windowClosing(WindowEvent e) {
-                exit();
+                _running = false;
             }
         });
 
@@ -90,56 +60,78 @@ public final class Game implements Exitable {
         _frame.setResizable(true);
         _frame.setIconImage(_resourceManager.getImage(ResourceID.WINDOW_ICON));
         _frame.setLocationRelativeTo(null);
-        _frame.setVisible(true);
     }
 
     private void gameLoop() {
-        long lastTime = System.nanoTime();
-        double updateTimer = 0.0, repaintTimer = 0.0, statsTimer = 0.0;
-        int updateCount = 0;
+        long previousTime = System.nanoTime();
 
         while (_running) {
             long currentTime = System.nanoTime();
-            double deltaTime = (currentTime - lastTime) / 1e9;
+            double deltaTime = (currentTime - previousTime) / 1e9;
             if (deltaTime < 0.0)
                 continue;
-            
-            lastTime = currentTime;
-            updateTimer += deltaTime;
-            statsTimer += deltaTime;
-            repaintTimer += deltaTime;
-
-            while (_running && updateTimer >= Constants.Time.UPDATE_INTERVAL) {
-                ++updateCount;
-                updateTimer -= Constants.Time.UPDATE_INTERVAL;
-                if (!_screenManager.update(Constants.Time.UPDATE_INTERVAL))
-                    exit();
-            }
-            if (!_running)
-                break;
-
-            if (repaintTimer >= Constants.Time.REPAINT_INTERVAL) {
-                repaintTimer = 0.0;
-                _panel.repaint(); // EDT calls _panel.paintComponent()
-            }
-
-            if (statsTimer >= 1.0) {
-                String title = String.format("%s: %d UPS, %d FPS", Constants.TITLE, updateCount, _panel.getFrameCount());
-                SwingUtilities.invokeLater(() -> _frame.setTitle(title));
-                statsTimer = updateCount = 0;
-                _panel.resetFrameCount();
-            }
+            previousTime = currentTime;
+        
+            update(deltaTime);
+            repaint(deltaTime);
+            displayStats(deltaTime);
         }
+
+        cleanup();
+    }
+
+    private void update(double deltaTime) {
+        final double STEP = 1.0 / Constants.UPS_TARGET;
+
+        _updateTimer += deltaTime;
+        if (_updateTimer > STEP * 4)
+            _updateTimer = STEP * 4;
+
+        while (_updateTimer >= STEP) {
+            if (!_screenManager.update(STEP)) {
+                _running = false;
+                return;
+            }
+            _updateTimer -= STEP;
+            ++_updateCount;
+        }
+    }
+
+    private void repaint(double deltaTime) {
+        _repaintTimer += deltaTime;
+        if (_repaintTimer >= 1.0 / Constants.FPS_TARGET) {
+            _panel.repaint(); // EDT calls _panel.paintComponent()
+            _repaintTimer = 0.0;
+        }
+    }
+
+    private void displayStats(double deltaTime) {
+        _statsTimer += deltaTime;
+        if (_statsTimer >= 1.0) {
+            String title = Constants.TITLE + ": " + _updateCount + " UPS, " + _panel.getFrameCount() + " FPS";
+            SwingUtilities.invokeLater(() -> _frame.setTitle(title));
+            _statsTimer = _updateCount = 0;
+            _panel.resetFrameCount();
+        }
+    }
+
+    private void cleanup() {
+        _LOGGER.info("Exiting game");
+        SwingUtilities.invokeLater(() -> _frame.dispose());
+        _screenManager.exit();
+        _resourceManager.exit();
     }
 
     private static final Logger _LOGGER = Logger.getLogger(Game.class.getName());
 
+    private final Thread _thread;
     private final JFrame _frame;
     private final GamePanel _panel;
     private final ScreenManager _screenManager;
     private final ResourcesManager _resourceManager;
     
     private volatile boolean _running;
-    private Thread _thread;
+    private double _updateTimer, _repaintTimer, _statsTimer;
+    private int _updateCount;
 
 }

@@ -14,11 +14,11 @@ public final class Paused implements Screen {
         _PlayingScreen = PlayingScreen;
         _FontLarge = ResourcesMgr.getFont(Constants.Pixel.FONT_SIZE_LARGE);
         
-        _navigator = new MenuNavigator(
+        _navigator = new Navigator(
             new Vector2(Constants.Pixel.WINDOW_SIZE.ix() * 0.375, Constants.Pixel.WINDOW_SIZE.iy() / 2),
             ResourcesMgr.getFont(Constants.Pixel.FONT_SIZE_SMALL),
-            new MenuNavigator.Option("Resume",    Playing.class),
-            new MenuNavigator.Option("Main Menu", MainMenu.class)
+            new Navigator.Option("Resume",    Playing.class),
+            new Navigator.Option("Main Menu", MainMenu.class)
         );
     }
 
@@ -73,7 +73,7 @@ public final class Paused implements Screen {
     private final Font _FontLarge;
     private final Screen _PlayingScreen;
 
-    private final MenuNavigator _navigator;
+    private final Navigator _navigator;
     private volatile Class<? extends Screen> _nextScreen;
 
 }

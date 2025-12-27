@@ -38,7 +38,7 @@ public abstract class Ghost extends Entity {
     public final void reset() {
         setGridPosition(_startGridPosition);
         setDirection(_startDirection);
-        _lastGridPosition = _startGridPosition;
+        _previousGridPosition = null;
         _DeathSound.reset();
         enterState(State.HUNTER);
     }
@@ -47,7 +47,8 @@ public abstract class Ghost extends Entity {
                     ImmutableEntity PacmanRef, ImmutableMap MapRef, ResourcesManager ResourcesMgr) {
         super(gridPosition, direction, speed, MapRef);
         _baseSpeed = speed;
-        _startGridPosition = _lastGridPosition = gridPosition;
+        _startGridPosition = gridPosition;
+        _previousGridPosition = null;
         _startDirection = direction;
         _DeathSound = ResourcesMgr.getSound(ResourceID.GHOST_DEATH_SOUND);
         _Pacman = PacmanRef;
@@ -87,29 +88,23 @@ public abstract class Ghost extends Entity {
         }
     }
 
-    @Override
-    protected final boolean validMovement(Vector2 fromGrid, Vector2 toGrid) {
-        return switch (tileAt(toGrid)) {
-            case WALL -> false;
-            case GATE -> getState() == State.DEAD || fromGrid.y() > toGrid.y();
-            default   -> true;
-        };
-    }
-
 
     private final void updateDirection() {
         Vector2 currentGrid = getGridPosition();
-        if ((!isCenteredInTile() || currentGrid == _lastGridPosition) && currentGrid != _startGridPosition)
+        if (currentGrid == _previousGridPosition)
             return;
-        _lastGridPosition = currentGrid;
+        _previousGridPosition = currentGrid;
 
+        Direction oppositeDir = getDirection().getOpposite();
         EnumSet<Direction> validDirections = EnumSet.noneOf(Direction.class);
         for (Direction dir : Direction.values())
-            if (validMovement(currentGrid, currentGrid.add(dir.toVector2())))
+            if (dir != oppositeDir && isValidDirection(dir))
                 validDirections.add(dir);
 
-        if (validDirections.size() > 1)
-            validDirections.remove(getDirection().opposite());
+        if (validDirections.isEmpty()) {
+            setDirection(oppositeDir);
+            return;
+        }
         if (validDirections.size() == 1) {
             setDirection(validDirections.iterator().next());
             return;
@@ -131,6 +126,6 @@ public abstract class Ghost extends Entity {
     private final Vector2 _startGridPosition;
     private final Direction _startDirection;
     private final Sprite _baseSprite, _preySprite, _flashSprite, _deathSprite;
-    private Vector2 _lastGridPosition;
+    private Vector2 _previousGridPosition;
 
 }

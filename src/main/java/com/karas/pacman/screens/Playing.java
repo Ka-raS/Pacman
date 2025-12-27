@@ -61,8 +61,8 @@ public final class Playing implements Screen {
 
         _LOGGER.info("Resumed game");
         if (_state != State.START) {
-            _pacman.enterPreIdleState();
-            _ghosts.forEach(Ghost::enterPreIdleState);
+            _pacman.enterPreviousState();
+            _ghosts.forEach(Ghost::enterPreviousState);
         }
 
         switch (_state) {

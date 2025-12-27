@@ -21,12 +21,12 @@ public final class Constants {
 
     public static final class Color {
 
-        public static final java.awt.Color BACKGROUND = java.awt.Color.BLACK;
         public static final java.awt.Color PELLET     = java.awt.Color.WHITE;
         public static final java.awt.Color SCORE      = java.awt.Color.CYAN;
         public static final java.awt.Color TEXT       = java.awt.Color.WHITE;
         public static final java.awt.Color HIGHLIGHT  = java.awt.Color.YELLOW;
         
+        public static final java.awt.Color BACKGROUND = java.awt.Color.BLACK;
         public static final java.awt.Color MAIN_MENU  = new java.awt.Color(0, 16, 48);
         public static final java.awt.Color PAUSE_MENU = new java.awt.Color(0, 0, 0, 192);
 
@@ -36,9 +36,7 @@ public final class Constants {
 
     public static final class Time {
 
-        public static final double UPDATE_INTERVAL      = 1.0 / UPS_TARGET;
-        public static final double REPAINT_INTERVAL     = 1.0 / FPS_TARGET;
-        public static final double SPRITE_INTERVAL      = 0.133;  // per sprite change
+        public static final double SPRITE_INTERVAL      = 1.0 / 7.5;  // per sprite change
         public static final double SCORE_DURATION       = 1.0;
         public static final double POWERUP_DURATION     = 8.0;
         public static final double GHOST_FLASH_DURATION = POWERUP_DURATION * 0.25; // when powerup is expiring
@@ -56,7 +54,7 @@ public final class Constants {
         public static final Vector2 PINKY_POSITION  = new Vector2(11.5, 14); // is squished between a wall and a walkable tile
         public static final Vector2 INKY_POSITION   = new Vector2(13.5, 14);
         public static final Vector2 CLYDE_POSITION  = new Vector2(15.5, 14); // same goes for this one
-        public static final Vector2 GHOST_HOME      = new Vector2(14  , 14);
+        public static final Vector2 GHOST_HOME      = new Vector2(14,   14);
 
         public static final int CLYDE_TARGET_DISTANCE = 8;
         public static final Vector2 CLYDE_SCATTER_POSITION  = new Vector2(0, MAP_SIZE.iy() - 1);

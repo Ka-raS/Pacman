@@ -4,11 +4,11 @@ public enum Direction {
 
     UP, RIGHT, DOWN, LEFT;
 
-    public boolean isVertical() {
-        return (ordinal() & 1) == 0;
+    public boolean isSameAxis(Direction other) {
+        return (ordinal() & 1) == (other.ordinal() & 1);
     }
 
-    public Direction opposite() {
+    public Direction getOpposite() {
         return values()[(ordinal() + 2) & 3];
     }
 

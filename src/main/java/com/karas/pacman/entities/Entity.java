@@ -7,7 +7,6 @@ import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Paintable;
 import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.maps.ImmutableMap;
-import com.karas.pacman.maps.Tile;
 import com.karas.pacman.maps.GameMap;
 
 public abstract class Entity implements ImmutableEntity, Paintable {
@@ -41,13 +40,12 @@ public abstract class Entity implements ImmutableEntity, Paintable {
 
     public final void enterState(State nextState) {
         handleStateTransition(nextState);
-        if (_state != State.IDLE)
-            _preIdleState = _state;
+        _previousState = _state;
         _state = nextState;
     }
 
-    public final void enterPreIdleState() {
-        enterState(_preIdleState);
+    public final void enterPreviousState() {
+        enterState(_previousState);
     }
 
     public final boolean collidesWith(Entity other) {
@@ -71,17 +69,22 @@ public abstract class Entity implements ImmutableEntity, Paintable {
 
     protected abstract void handleStateTransition(State nextState);
 
-    protected abstract boolean validMovement(Vector2 fromGrid, Vector2 toGrid);
-
     protected final boolean isCenteredInTile() {
         return _centeredInTile;
     }
 
-    protected final Tile tileAt(Vector2 gridPosition) {
-        return _Map.tileAt(gridPosition);
+    protected final boolean isValidDirection(Direction direction) {
+        Vector2 toGrid = _gridPosition.add(direction.toVector2());
+        return switch (_Map.tileAt(toGrid)) {
+            case WALL -> false;
+            case GATE -> _state == State.DEAD || _gridPosition.y() > toGrid.y();
+            default   -> true;
+        };
     }
 
     protected final void setDirection(Direction direction) {
+        if (direction == _direction)
+            return;
         _direction = direction;
         _Sprite.setDirection(_direction);
     }
@@ -93,14 +96,18 @@ public abstract class Entity implements ImmutableEntity, Paintable {
     }
 
     protected final void updatePosition(double deltaTime) {
-        if (_centeredInTile && !validMovement(_gridPosition, _gridPosition.add(_direction.toVector2())))
+        if (_centeredInTile && !isValidDirection(_direction))
             return;
         _position = _position.add(_direction.toVector2().mul(deltaTime * _speed));
-        _centeredInTile = GameMap.isCenteredInTile(_position);
+
+        if (!GameMap.isCenteredInTile(_position)) {
+            _centeredInTile = false;
+            return;
+        }
 
         if (!_centeredInTile) {
+            _centeredInTile = true;
             _gridPosition = GameMap.toGridVector2(_position);
-            return;
         }
 
         Vector2 tunneled = _Map.useTunnel(_gridPosition, _direction);
@@ -131,6 +138,6 @@ public abstract class Entity implements ImmutableEntity, Paintable {
     private boolean _centeredInTile;
     private Vector2 _position, _gridPosition;
     private Direction _direction;
-    private State _state, _preIdleState;
+    private State _state, _previousState;
 
 }

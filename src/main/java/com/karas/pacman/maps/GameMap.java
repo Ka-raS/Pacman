@@ -22,8 +22,9 @@ public final class GameMap implements ImmutableMap, Paintable {
     }
 
     public static boolean isCenteredInTile(Vector2 position) {
+        final int HALF = Constants.Pixel.TILE_SIZE / 2;
         Vector2 p = position.mod(Constants.Pixel.TILE_SIZE).abs();
-        return p.ix() == HALF_TILE && p.iy() == HALF_TILE;
+        return p.ix() == HALF && p.iy() == HALF;
     }
 
     public GameMap(ResourcesManager ResourcesMgr) {
@@ -59,7 +60,7 @@ public final class GameMap implements ImmutableMap, Paintable {
     public Vector2 useTunnel(Vector2 gridPosition, Direction direction) {
         if (tileAt(gridPosition) != Tile.TUNNEL)
             return null;
-        Vector2 dir = direction.opposite().toVector2();
+        Vector2 dir = direction.getOpposite().toVector2();
         return dir.mul(WIDTH - 1).add(gridPosition);
     }
 
@@ -110,8 +111,7 @@ public final class GameMap implements ImmutableMap, Paintable {
         }
     }
 
-    private static final int HALF_TILE = Constants.Pixel.TILE_SIZE / 2;
-    private static final int WIDTH     = Constants.Grid.MAP_SIZE.ix();
+    private static final int WIDTH = Constants.Grid.MAP_SIZE.ix();
 
     private final Sound[] _WakaSounds;
     private final BufferedImage _MapImage, _PelletImage, _PowerupImage;

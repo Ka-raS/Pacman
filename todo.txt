@@ -1,8 +1,12 @@
+- Review Ghost::updateDirection()
+- Object.requiresNonNull()
 - Simplify ResourcesManager.java code
+- Optimize Screen.repaint()
 
 - Paused Screen background music
 - Ghost chases Pacman in MainMenu
 - Pacman eats Pellets in HighScore Screen
+- Maybe Ghost scatter mode
 
 - Fix audio in linux
 - Review Vector2

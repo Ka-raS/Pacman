@@ -2,9 +2,7 @@ package com.karas.pacman.entities;
 
 import com.karas.pacman.Constants;
 import com.karas.pacman.commons.Direction;
-import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.maps.ImmutableMap;
-import com.karas.pacman.maps.Tile;
 import com.karas.pacman.resources.ResourceID;
 import com.karas.pacman.resources.ResourcesManager;
 import com.karas.pacman.resources.Sound;
@@ -27,15 +25,15 @@ public final class Pacman extends Entity {
         enterState(State.PREY);
     }
 
-    public void setNextDirection(Direction d) {
-        _nextDirection = d;
+    public void setNextDirection(Direction direction) {
+        _nextDirection = direction;
     }
 
     @Override
     public void update(double deltaTime) {
         switch (getState()) {
             case PREY, HUNTER:
-                if (validNextDirection())
+                if (isValidNextDirection())
                     setDirection(_nextDirection);
                 updatePosition(deltaTime);
 
@@ -74,19 +72,13 @@ public final class Pacman extends Entity {
         }
     }
 
-    @Override
-    protected boolean validMovement(Vector2 fromGrid, Vector2 toGrid) {
-        Tile tile = tileAt(toGrid);
-        return tile != Tile.WALL && tile != Tile.GATE;
-    }
 
-
-    private boolean validNextDirection() {
-        if (getDirection().isVertical() == _nextDirection.isVertical())
+    private boolean isValidNextDirection() {
+        if (getDirection().isSameAxis(_nextDirection))
             return true;
         if (!isCenteredInTile())
             return false;
-        return validMovement(null, getGridPosition().add(_nextDirection.toVector2()));
+        return isValidDirection(_nextDirection);
     }
 
     private final Sound _DeathSound;

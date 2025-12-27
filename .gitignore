@@ -18,6 +18,7 @@ buildNumber.properties
 # VSCode
 .vscode/
 
+logging.properties
 Pacman.jar
 
 Deathconsciousness

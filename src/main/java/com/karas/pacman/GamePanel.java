@@ -3,7 +3,6 @@ package com.karas.pacman;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
@@ -15,10 +14,10 @@ import com.karas.pacman.screens.ScreenManager;
 
 public final class GamePanel extends JPanel {
     
-    public GamePanel(ScreenManager screenManager) {
-        _scale   = Constants.DEFAULT_SCALE;
+    public GamePanel(ScreenManager ScreenMgr) {
         _offsetX = _offsetY = _frameCount = 0;
-        _ScreenManager = screenManager;
+        _scale = Constants.DEFAULT_SCALE;
+        _ScreenManager = ScreenMgr;
     }
 
     public int getFrameCount() {
@@ -30,9 +29,12 @@ public final class GamePanel extends JPanel {
     }
 
     public void initializeUI() {
-        setDoubleBuffered(true);
         setFocusable(true);
         setBackground(Constants.Color.BACKGROUND);
+        setPreferredSize(new Dimension(
+            (int) (Constants.Pixel.WINDOW_SIZE.x() * _scale),
+            (int) (Constants.Pixel.WINDOW_SIZE.y() * _scale)
+        ));
 
         addKeyListener(new KeyAdapter() {
             @Override
@@ -56,14 +58,6 @@ public final class GamePanel extends JPanel {
         });
     }
 
-    @Override
-    public Dimension getPreferredSize() {
-        return new Dimension(
-            (int) (Constants.Pixel.WINDOW_SIZE.x() * _scale),
-            (int) (Constants.Pixel.WINDOW_SIZE.y() * _scale)
-        );
-    }
-
 
     @Override
     protected void paintComponent(Graphics G) {
@@ -71,6 +65,7 @@ public final class GamePanel extends JPanel {
         Graphics2D G2D = (Graphics2D) G;
         G2D.translate(_offsetX, _offsetY);
         G2D.scale(_scale, _scale);
+
         _ScreenManager.repaint(G2D);
         ++_frameCount;
     }

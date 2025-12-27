@@ -13,11 +13,11 @@ public final class MainMenu implements Screen {
     
     public MainMenu(ResourcesManager ResourcesMgr) {
         _TitleImage = ResourcesMgr.getImage(ResourceID.TITLE_IMAGE);
-        _navigator = new MenuNavigator(
+        _navigator = new Navigator(
             new Vector2(Constants.Pixel.WINDOW_SIZE.ix() * 0.375, Constants.Pixel.WINDOW_SIZE.iy() * 0.75),
             ResourcesMgr.getFont(Constants.Pixel.FONT_SIZE_SMALL),
-            new MenuNavigator.Option("Start Game", Playing.class),
-            new MenuNavigator.Option("Exit Game",  null)
+            new Navigator.Option("Start Game", Playing.class),
+            new Navigator.Option("Exit Game",  null)
         );
     }
 
@@ -67,7 +67,7 @@ public final class MainMenu implements Screen {
 
     private final BufferedImage _TitleImage;
 
-    private final MenuNavigator _navigator;
+    private final Navigator _navigator;
     private volatile Class<? extends Screen> _nextScreen;
 
 }

@@ -71,9 +71,7 @@ public final class ResourcesManager implements Exitable {
 
     @Override
     public void exit() {
-        for (Sound sound : _soundMap.values())
-            sound.exit();
-
+        _soundMap.values().forEach(Sound::exit);
         _soundMap.clear();
         _imageMap.clear();
         _spriteMap.clear();

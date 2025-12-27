@@ -50,8 +50,6 @@ public record Vector2(double x, double y) {
         return result;
     }
 
-    // Not the best placement bth, maybe DirectionUtils.java?
-
 }
 
 // Project Valhalla's value class please save my ass

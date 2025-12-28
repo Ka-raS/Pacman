@@ -58,11 +58,12 @@ public abstract class Entity implements ImmutableEntity, Paintable {
     }
 
 
-    protected Entity(Vector2 gridPosition, Direction direction, int speed, ImmutableMap MapRef) {
+    protected Entity(Vector2 gridPosition, Direction direction, int speed, Sprite SpriteRef, ImmutableMap MapRef) {
         _gridPosition = gridPosition;
         _direction = direction;
         _speed = speed;
         _Map = MapRef;
+        _Sprite = SpriteRef;
         _position = GameMap.toPixelVector2(gridPosition);
         _centeredInTile = GameMap.isCenteredInTile(_position);
     }

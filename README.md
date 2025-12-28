@@ -24,22 +24,22 @@
 ### From Latest Release: 
 
 ```bash
-curl -LO https://github.com/Ka-raS/Pacman/releases/download/v1.0.0/pacman-1.0.0.jar
-java -Dsun.java2d.opengl=true -jar pacman-1.0.0.jar
+curl -LO https://github.com/Ka-raS/Pacman/releases/download/v1.1.0/pacman-1.1.0.jar
+java -Dsun.java2d.opengl=true -jar pacman-1.1.0.jar
 ```
 
 ### Build And Run From Source
 
 #### Requirements
 
-- [Java 21](https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html)
+- [JDK 25](https://www.oracle.com/java/technologies/javase/jdk25-archive-downloads.html)
 - [Maven 3.9](https://maven.apache.org/install.html) - Build Automation Tool
 
 ```bash
 git clone https://github.com/Ka-raS/Pacman.git
 cd Pacman
 mvn package
-java -Dsun.java2d.opengl=true -jar target/pacman-1.1.0-SNAPSHOT.jar
+java -Dsun.java2d.opengl=true -jar target/pacman-1.1.0.jar
 ```
 
 > Note: `-Dsun.java2d.opengl=true` flag enables GPU acceleration, see more [here](https://docs.oracle.com/en/java/javase/22/troubleshoot/java-2d-pipeline-rendering-and-properties.html)

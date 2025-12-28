@@ -49,45 +49,44 @@ public final class HighScores implements Screen {
 
 
     private void paintHeaderImage(Graphics2D G) {
-        final double Ratio = (double) _HeaderImage.getWidth() / _HeaderImage.getHeight();
-        int sizeX = (int) (Constants.Pixel.WINDOW_SIZE.ix() * 0.6);
-        int sizeY = (int) (sizeX / Ratio);
-        int x = (Constants.Pixel.WINDOW_SIZE.ix() - sizeX) / 2;
-        int y = Constants.Pixel.WINDOW_SIZE.iy() >> 4;
-        G.drawImage(_HeaderImage, x, y, sizeX, sizeY, null);
+        if (_HeaderImage == null)
+            return;
+        final int W = Constants.Pixel.WINDOW_SIZE.ix();
+        final int H = Constants.Pixel.WINDOW_SIZE.iy();
+
+        int width = (int) (W * 0.6);
+        int height = width * _HeaderImage.getHeight() / _HeaderImage.getWidth();
+        G.drawImage(_HeaderImage, (W - width) / 2, H / 16, width, height, null);
     }
 
     private void paintText(Graphics2D G) {
-        String text = "HIGH SCORES";
-        FontMetrics fm = G.getFontMetrics(_FontMedium);
-        int x = (Constants.Pixel.WINDOW_SIZE.ix() - fm.stringWidth(text)) / 2;
-        int y = Constants.Pixel.WINDOW_SIZE.iy() / 3;
+        final int W = Constants.Pixel.WINDOW_SIZE.ix();
+        final int H = Constants.Pixel.WINDOW_SIZE.iy();
 
+        final String TOP = "HIGH SCORES";
         G.setFont(_FontMedium);
         G.setColor(Constants.Color.TEXT);
-        G.drawString(text, x, y);
+        G.drawString(TOP, (W - G.getFontMetrics().stringWidth(TOP)) / 2, H / 3);
 
-        text = "NEW GAME";
-        fm = G.getFontMetrics(_FontSmall);
-        x = (Constants.Pixel.WINDOW_SIZE.ix() - fm.stringWidth(text)) / 2;
-        y = (int) (Constants.Pixel.WINDOW_SIZE.iy() * 0.85);
-        
+        final String BOTTOM = "NEW GAME";
         G.setFont(_FontSmall);
         G.setColor(Constants.Color.HIGHLIGHT);
-        G.drawString(text, x, y);
+        G.drawString(BOTTOM, (W - G.getFontMetrics().stringWidth(BOTTOM)) / 2, (int)(H * 0.85));
     }
 
     private void paintHighScores(Graphics2D G) {
+        final int W = Constants.Pixel.WINDOW_SIZE.ix();
+        final int H = Constants.Pixel.WINDOW_SIZE.iy();
+
         G.setFont(_FontSmall);
         G.setColor(Constants.Color.TEXT);
         FontMetrics fm = G.getFontMetrics(_FontSmall);
-        int y = (int) (Constants.Pixel.WINDOW_SIZE.iy() * 0.45);
+        int y = (int) (H * 0.45);
         int i = 0;
 
         for (ScoreDatabase.Entry entry : _highscores) {
             String text = String.format("%d. %05d - %s", ++i, entry.score(), entry.date());
-            int x = (Constants.Pixel.WINDOW_SIZE.ix() - fm.stringWidth(text)) / 2;
-            G.drawString(text, x, y);
+            G.drawString(text, (W - fm.stringWidth(text)) / 2, y);
             y += fm.getHeight() * 2;
         }
     }

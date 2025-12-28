@@ -11,17 +11,17 @@ import com.karas.pacman.resources.SpriteID;
 public final class Pacman extends Entity {
 
     public Pacman(ImmutableMap MapRef, ResourceManager ResourceMgr) {
+        Sprite baseSprite = new Sprite(ResourceMgr.getSprite(SpriteID.PACMAN), Direction.RIGHT);
         super(
             Constants.Grid.PACMAN_POSITION,
             Direction.RIGHT,
             Constants.Pixel.PACMAN_SPEED,
-            MapRef
+            baseSprite, MapRef
         );
         _nextDirection = Direction.RIGHT;
-        _baseSprite = new Sprite(ResourceMgr.getSprite(SpriteID.PACMAN), Direction.RIGHT);
+        _baseSprite = baseSprite;
         _deathSprite = new Sprite(ResourceMgr.getSprite(SpriteID.DEAD_PACMAN));
         _DeathSound = ResourceMgr.getSound(ResourceID.PACMAN_DEATH_SOUND);
-        setSprite(_baseSprite);
         enterState(State.PREY);
     }
 

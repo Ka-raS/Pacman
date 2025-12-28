@@ -36,7 +36,9 @@ public final class MainMenu implements Screen {
 
     @Override
     public void repaint(Graphics2D G) {
-        paintBackgroundColor(G);
+        G.setColor(Constants.Color.MAIN_MENU);
+        G.fillRect(0, 0, Constants.Pixel.WINDOW_SIZE.ix(), Constants.Pixel.WINDOW_SIZE.iy());
+
         paintTitleImage(G);
         _navigator.repaint(G);
     }
@@ -51,18 +53,15 @@ public final class MainMenu implements Screen {
     }
 
 
-    private void paintBackgroundColor(Graphics2D G) {
-        G.setColor(Constants.Color.MAIN_MENU);
-        G.fillRect(0, 0, Constants.Pixel.WINDOW_SIZE.ix(), Constants.Pixel.WINDOW_SIZE.iy());
-    }
-
     private void paintTitleImage(Graphics2D G) {
-        final double Ratio = (double) _TitleImage.getWidth() / _TitleImage.getHeight();
-        int sizeX = (int) (Constants.Pixel.WINDOW_SIZE.ix() * 0.75);
-        int sizeY = (int) (sizeX / Ratio);
-        int x = (Constants.Pixel.WINDOW_SIZE.ix() - sizeX) / 2;
-        int y = Constants.Pixel.WINDOW_SIZE.iy() / 8;
-        G.drawImage(_TitleImage, x, y, sizeX, sizeY, null);
+        if (_TitleImage == null)
+            return;
+        final int W = Constants.Pixel.WINDOW_SIZE.ix();
+        final int H = Constants.Pixel.WINDOW_SIZE.iy();
+
+        int width = (int) (W * 0.75);
+        int height = width * _TitleImage.getHeight() / _TitleImage.getWidth();
+        G.drawImage(_TitleImage, (W - width) / 2, H / 8, width, height, null);
     }
 
     private final BufferedImage _TitleImage;

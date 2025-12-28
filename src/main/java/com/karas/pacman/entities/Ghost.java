@@ -45,7 +45,8 @@ public abstract class Ghost extends Entity {
 
     protected Ghost(Vector2 gridPosition, Direction direction, int speed, SpriteID baseSpriteID,
                     ImmutableEntity PacmanRef, ImmutableMap MapRef, ResourceManager ResourceMgr) {
-        super(gridPosition, direction, speed, MapRef);
+        Sprite baseSprite = new Sprite(ResourceMgr.getSprite(baseSpriteID), direction);
+        super(gridPosition, direction, speed, baseSprite, MapRef);
         _baseSpeed = speed;
         _startGridPosition = gridPosition;
         _previousGridPosition = null;
@@ -53,7 +54,7 @@ public abstract class Ghost extends Entity {
         _DeathSound = ResourceMgr.getSound(ResourceID.GHOST_DEATH_SOUND);
         _Pacman = PacmanRef;
         
-        _baseSprite  = new Sprite(ResourceMgr.getSprite(baseSpriteID), direction);
+        _baseSprite  = baseSprite;
         _preySprite  = new Sprite(ResourceMgr.getSprite(SpriteID.PREY_GHOST));
         _flashSprite = new Sprite(ResourceMgr.getSprite(SpriteID.FLASH_GHOST));
         _deathSprite = new Sprite(ResourceMgr.getSprite(SpriteID.DEAD_GHOST), direction);

@@ -1,6 +1,3 @@
-- JDK 25 to fix Entity._Sprite goofy ahh construct
-- Optimize Screen.repaint()
-
 - Paused Screen background music
 - Ghost chases Pacman in MainMenu
 - Pacman eats Pellets in HighScore Screen
@@ -9,3 +6,4 @@
 - Fix audio in linux
 - Review record Vector2
 - Review Ghost::updateDirection()
+- Review Manhattan distance vs Euclidean

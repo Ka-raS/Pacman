@@ -100,7 +100,9 @@ public final class ResourceManager implements Exitable {
         for (SpriteID id : SpriteID.values()) {
             BufferedImage[] sprite = new BufferedImage[id.length()];
             spriteMap.put(id, sprite);
-            for (int i = 0; i < id.length(); ++i)
+            if (sheetImage == null)
+                continue;
+            for (int i = 0; i < sprite.length; ++i)
                 sprite[i] = sheetImage.getSubimage((id.column() + i) * SIZE, id.row() * SIZE, SIZE, SIZE);
         }
         return spriteMap;

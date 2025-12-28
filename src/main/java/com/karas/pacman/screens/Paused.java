@@ -39,8 +39,14 @@ public final class Paused implements Screen {
     @Override
     public void repaint(Graphics2D G) {
         _PlayingScreen.repaint(G);
-        paintOverlay(G);
-        paintPausedText(G);
+
+        G.setColor(Constants.Color.PAUSE_MENU);
+        G.fillRect(0, 0, Constants.Pixel.WINDOW_SIZE.ix(), Constants.Pixel.WINDOW_SIZE.iy());
+
+        G.setColor(Constants.Color.TEXT);
+        G.setFont(_FontLarge);
+        G.drawString("PAUSED", Constants.Pixel.WINDOW_SIZE.ix() / 3, Constants.Pixel.WINDOW_SIZE.iy() / 3);
+
         _navigator.repaint(G);
     }
 
@@ -58,17 +64,6 @@ public final class Paused implements Screen {
             _nextScreen = Playing.class;
     }
 
-
-    private void paintOverlay(Graphics2D G) {
-        G.setColor(Constants.Color.PAUSE_MENU);
-        G.fillRect(0, 0, Constants.Pixel.WINDOW_SIZE.ix(), Constants.Pixel.WINDOW_SIZE.iy());
-    }
-
-    private void paintPausedText(Graphics2D G) {
-        G.setColor(Constants.Color.TEXT);
-        G.setFont(_FontLarge);
-        G.drawString("PAUSED", Constants.Pixel.WINDOW_SIZE.ix() / 3, Constants.Pixel.WINDOW_SIZE.iy() / 3);
-    }
 
     private final Font _FontLarge;
     private final Screen _PlayingScreen;

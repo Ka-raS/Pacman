@@ -6,18 +6,18 @@ import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.entities.Ghost;
 import com.karas.pacman.entities.ImmutableEntity;
 import com.karas.pacman.maps.ImmutableMap;
-import com.karas.pacman.resources.ResourcesManager;
+import com.karas.pacman.resources.ResourceManager;
 import com.karas.pacman.resources.SpriteID;
 
 public final class Blinky extends Ghost {
     
-    public Blinky(ImmutableEntity PacmanRef, ImmutableMap MapRef, ResourcesManager ResourcesMgr) {
+    public Blinky(ImmutableEntity PacmanRef, ImmutableMap MapRef, ResourceManager ResourceMgr) {
         super(
             Constants.Grid.BLINKY_POSITION,
             Direction.LEFT,
             Constants.Pixel.BLINKY_SPEED,
             SpriteID.BLINKY,
-            PacmanRef, MapRef, ResourcesMgr
+            PacmanRef, MapRef, ResourceMgr
         );
     }
 

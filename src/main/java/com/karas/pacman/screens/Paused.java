@@ -6,17 +6,17 @@ import java.awt.event.KeyEvent;
 
 import com.karas.pacman.Constants;
 import com.karas.pacman.commons.Vector2;
-import com.karas.pacman.resources.ResourcesManager;
+import com.karas.pacman.resources.ResourceManager;
 
 public final class Paused implements Screen {
     
-    public Paused(Screen PlayingScreen, ResourcesManager ResourcesMgr) {
+    public Paused(Screen PlayingScreen, ResourceManager ResourceMgr) {
         _PlayingScreen = PlayingScreen;
-        _FontLarge = ResourcesMgr.getFont(Constants.Pixel.FONT_SIZE_LARGE);
+        _FontLarge = ResourceMgr.getFont(Constants.Pixel.FONT_SIZE_LARGE);
         
         _navigator = new Navigator(
             new Vector2(Constants.Pixel.WINDOW_SIZE.ix() * 0.375, Constants.Pixel.WINDOW_SIZE.iy() / 2),
-            ResourcesMgr.getFont(Constants.Pixel.FONT_SIZE_SMALL),
+            ResourceMgr.getFont(Constants.Pixel.FONT_SIZE_SMALL),
             new Navigator.Option("Resume",    Playing.class),
             new Navigator.Option("Main Menu", MainMenu.class)
         );

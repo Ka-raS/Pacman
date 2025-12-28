@@ -18,7 +18,6 @@ buildNumber.properties
 # VSCode
 .vscode/
 
-logging.properties
-Pacman.jar
+highscores.csv
 
 Deathconsciousness

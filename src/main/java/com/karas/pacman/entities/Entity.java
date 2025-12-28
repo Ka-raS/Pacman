@@ -74,7 +74,7 @@ public abstract class Entity implements ImmutableEntity, Paintable {
     }
 
     protected final boolean isValidDirection(Direction direction) {
-        Vector2 toGrid = _gridPosition.add(direction.toVector2());
+        Vector2 toGrid = _gridPosition.add(direction.vector2());
         return switch (_Map.tileAt(toGrid)) {
             case WALL -> false;
             case GATE -> _state == State.DEAD || _gridPosition.y() > toGrid.y();
@@ -98,18 +98,15 @@ public abstract class Entity implements ImmutableEntity, Paintable {
     protected final void updatePosition(double deltaTime) {
         if (_centeredInTile && !isValidDirection(_direction))
             return;
-        _position = _position.add(_direction.toVector2().mul(deltaTime * _speed));
+        _position = _position.add(_direction.vector2().mul(deltaTime * _speed));
 
-        if (!GameMap.isCenteredInTile(_position)) {
-            _centeredInTile = false;
+        boolean nowCentered = GameMap.isCenteredInTile(_position);
+        boolean recentered  = nowCentered && !_centeredInTile;
+        _centeredInTile = nowCentered;
+        if (!recentered)
             return;
-        }
 
-        if (!_centeredInTile) {
-            _centeredInTile = true;
-            _gridPosition = GameMap.toGridVector2(_position);
-        }
-
+        _gridPosition = GameMap.toGridVector2(_position);
         Vector2 tunneled = _Map.useTunnel(_gridPosition, _direction);
         if (tunneled != null) {
             _gridPosition = tunneled;

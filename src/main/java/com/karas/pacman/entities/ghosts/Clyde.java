@@ -6,18 +6,18 @@ import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.entities.Ghost;
 import com.karas.pacman.entities.ImmutableEntity;
 import com.karas.pacman.maps.ImmutableMap;
-import com.karas.pacman.resources.ResourcesManager;
+import com.karas.pacman.resources.ResourceManager;
 import com.karas.pacman.resources.SpriteID;
 
 public final class Clyde extends Ghost {
     
-    public Clyde(ImmutableEntity PacmanRef, ImmutableMap MapRef, ResourcesManager ResourcesMgr) {
+    public Clyde(ImmutableEntity PacmanRef, ImmutableMap MapRef, ResourceManager ResourceMgr) {
         super(
             Constants.Grid.CLYDE_POSITION,
             Direction.UP,
             Constants.Pixel.CLYDE_SPEED,
             SpriteID.CLYDE,
-            PacmanRef, MapRef, ResourcesMgr
+            PacmanRef, MapRef, ResourceMgr
         );
     }
 

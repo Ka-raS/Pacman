@@ -9,7 +9,7 @@ import javax.swing.SwingUtilities;
 
 import com.karas.pacman.commons.Exitable;
 import com.karas.pacman.resources.ResourceID;
-import com.karas.pacman.resources.ResourcesManager;
+import com.karas.pacman.resources.ResourceManager;
 import com.karas.pacman.screens.ScreenManager;
 
 public final class Game implements Exitable {
@@ -17,7 +17,7 @@ public final class Game implements Exitable {
     public Game() {
         _running = false;
         _updateTimer = _repaintTimer = _statsTimer = _updateCount = 0;
-        _resourceManager = new ResourcesManager();
+        _resourceManager = new ResourceManager();
         _screenManager = new ScreenManager(_resourceManager);
         _thread = new Thread(this::gameLoop, "Game Thread");
         _frame = new JFrame(Constants.TITLE);
@@ -30,7 +30,7 @@ public final class Game implements Exitable {
         if (_running)
             return;
         _running = true;
-        _LOGGER.info("Entering game");
+        LOG.info("Entering game");
         SwingUtilities.invokeLater(() -> _frame.setVisible(true));
         _thread.start();
     }
@@ -116,19 +116,19 @@ public final class Game implements Exitable {
     }
 
     private void cleanup() {
-        _LOGGER.info("Exiting game");
+        LOG.info("Exiting game");
         SwingUtilities.invokeLater(() -> _frame.dispose());
         _screenManager.exit();
         _resourceManager.exit();
     }
 
-    private static final Logger _LOGGER = Logger.getLogger(Game.class.getName());
+    private static final Logger LOG = Logger.getLogger(Game.class.getName());
 
     private final Thread _thread;
     private final JFrame _frame;
     private final GamePanel _panel;
     private final ScreenManager _screenManager;
-    private final ResourcesManager _resourceManager;
+    private final ResourceManager _resourceManager;
     
     private volatile boolean _running;
     private double _updateTimer, _repaintTimer, _statsTimer;

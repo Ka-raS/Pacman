@@ -1,5 +1,7 @@
 package com.karas.pacman;
 
+import java.util.logging.Level;
+
 import com.karas.pacman.commons.Vector2;
 
 public final class Constants {
@@ -8,6 +10,7 @@ public final class Constants {
     public static final int FPS_TARGET = Integer.MAX_VALUE;
     public static final String TITLE   = "Pacman";
     public static final double DEFAULT_SCALE = 3.0;
+    public static final Level LOG_LEVEL = Level.INFO;
 
     public static final class Score {
 

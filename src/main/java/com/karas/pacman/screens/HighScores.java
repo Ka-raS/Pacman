@@ -8,16 +8,16 @@ import java.awt.image.BufferedImage;
 
 import com.karas.pacman.Constants;
 import com.karas.pacman.resources.ResourceID;
-import com.karas.pacman.resources.ResourcesManager;
+import com.karas.pacman.resources.ResourceManager;
 import com.karas.pacman.resources.ScoreDatabase;
 
 public final class HighScores implements Screen {
 
-    public HighScores(ResourcesManager ResourcesMgr) {
-        _ScoreDatabase = ResourcesMgr.getDatabase();
-        _HeaderImage   = ResourcesMgr.getImage(ResourceID.HIGHSCORE_IMAGE);
-        _FontMedium    = ResourcesMgr.getFont(Constants.Pixel.FONT_SIZE_MEDIUM);
-        _FontSmall     = ResourcesMgr.getFont(Constants.Pixel.FONT_SIZE_SMALL);
+    public HighScores(ResourceManager ResourceMgr) {
+        _ScoreDatabase = ResourceMgr.getDatabase();
+        _HeaderImage   = ResourceMgr.getImage(ResourceID.HIGHSCORE_IMAGE);
+        _FontMedium    = ResourceMgr.getFont(Constants.Pixel.FONT_SIZE_MEDIUM);
+        _FontSmall     = ResourceMgr.getFont(Constants.Pixel.FONT_SIZE_SMALL);
     }
 
     @Override

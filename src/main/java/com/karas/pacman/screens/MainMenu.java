@@ -7,15 +7,15 @@ import java.awt.image.BufferedImage;
 import com.karas.pacman.Constants;
 import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.resources.ResourceID;
-import com.karas.pacman.resources.ResourcesManager;
+import com.karas.pacman.resources.ResourceManager;
 
 public final class MainMenu implements Screen {
     
-    public MainMenu(ResourcesManager ResourcesMgr) {
-        _TitleImage = ResourcesMgr.getImage(ResourceID.TITLE_IMAGE);
+    public MainMenu(ResourceManager ResourceMgr) {
+        _TitleImage = ResourceMgr.getImage(ResourceID.TITLE_IMAGE);
         _navigator = new Navigator(
             new Vector2(Constants.Pixel.WINDOW_SIZE.ix() * 0.375, Constants.Pixel.WINDOW_SIZE.iy() * 0.75),
-            ResourcesMgr.getFont(Constants.Pixel.FONT_SIZE_SMALL),
+            ResourceMgr.getFont(Constants.Pixel.FONT_SIZE_SMALL),
             new Navigator.Option("Start Game", Playing.class),
             new Navigator.Option("Exit Game",  null)
         );

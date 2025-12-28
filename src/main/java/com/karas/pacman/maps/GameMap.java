@@ -8,7 +8,7 @@ import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Paintable;
 import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.resources.ResourceID;
-import com.karas.pacman.resources.ResourcesManager;
+import com.karas.pacman.resources.ResourceManager;
 import com.karas.pacman.resources.Sound;
 
 public final class GameMap implements ImmutableMap, Paintable {
@@ -27,15 +27,15 @@ public final class GameMap implements ImmutableMap, Paintable {
         return p.ix() == HALF && p.iy() == HALF;
     }
 
-    public GameMap(ResourcesManager ResourcesMgr) {
-        _MapImage = ResourcesMgr.getImage(ResourceID.MAP_IMAGE);
+    public GameMap(ResourceManager ResourceMgr) {
+        _MapImage = ResourceMgr.getImage(ResourceID.MAP_IMAGE);
         _PelletImage = createSquare(Constants.Pixel.PELLET_SIZE);
         _PowerupImage = createSquare(Constants.Pixel.POWERUP_SIZE);
         _WakaSounds = new Sound[] { 
-            ResourcesMgr.getSound(ResourceID.EAT_WA_SOUND), 
-            ResourcesMgr.getSound(ResourceID.EAT_KA_SOUND) 
+            ResourceMgr.getSound(ResourceID.EAT_WA_SOUND), 
+            ResourceMgr.getSound(ResourceID.EAT_KA_SOUND) 
         };
-        _OriginalTilemap = ResourcesMgr.getTilemap();
+        _OriginalTilemap = ResourceMgr.getTilemap();
         reset();
     }
 
@@ -60,7 +60,7 @@ public final class GameMap implements ImmutableMap, Paintable {
     public Vector2 useTunnel(Vector2 gridPosition, Direction direction) {
         if (tileAt(gridPosition) != Tile.TUNNEL)
             return null;
-        Vector2 dir = direction.getOpposite().toVector2();
+        Vector2 dir = direction.opposite().vector2();
         return dir.mul(WIDTH - 1).add(gridPosition);
     }
 

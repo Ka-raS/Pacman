@@ -14,9 +14,9 @@ public enum SpriteID {
     DEAD_GHOST( 6, 4, 4),
     SCORES(     7, 0, 4);
 
-    public int getRow()    { return _row; }
-    public int getColumn() { return _column; }
-    public int getLength() { return _length; }
+    public int row()    { return _row; }
+    public int column() { return _column; }
+    public int length() { return _length; }
 
 
     private SpriteID(int row, int column, int length) {

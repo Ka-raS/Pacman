@@ -3,7 +3,6 @@ package com.karas.pacman.resources;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -11,23 +10,22 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.PriorityQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class ScoreDatabase {
 
     public static record Entry(int score, LocalDate date) {}
 
-    public ScoreDatabase() {
-        _databaseFile = null;
+    public ScoreDatabase(File file) {
         _fileLength = 0;
         _entries = new ArrayList<>();
-    }
+        if (file == null) {
+            _file = null;
+            return;
+        }
 
-    public ScoreDatabase(File databaseFile) throws FileNotFoundException, IOException {
-        _databaseFile = databaseFile;
-        _fileLength = 0;
-        _entries = new ArrayList<>();
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(databaseFile))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] split = line.split(",");
@@ -36,7 +34,13 @@ public final class ScoreDatabase {
                     LocalDate.parse(split[1])
                 ));
             }
+
+        } catch (IOException e) {
+            LOG.log(Level.SEVERE, e, () -> "Failed Reading Database File: " + file.getAbsolutePath());
+            _entries.clear();
         }
+
+        _file = file;
         _fileLength = _entries.size();
     }
 
@@ -54,22 +58,26 @@ public final class ScoreDatabase {
         return maxScores;
     }
 
-    public void save() throws IOException {
-        if (_databaseFile == null || _entries.size() == _fileLength)
+    public void save() {
+        if (_file == null || _entries.size() == _fileLength)
             return;
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(_databaseFile, true))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(_file, true))) {
             while (_fileLength < _entries.size()) {
                 Entry entry = _entries.get(_fileLength++);
                 writer.write(String.format("%05d,%s", entry.score(), entry.date()));
                 writer.newLine();
             }
+        } catch (IOException e) {
+            LOG.log(Level.SEVERE, "Failed Saving Database On Exit", e);
         }
     }
 
 
+    private static final Logger LOG = Logger.getLogger(ScoreDatabase.class.getName());
+
     private final ArrayList<Entry> _entries;
-    private final File _databaseFile;
+    private final File _file;
     private int _fileLength;
 
 }

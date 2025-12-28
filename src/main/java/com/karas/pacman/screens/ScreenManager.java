@@ -7,15 +7,15 @@ import java.util.logging.Logger;
 
 import com.karas.pacman.commons.Paintable;
 import com.karas.pacman.commons.Exitable;
-import com.karas.pacman.resources.ResourcesManager;
+import com.karas.pacman.resources.ResourceManager;
 
 public final class ScreenManager implements Exitable, Paintable {
     
-    public ScreenManager(ResourcesManager ResourcesMgr) {
-        Screen mainMenu   = new MainMenu(ResourcesMgr);
-        Screen playing    = new Playing(ResourcesMgr);
-        Screen paused     = new Paused(playing, ResourcesMgr);
-        Screen highScores = new HighScores(ResourcesMgr);
+    public ScreenManager(ResourceManager ResourceMgr) {
+        Screen mainMenu   = new MainMenu(ResourceMgr);
+        Screen playing    = new Playing(ResourceMgr);
+        Screen paused     = new Paused(playing, ResourceMgr);
+        Screen highScores = new HighScores(ResourceMgr);
 
         _current = mainMenu;
         _current.enter(null);
@@ -54,7 +54,7 @@ public final class ScreenManager implements Exitable, Paintable {
             return true;
 
         _enteringScreen = true;
-        _LOGGER.info("Switching to screen " + nextScreen.getSimpleName());
+        LOG.info(() -> "Switching to screen " + nextScreen.getSimpleName());
 
         Class<? extends Screen> currentScreen = _current.getClass();
         _current.exit();
@@ -65,7 +65,7 @@ public final class ScreenManager implements Exitable, Paintable {
         return true;
     }
 
-    private static final Logger _LOGGER = Logger.getLogger(ScreenManager.class.getName());
+    private static final Logger LOG = Logger.getLogger(ScreenManager.class.getName());
 
     private final Map<Class<? extends Screen>, Screen> _screens;
     private Screen _current;

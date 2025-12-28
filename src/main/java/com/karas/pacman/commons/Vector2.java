@@ -28,7 +28,7 @@ public record Vector2(double x, double y) {
         Direction result = null;
         double maxDistance = -1.0;
         for (Direction dir : directions) {
-            double distance = this.add(dir.toVector2()).distance(other);
+            double distance = this.add(dir.vector2()).distance(other);
             if (maxDistance < distance) {
                 maxDistance = distance;
                 result = dir;
@@ -41,7 +41,7 @@ public record Vector2(double x, double y) {
         Direction result = null;
         double minDistance = Double.MAX_VALUE;
         for (Direction dir : directions) {
-            double distance = this.add(dir.toVector2()).distance(other);
+            double distance = this.add(dir.vector2()).distance(other);
             if (minDistance > distance) {
                 minDistance = distance;
                 result = dir;

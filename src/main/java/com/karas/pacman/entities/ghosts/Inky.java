@@ -6,18 +6,18 @@ import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.entities.Ghost;
 import com.karas.pacman.entities.ImmutableEntity;
 import com.karas.pacman.maps.ImmutableMap;
-import com.karas.pacman.resources.ResourcesManager;
+import com.karas.pacman.resources.ResourceManager;
 import com.karas.pacman.resources.SpriteID;
 
 public final class Inky extends Ghost {
     
-    public Inky(ImmutableEntity PacmanRef, ImmutableMap MapRef, ImmutableEntity BlinkyRef, ResourcesManager ResourcesMgr) {
+    public Inky(ImmutableEntity PacmanRef, ImmutableMap MapRef, ImmutableEntity BlinkyRef, ResourceManager ResourceMgr) {
         super(
             Constants.Grid.INKY_POSITION,
             Direction.DOWN,
             Constants.Pixel.INKY_SPEED,
             SpriteID.INKY,
-            PacmanRef, MapRef, ResourcesMgr
+            PacmanRef, MapRef, ResourceMgr
         );
         _Blinky = BlinkyRef;
     }
@@ -25,7 +25,7 @@ public final class Inky extends Ghost {
 
     @Override
     protected Vector2 findHunterTarget(ImmutableEntity PacmanRef) {
-        Vector2 pacmanDir = PacmanRef.getDirection().toVector2();
+        Vector2 pacmanDir = PacmanRef.getDirection().vector2();
         Vector2 pacmanPredict = PacmanRef.getGridPosition().add(pacmanDir.mul(2));
         return pacmanPredict.mul(2).sub(_Blinky.getGridPosition());
     }

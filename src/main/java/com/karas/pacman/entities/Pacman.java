@@ -4,13 +4,13 @@ import com.karas.pacman.Constants;
 import com.karas.pacman.commons.Direction;
 import com.karas.pacman.maps.ImmutableMap;
 import com.karas.pacman.resources.ResourceID;
-import com.karas.pacman.resources.ResourcesManager;
+import com.karas.pacman.resources.ResourceManager;
 import com.karas.pacman.resources.Sound;
 import com.karas.pacman.resources.SpriteID;
 
 public final class Pacman extends Entity {
 
-    public Pacman(ImmutableMap MapRef, ResourcesManager ResourcesMgr) {
+    public Pacman(ImmutableMap MapRef, ResourceManager ResourceMgr) {
         super(
             Constants.Grid.PACMAN_POSITION,
             Direction.RIGHT,
@@ -18,9 +18,9 @@ public final class Pacman extends Entity {
             MapRef
         );
         _nextDirection = Direction.RIGHT;
-        _baseSprite = new Sprite(ResourcesMgr.getSprite(SpriteID.PACMAN), Direction.RIGHT);
-        _deathSprite = new Sprite(ResourcesMgr.getSprite(SpriteID.DEAD_PACMAN));
-        _DeathSound = ResourcesMgr.getSound(ResourceID.PACMAN_DEATH_SOUND);
+        _baseSprite = new Sprite(ResourceMgr.getSprite(SpriteID.PACMAN), Direction.RIGHT);
+        _deathSprite = new Sprite(ResourceMgr.getSprite(SpriteID.DEAD_PACMAN));
+        _DeathSound = ResourceMgr.getSound(ResourceID.PACMAN_DEATH_SOUND);
         setSprite(_baseSprite);
         enterState(State.PREY);
     }

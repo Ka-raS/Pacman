@@ -19,22 +19,22 @@ import com.karas.pacman.entities.ghosts.Pinky;
 import com.karas.pacman.maps.GameMap;
 import com.karas.pacman.maps.ScorePopup;
 import com.karas.pacman.resources.ResourceID;
-import com.karas.pacman.resources.ResourcesManager;
+import com.karas.pacman.resources.ResourceManager;
 import com.karas.pacman.resources.ScoreDatabase;
 import com.karas.pacman.resources.Sound;
 import com.karas.pacman.resources.SpriteID;
 
 public final class Playing implements Screen {
 
-    public Playing(ResourcesManager ResourcesMgr) {
-        _map    = new GameMap(ResourcesMgr);
-        _pacman = new Pacman(_map, ResourcesMgr);
-        _scores = Arrays.stream(ResourcesMgr.getSprite(SpriteID.SCORES)).map(ScorePopup::new).toList();
+    public Playing(ResourceManager ResourceMgr) {
+        _map    = new GameMap(ResourceMgr);
+        _pacman = new Pacman(_map, ResourceMgr);
+        _scores = Arrays.stream(ResourceMgr.getSprite(SpriteID.SCORES)).map(ScorePopup::new).toList();
         
-        Blinky blinky = new Blinky(_pacman, _map, ResourcesMgr);
-        Pinky pinky   = new Pinky(_pacman, _map, ResourcesMgr);
-        Inky inky     = new Inky(_pacman, _map, blinky, ResourcesMgr);
-        Clyde clyde   = new Clyde(_pacman, _map, ResourcesMgr);
+        Blinky blinky = new Blinky(_pacman, _map, ResourceMgr);
+        Pinky pinky   = new Pinky(_pacman, _map, ResourceMgr);
+        Inky inky     = new Inky(_pacman, _map, blinky, ResourceMgr);
+        Clyde clyde   = new Clyde(_pacman, _map, ResourceMgr);
         _ghosts = List.of(blinky, pinky, inky, clyde);
 
         _totalScore = 0;
@@ -42,12 +42,12 @@ public final class Playing implements Screen {
         _stateDuration = 0.0;
         _nextScreen = Playing.class;
 
-        _ScoreDatabase = ResourcesMgr.getDatabase();
-        _FontMedium    = ResourcesMgr.getFont(Constants.Pixel.FONT_SIZE_MEDIUM);
-        _NewGameSound  = ResourcesMgr.getSound(ResourceID.GAME_START_SOUND);
-        _NormalSound   = ResourcesMgr.getSound(ResourceID.GAME_NORMAL_SOUND);
-        _PowerupSound  = ResourcesMgr.getSound(ResourceID.GAME_POWERUP_SOUND);
-        _WonSound      = ResourcesMgr.getSound(ResourceID.GAME_WON_SOUND);
+        _ScoreDatabase = ResourceMgr.getDatabase();
+        _FontMedium    = ResourceMgr.getFont(Constants.Pixel.FONT_SIZE_MEDIUM);
+        _NewGameSound  = ResourceMgr.getSound(ResourceID.GAME_START_SOUND);
+        _NormalSound   = ResourceMgr.getSound(ResourceID.GAME_NORMAL_SOUND);
+        _PowerupSound  = ResourceMgr.getSound(ResourceID.GAME_POWERUP_SOUND);
+        _WonSound      = ResourceMgr.getSound(ResourceID.GAME_WON_SOUND);
     }
 
     @Override
@@ -59,7 +59,7 @@ public final class Playing implements Screen {
             return;
         }
 
-        _LOGGER.info("Resumed game");
+        LOG.info("Resumed game");
         if (_state != State.START) {
             _pacman.enterPreviousState();
             _ghosts.forEach(Ghost::enterPreviousState);
@@ -128,14 +128,14 @@ public final class Playing implements Screen {
         _state = nextState;
         switch (nextState) {
             case START:
-                _LOGGER.info("Started new playing");
+                LOG.info("Started new playing");
                 _totalScore = 0;
                 _stateDuration = Constants.Time.STARTING_DURATION;
                 
                 _pacman.reset();
                 _ghosts.forEach(Ghost::reset);
                 _map.reset();
-                for (Sound sound : List.of(_NewGameSound, _NormalSound, _PowerupSound, _WonSound))
+                for (Sound sound : new Sound[] {_NewGameSound, _NormalSound, _PowerupSound, _WonSound})
                     sound.reset();
 
                 _pacman.enterState(Pacman.State.IDLE);
@@ -161,14 +161,14 @@ public final class Playing implements Screen {
                 break;
 
             case LOST:
-                _LOGGER.info("Game lost");
+                LOG.info("Game lost");
                 _stateDuration = Constants.Time.GAMELOST_DURATION;
                 _pacman.enterState(Pacman.State.DEAD);
                 _ghosts.forEach(ghost -> ghost.enterState(Ghost.State.IDLE));
                 break;
 
             case WON:
-                _LOGGER.info("Game won");
+                LOG.info(() -> "Game won with score: " + _totalScore);
                 _stateDuration = Constants.Time.GAMEWON_DURATION;
                 _pacman.enterState(Pacman.State.IDLE);
                 _ghosts.forEach(ghost -> ghost.enterState(Ghost.State.IDLE));
@@ -228,7 +228,6 @@ public final class Playing implements Screen {
                 
                     case PREY:
                         ghost.enterState(Ghost.State.DEAD);
-                        _LOGGER.info(ghost.getClass().getSimpleName() + " eaten");
                         _totalScore += Constants.Score.GHOST * (1 << deadGhostCount);
                         _scores.get(deadGhostCount).displayAt(ghost.getPosition());
                         ++deadGhostCount;
@@ -248,7 +247,6 @@ public final class Playing implements Screen {
                 break;
         
             case POWERUP:
-                _LOGGER.info("Powerup eaten");
                 _totalScore += Constants.Score.POWERUP;
                 currentSound.pause();
                 enterState(State.POWERUP);
@@ -270,7 +268,7 @@ public final class Playing implements Screen {
         G.drawString(text, x, y);
     }
 
-    private static final Logger _LOGGER = Logger.getLogger(Playing.class.getName());
+    private static final Logger LOG = Logger.getLogger(Playing.class.getName());
 
     private final Font _FontMedium;
     private final Sound _NewGameSound, _NormalSound, _PowerupSound, _WonSound;

@@ -7,7 +7,7 @@ import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.maps.ImmutableMap;
 import com.karas.pacman.resources.ResourceID;
-import com.karas.pacman.resources.ResourcesManager;
+import com.karas.pacman.resources.ResourceManager;
 import com.karas.pacman.resources.Sound;
 import com.karas.pacman.resources.SpriteID;
 
@@ -44,19 +44,19 @@ public abstract class Ghost extends Entity {
     }
 
     protected Ghost(Vector2 gridPosition, Direction direction, int speed, SpriteID baseSpriteID,
-                    ImmutableEntity PacmanRef, ImmutableMap MapRef, ResourcesManager ResourcesMgr) {
+                    ImmutableEntity PacmanRef, ImmutableMap MapRef, ResourceManager ResourceMgr) {
         super(gridPosition, direction, speed, MapRef);
         _baseSpeed = speed;
         _startGridPosition = gridPosition;
         _previousGridPosition = null;
         _startDirection = direction;
-        _DeathSound = ResourcesMgr.getSound(ResourceID.GHOST_DEATH_SOUND);
+        _DeathSound = ResourceMgr.getSound(ResourceID.GHOST_DEATH_SOUND);
         _Pacman = PacmanRef;
         
-        _baseSprite  = new Sprite(ResourcesMgr.getSprite(baseSpriteID), direction);
-        _preySprite  = new Sprite(ResourcesMgr.getSprite(SpriteID.PREY_GHOST));
-        _flashSprite = new Sprite(ResourcesMgr.getSprite(SpriteID.FLASH_GHOST));
-        _deathSprite = new Sprite(ResourcesMgr.getSprite(SpriteID.DEAD_GHOST), direction);
+        _baseSprite  = new Sprite(ResourceMgr.getSprite(baseSpriteID), direction);
+        _preySprite  = new Sprite(ResourceMgr.getSprite(SpriteID.PREY_GHOST));
+        _flashSprite = new Sprite(ResourceMgr.getSprite(SpriteID.FLASH_GHOST));
+        _deathSprite = new Sprite(ResourceMgr.getSprite(SpriteID.DEAD_GHOST), direction);
         enterState(State.HUNTER);
     }
 
@@ -95,18 +95,18 @@ public abstract class Ghost extends Entity {
             return;
         _previousGridPosition = currentGrid;
 
-        Direction oppositeDir = getDirection().getOpposite();
+        Direction oppositeDir = getDirection().opposite();
         EnumSet<Direction> validDirections = EnumSet.noneOf(Direction.class);
         for (Direction dir : Direction.values())
             if (dir != oppositeDir && isValidDirection(dir))
                 validDirections.add(dir);
 
-        if (validDirections.isEmpty()) {
-            setDirection(oppositeDir);
-            return;
-        }
         if (validDirections.size() == 1) {
             setDirection(validDirections.iterator().next());
+            return;
+        }
+        if (validDirections.isEmpty()) {
+            setDirection(oppositeDir);
             return;
         }
 

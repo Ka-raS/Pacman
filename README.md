@@ -42,6 +42,4 @@ mvn package
 java -Dsun.java2d.opengl=true -jar target/pacman-1.1.0-SNAPSHOT.jar
 ```
 
-> Note: `-Dsun.java2d.opengl=true` flag enables GPU acceleration.  
-See more here https://docs.oracle.com/en/java/javase/22/troubleshoot/java-2d-pipeline-rendering-and-properties.html
-
+> Note: `-Dsun.java2d.opengl=true` flag enables GPU acceleration, see more [here](https://docs.oracle.com/en/java/javase/22/troubleshoot/java-2d-pipeline-rendering-and-properties.html)

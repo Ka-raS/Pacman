@@ -1,6 +1,4 @@
-- Review Ghost::updateDirection()
-- Object.requiresNonNull()
-- Simplify ResourcesManager.java code
+- JDK 25 to fix Entity._Sprite goofy ahh construct
 - Optimize Screen.repaint()
 
 - Paused Screen background music
@@ -9,4 +7,5 @@
 - Maybe Ghost scatter mode
 
 - Fix audio in linux
-- Review Vector2
+- Review record Vector2
+- Review Ghost::updateDirection()

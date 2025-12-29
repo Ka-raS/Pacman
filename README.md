@@ -13,12 +13,6 @@
 - High scores are saved and displayed the next time the game is launched 
 - Resizable Window
 
-## Controls
-
-- Movement: W A S D or ← ↑ → ↓  
-- Pause: Esc
-- Select: Enter
-
 ## How to Run
 
 ### From Latest Release: 
@@ -33,7 +27,7 @@ java -Dsun.java2d.opengl=true -jar pacman-1.1.0.jar
 #### Requirements
 
 - [JDK 25](https://www.oracle.com/java/technologies/javase/jdk25-archive-downloads.html)
-- [Maven 3.9](https://maven.apache.org/install.html) - Build Automation Tool
+- [Maven 3.9.12](https://maven.apache.org/install.html) - Build Automation Tool
 
 ```bash
 git clone https://github.com/Ka-raS/Pacman.git
@@ -43,3 +37,9 @@ java -Dsun.java2d.opengl=true -jar target/pacman-1.1.0.jar
 ```
 
 > Note: `-Dsun.java2d.opengl=true` flag enables GPU acceleration, see more [here](https://docs.oracle.com/en/java/javase/22/troubleshoot/java-2d-pipeline-rendering-and-properties.html)
+
+## Controls
+
+- Movement: W A S D or ← ↑ → ↓  
+- Pause: Esc
+- Select: Enter

@@ -17,7 +17,7 @@ public enum ResourceID {
     GAME_POWERUP_SOUND(Type.SOUND, "/sounds/game_powerup.wav"),
     GAME_WON_SOUND(    Type.SOUND, "/sounds/game_won.wav"),
 
-    FONT(    Type.FONT, "/fonts/Emulogic-zrEw.ttf"),
+    FONT(    Type.FONT, "/font/pac-man-arcade-original.ttf"),
     TILEMAP( Type.TEXT, "/tilemap.txt"),
     DATABASE(Type.TEXT, "./highscores.csv");
 

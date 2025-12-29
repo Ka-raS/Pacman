@@ -56,7 +56,7 @@ public final class HighScores implements Screen {
 
         int width = (int) (W * 0.6);
         int height = width * _HeaderImage.getHeight() / _HeaderImage.getWidth();
-        G.drawImage(_HeaderImage, (W - width) / 2, H / 16, width, height, null);
+        G.drawImage(_HeaderImage, (W - width) >> 1, H >> 4, width, height, null);
     }
 
     private void paintText(Graphics2D G) {
@@ -66,12 +66,12 @@ public final class HighScores implements Screen {
         final String TOP = "HIGH SCORES";
         G.setFont(_FontMedium);
         G.setColor(Constants.Color.TEXT);
-        G.drawString(TOP, (W - G.getFontMetrics().stringWidth(TOP)) / 2, H / 3);
+        G.drawString(TOP, (W - G.getFontMetrics().stringWidth(TOP)) >> 1, H / 3);
 
         final String BOTTOM = "NEW GAME";
         G.setFont(_FontSmall);
         G.setColor(Constants.Color.HIGHLIGHT);
-        G.drawString(BOTTOM, (W - G.getFontMetrics().stringWidth(BOTTOM)) / 2, (int)(H * 0.85));
+        G.drawString(BOTTOM, (W - G.getFontMetrics().stringWidth(BOTTOM)) >> 1, (int)(H * 0.85));
     }
 
     private void paintHighScores(Graphics2D G) {
@@ -86,7 +86,7 @@ public final class HighScores implements Screen {
 
         for (ScoreDatabase.Entry entry : _highscores) {
             String text = String.format("%d. %05d - %s", ++i, entry.score(), entry.date());
-            G.drawString(text, (W - fm.stringWidth(text)) / 2, y);
+            G.drawString(text, (W - fm.stringWidth(text)) >> 1, y);
             y += fm.getHeight() * 2;
         }
     }

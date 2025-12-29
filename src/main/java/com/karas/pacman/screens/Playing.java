@@ -260,8 +260,8 @@ public final class Playing implements Screen {
     private void paintTotalScore(Graphics2D G) {
         String text = String.format("%05d", _totalScore);
         FontMetrics fm = G.getFontMetrics(_FontMedium);
-        int x = (Constants.Pixel.WINDOW_SIZE.ix() - fm.stringWidth(text)) / 2;
-        int y = (Constants.Pixel.WINDOW_SIZE.iy() - fm.getHeight()) / 2;
+        int x = (Constants.Pixel.WINDOW_SIZE.ix() - fm.stringWidth(text)) >> 1;
+        int y = (Constants.Pixel.WINDOW_SIZE.iy() - fm.getHeight()) >> 1;
         
         G.setFont(_FontMedium);
         G.setColor(Constants.Color.SCORE);

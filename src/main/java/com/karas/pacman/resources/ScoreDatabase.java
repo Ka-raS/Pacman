@@ -36,8 +36,10 @@ public final class ScoreDatabase {
             }
 
         } catch (IOException e) {
-            LOG.log(Level.SEVERE, e, () -> "Failed Reading Database File: " + file.getAbsolutePath());
+            File tmp = file;
+            LOG.log(Level.SEVERE, e, () -> "Failed Reading Database File: " + tmp.getAbsolutePath());
             _entries.clear();
+            file = null;
         }
 
         _file = file;

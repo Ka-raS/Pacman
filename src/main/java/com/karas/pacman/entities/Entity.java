@@ -108,7 +108,7 @@ public abstract class Entity implements ImmutableEntity, Paintable {
             return;
 
         _gridPosition = GameMap.toGridVector2(_position);
-        Vector2 tunneled = _Map.useTunnel(_gridPosition, _direction);
+        Vector2 tunneled = _Map.useTunnel(_gridPosition);
         if (tunneled != null) {
             _gridPosition = tunneled;
             _position = GameMap.toPixelVector2(tunneled);

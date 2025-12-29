@@ -83,6 +83,12 @@ public final class ResourceManager implements Exitable {
                 continue;
 
             URL url = ResourceManager.class.getResource(id.path());
+            if (url == null) {
+                LOG.warning(() -> "Image Not Found: " + id.path());
+                imageMap.put(id, null);
+                continue;
+            }
+
             try {
                 imageMap.put(id, ImageIO.read(url));
             } catch (IOException e) {
@@ -94,14 +100,18 @@ public final class ResourceManager implements Exitable {
     }
 
     private static EnumMap<SpriteID, BufferedImage[]> loadSprites(BufferedImage sheetImage) {
-        final int SIZE = Constants.Pixel.SPRITE_SIZE;
         EnumMap<SpriteID, BufferedImage[]> spriteMap = new EnumMap<>(SpriteID.class);
-
+        if (sheetImage == null) {
+            LOG.warning("Intializing Empty Sprite Map");
+            for (SpriteID id : SpriteID.values())
+                spriteMap.put(id, new BufferedImage[id.length()]);
+            return spriteMap;
+        }
+        
+        final int SIZE = Constants.Pixel.SPRITE_SIZE;
         for (SpriteID id : SpriteID.values()) {
             BufferedImage[] sprite = new BufferedImage[id.length()];
             spriteMap.put(id, sprite);
-            if (sheetImage == null)
-                continue;
             for (int i = 0; i < sprite.length; ++i)
                 sprite[i] = sheetImage.getSubimage((id.column() + i) * SIZE, id.row() * SIZE, SIZE, SIZE);
         }
@@ -115,6 +125,12 @@ public final class ResourceManager implements Exitable {
                 continue;
 
             URL url = ResourceManager.class.getResource(id.path());
+            if (url == null) {
+                LOG.warning(() -> "Sound Not Found: " + id.path());
+                soundMap.put(id, new Sound(null));
+                continue;
+            }
+
             try (AudioInputStream stream = AudioSystem.getAudioInputStream(url)) {
                 Clip clip = AudioSystem.getClip();
                 clip.open(stream);
@@ -136,7 +152,13 @@ public final class ResourceManager implements Exitable {
     private static Tile[] loadTilemap() {
         final Vector2 SIZE = Constants.Grid.MAP_SIZE;
         Tile[] tilemap = new Tile[SIZE.iy() * SIZE.ix()];
+
         URL url = ResourceManager.class.getResource(ResourceID.TILEMAP.path());
+        if (url == null) {
+            LOG.severe("Tilemap Not Found: " + ResourceID.TILEMAP.path());
+            Arrays.fill(tilemap, Tile.WALL);
+            return tilemap;
+        }
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
             for (int y = 0; y < SIZE.iy(); ++y) {
@@ -154,32 +176,37 @@ public final class ResourceManager implements Exitable {
 
     private static ScoreDatabase loadDatabase() {
         File file = new File(ResourceID.DATABASE.path());
-        if (!file.exists()) {
-            LOG.info("Creating new database file at: " + file.getAbsolutePath());
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                LOG.log(Level.SEVERE, "Failed Creating Database File", e);
-                file = null;
-            }
+        if (file.exists())
+            return new ScoreDatabase(file);
+
+        LOG.info("Creating new database file at: " + file.getAbsolutePath());
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            LOG.log(Level.SEVERE, "Failed Creating Database File", e);
+            file = null;
         }
         return new ScoreDatabase(file);
     }
 
     private static Font[] loadFonts() {
         URL url = ResourceManager.class.getResource(ResourceID.FONT.path());
-        try (InputStream stream = url.openStream()) {
-            Font font = Font.createFont(Font.TRUETYPE_FONT, stream);
-            return new Font[] {
-                font.deriveFont((float) Constants.Pixel.FONT_SIZE_SMALL),
-                font.deriveFont((float) Constants.Pixel.FONT_SIZE_MEDIUM),
-                font.deriveFont((float) Constants.Pixel.FONT_SIZE_LARGE)
-            };
-    
-        } catch (IOException e) {
-            LOG.log(Level.WARNING, e, () -> "Failed Reading Font: " + url);
-        } catch (FontFormatException e) {
-            LOG.log(Level.WARNING, e, () -> "Invalid Font Format: " + url);
+        if (url == null)
+            LOG.warning(() -> "Font Not Found: " + ResourceID.FONT.path());
+        else {
+            try (InputStream stream = url.openStream()) {
+                Font font = Font.createFont(Font.TRUETYPE_FONT, stream);
+                return new Font[] {
+                    font.deriveFont((float) Constants.Pixel.FONT_SIZE_SMALL),
+                    font.deriveFont((float) Constants.Pixel.FONT_SIZE_MEDIUM),
+                    font.deriveFont((float) Constants.Pixel.FONT_SIZE_LARGE)
+                };
+
+            } catch (IOException e) {
+                LOG.log(Level.WARNING, e, () -> "Failed Reading Font: " + url);
+            } catch (FontFormatException e) {
+                LOG.log(Level.WARNING, e, () -> "Invalid Font Format: " + url);
+            }
         }
 
         Font fallback = new Font("Arial", Font.BOLD, Constants.Pixel.FONT_SIZE_MEDIUM);

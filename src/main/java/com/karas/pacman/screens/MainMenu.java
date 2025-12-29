@@ -61,7 +61,7 @@ public final class MainMenu implements Screen {
 
         int width = (int) (W * 0.75);
         int height = width * _TitleImage.getHeight() / _TitleImage.getWidth();
-        G.drawImage(_TitleImage, (W - width) / 2, H / 8, width, height, null);
+        G.drawImage(_TitleImage, (W - width) >> 1, H >> 3, width, height, null);
     }
 
     private final BufferedImage _TitleImage;

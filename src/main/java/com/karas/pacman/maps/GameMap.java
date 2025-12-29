@@ -4,7 +4,6 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import com.karas.pacman.Constants;
-import com.karas.pacman.commons.Direction;
 import com.karas.pacman.commons.Paintable;
 import com.karas.pacman.commons.Vector2;
 import com.karas.pacman.resources.ResourceID;
@@ -57,18 +56,17 @@ public final class GameMap implements ImmutableMap, Paintable {
     }
 
     @Override
-    public Vector2 useTunnel(Vector2 gridPosition, Direction direction) {
+    public Vector2 useTunnel(Vector2 gridPosition) {
         if (tileAt(gridPosition) != Tile.TUNNEL)
             return null;
-        Vector2 dir = direction.opposite().vector2();
-        return dir.mul(WIDTH - 1).add(gridPosition);
+        return new Vector2(WIDTH - 1 - gridPosition.ix(), gridPosition.iy());
     }
 
     public Tile eatConsumable(Vector2 gridPosition) {
         Tile tile = tileAt(gridPosition);
         switch (tile) {
             case PELLET:
-                _WakaSounds[_pelletCounts % 2].play();
+                _WakaSounds[_pelletCounts & 1].play();
                 --_pelletCounts;
 
             case POWERUP:
@@ -83,7 +81,19 @@ public final class GameMap implements ImmutableMap, Paintable {
     @Override
     public void repaint(Graphics2D G) {
         G.drawImage(_MapImage, 0, 0, null);
-        paintConsumables(G);
+
+        for (int i = 0; i < _tiles.length; ++i) {
+            BufferedImage image = switch (_tiles[i]) {
+                case PELLET  -> _PelletImage;
+                case POWERUP -> _PowerupImage;
+                default      -> null;
+            };
+            if (image == null)
+                continue;
+            int offset = Constants.Pixel.TILE_SIZE - (image.getWidth() >> 1);
+            Vector2 p = toPixelVector2(new Vector2(i % WIDTH, i / WIDTH)).add(offset);
+            G.drawImage(image, p.ix(), p.iy(), null);
+        }
     }
 
 
@@ -94,21 +104,6 @@ public final class GameMap implements ImmutableMap, Paintable {
         g.fillRect(0, 0, size, size);
         g.dispose();
         return image;
-    }
-
-    private void paintConsumables(Graphics2D G) {
-        for (int i = 0; i < _tiles.length; ++i) {
-            BufferedImage image = switch (_tiles[i]) {
-                case PELLET  -> _PelletImage;
-                case POWERUP -> _PowerupImage;
-                default      -> null;
-            };
-            if (image == null)
-                continue;
-            int offset = (Constants.Pixel.TILE_SIZE - image.getWidth() / 2);
-            Vector2 p = toPixelVector2(new Vector2(i % WIDTH, i / WIDTH)).add(offset);
-            G.drawImage(image, p.ix(), p.iy(), null);
-        }
     }
 
     private static final int WIDTH = Constants.Grid.MAP_SIZE.ix();

@@ -22,7 +22,25 @@ public final class Game implements Exitable {
         _thread = new Thread(this::gameLoop, "Game Thread");
         _frame = new JFrame(Constants.TITLE);
         _panel = new GamePanel(_screenManager);
-        SwingUtilities.invokeLater(this::initializeUI);
+
+        SwingUtilities.invokeLater(() -> {
+            _frame.add(_panel);
+            _frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowActivated(WindowEvent e) {
+                    _panel.requestFocusInWindow();
+                }
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    _running = false;
+                }
+            });
+
+            _frame.pack(); // uses _panel.getPreferredSize()
+            _frame.setResizable(true);
+            _frame.setIconImage(_resourceManager.getImage(ResourceID.WINDOW_ICON));
+            _frame.setLocationRelativeTo(null);
+        });
     }
 
     /** must not be called after {@link Game#exit()} */
@@ -40,27 +58,6 @@ public final class Game implements Exitable {
         _running = false;
     }
 
-
-    private void initializeUI() {
-        _panel.initializeUI();
-        _frame.add(_panel);
-
-        _frame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowActivated(WindowEvent e) {
-                _panel.requestFocusInWindow();
-            }
-            @Override
-            public void windowClosing(WindowEvent e) {
-                _running = false;
-            }
-        });
-
-        _frame.pack(); // uses _panel.getPreferredSize()
-        _frame.setResizable(true);
-        _frame.setIconImage(_resourceManager.getImage(ResourceID.WINDOW_ICON));
-        _frame.setLocationRelativeTo(null);
-    }
 
     private void gameLoop() {
         long previousTime = System.nanoTime();

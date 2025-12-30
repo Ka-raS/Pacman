@@ -9,6 +9,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import com.karas.pacman.screens.ScreenManager;
 
@@ -18,6 +19,35 @@ public final class GamePanel extends JPanel {
         _offsetX = _offsetY = _frameCount = 0;
         _scale = Constants.DEFAULT_SCALE;
         _ScreenManager = ScreenMgr;
+
+        SwingUtilities.invokeLater(() -> {
+            addKeyListener(new KeyAdapter() {
+                @Override
+                public void keyPressed(KeyEvent e) {
+                    _ScreenManager.input(e);
+                }
+            });
+            addComponentListener(new ComponentAdapter() {
+                @Override 
+                public void componentResized(ComponentEvent e) {
+                    int width  = getWidth();
+                    int height = getHeight();
+                    _scale = Math.min(
+                        width  / Constants.Pixel.WINDOW_SIZE.x(),
+                        height / Constants.Pixel.WINDOW_SIZE.y()
+                    );
+                    _offsetX = (width  - Constants.Pixel.WINDOW_SIZE.x() * _scale) / 2;
+                    _offsetY = (height - Constants.Pixel.WINDOW_SIZE.y() * _scale) / 2;
+                }
+            });
+
+            setFocusable(true);
+            setBackground(Constants.Color.BACKGROUND);
+            setPreferredSize(new Dimension(
+                (int) (Constants.Pixel.WINDOW_SIZE.x() * _scale),
+                (int) (Constants.Pixel.WINDOW_SIZE.y() * _scale)
+            ));
+        });
     }
 
     public int getFrameCount() {
@@ -26,36 +56,6 @@ public final class GamePanel extends JPanel {
 
     public void resetFrameCount() {
         _frameCount = 0;
-    }
-
-    public void initializeUI() {
-        setFocusable(true);
-        setBackground(Constants.Color.BACKGROUND);
-        setPreferredSize(new Dimension(
-            (int) (Constants.Pixel.WINDOW_SIZE.x() * _scale),
-            (int) (Constants.Pixel.WINDOW_SIZE.y() * _scale)
-        ));
-
-        addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                _ScreenManager.input(e);
-            }
-        });
-
-        addComponentListener(new ComponentAdapter() {
-            @Override 
-            public void componentResized(ComponentEvent e) {
-                int width  = getWidth();
-                int height = getHeight();
-                _scale = Math.min(
-                    width  / Constants.Pixel.WINDOW_SIZE.x(),
-                    height / Constants.Pixel.WINDOW_SIZE.y()
-                );
-                _offsetX = (width  - Constants.Pixel.WINDOW_SIZE.x() * _scale) / 2;
-                _offsetY = (height - Constants.Pixel.WINDOW_SIZE.y() * _scale) / 2;
-            }
-        });
     }
 
 

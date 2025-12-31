@@ -32,7 +32,7 @@ public final class Pacman extends Entity {
     @Override
     public void update(double deltaTime) {
         switch (getState()) {
-            case PREY, HUNTER:
+            default:
                 if (isValidNextDirection())
                     setDirection(_nextDirection);
                 updatePosition(deltaTime);

@@ -16,6 +16,7 @@ import com.karas.pacman.screens.ScreenManager;
 public final class GamePanel extends JPanel {
     
     public GamePanel(ScreenManager ScreenMgr) {
+        super();
         _offsetX = _offsetY = _frameCount = 0;
         _scale = Constants.DEFAULT_SCALE;
         _ScreenManager = ScreenMgr;

@@ -19,6 +19,10 @@ public abstract class Entity implements ImmutableEntity, Paintable {
 
     public abstract void reset();
 
+    public final boolean isCenteredInTile() {
+        return _centeredInTile;
+    }
+
     @Override
     public final Vector2 getPosition() {
         return _position;
@@ -69,10 +73,6 @@ public abstract class Entity implements ImmutableEntity, Paintable {
     }
 
     protected abstract void handleStateTransition(State nextState);
-
-    protected final boolean isCenteredInTile() {
-        return _centeredInTile;
-    }
 
     protected final boolean isValidDirection(Direction direction) {
         Vector2 toGrid = _gridPosition.add(direction.vector2());

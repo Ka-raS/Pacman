@@ -237,6 +237,9 @@ public final class Playing implements Screen {
                         break;
                 }
 
+        if(!_pacman.isCenteredInTile())
+            return;
+
         switch (_map.eatConsumable(_pacman.getGridPosition())) {
             case PELLET:
                 _totalScore += Constants.Score.PELLET;
